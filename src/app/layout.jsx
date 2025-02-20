@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import "./globals.css";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +25,9 @@ export default function RootLayout({ children }) {
         >
           <div className="flex flex-col min-h-screen">
             <Navbar />
-            <main className="flex-grow px-5 md:px-20">{children}</main>
+            <main className="flex-grow px-5 md:px-20">
+              <TooltipProvider>{children}</TooltipProvider>
+            </main>
             <Footer />
           </div>
         </ThemeProvider>

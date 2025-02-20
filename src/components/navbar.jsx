@@ -17,6 +17,11 @@ const navItems = [
   { name: "Events", href: "/events" },
   { name: "Courses", href: "/courses" },
   { name: "Members", href: "/members" },
+  { name: "Membership", href: "/membership" },
+  { name: "About", href: "/about" },
+  { name: "Workshop", href: "/workshop" },
+  { name: "Gallery", href: "/gallery" },
+  { name: "Contact", href: "/contact" },
   { name: "Profile", href: "/profile" },
   { name: "Discord", href: "/discord" },
 ];
@@ -34,7 +39,7 @@ export function Navbar() {
               <span className="text-2xl font-bold text-primary">CDC</span>
             </Link>
             <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-4">
+              <div className="ml-10 flex items-baseline space-x-4 flex-wrap">
                 {navItems.map((item) => (
                   <Link
                     key={item.name}
