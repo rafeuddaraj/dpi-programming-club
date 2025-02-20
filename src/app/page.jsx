@@ -16,16 +16,16 @@ import { Icons } from "@/components/icons";
 export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-12 bg-gradient-to-b from-background via-background/90 to-background text-foreground overflow-hidden">
-      <main className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-20">
+      <main className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-6xl mx-auto"
+          className="max-w-7xl mx-auto"
         >
           <header className="text-center mb-16">
             <motion.h1
-              className="text-5xl sm:text-7xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600"
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -33,7 +33,7 @@ export default function Home() {
               Programming Club
             </motion.h1>
             <motion.p
-              className="text-2xl sm:text-3xl mb-8"
+              className="text-xl sm:text-2xl md:text-3xl mb-8"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
@@ -45,20 +45,23 @@ export default function Home() {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
-              <Badge variant="outline" className="text-lg py-2 px-4">
-                Est. 2023
+              <Badge
+                variant="outline"
+                className="text-base sm:text-lg py-2 px-4"
+              >
+                Est. 2025
               </Badge>
             </motion.div>
           </header>
 
           <section className="mb-16">
-            <Card className="backdrop-blur-lg bg-background/30 border-none shadow-xl">
+            <Card className="backdrop-blur-lg bg-background/30 border-none shadow-xl hover:shadow-2xl transition-shadow duration-300">
               <CardHeader>
-                <CardTitle className="text-3xl sm:text-4xl font-bold text-center">
+                <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold text-center">
                   Our Vision
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-lg sm:text-xl text-center">
+              <CardContent className="text-base sm:text-lg md:text-xl text-center">
                 <p>
                   Empowering the next generation of tech innovators through
                   collaboration, learning, and hands-on experience.
@@ -68,27 +71,27 @@ export default function Home() {
           </section>
 
           <section className="mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 text-center">
               What We Offer
             </h2>
-            <div className="grid gap-8 md:grid-cols-2">
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               <FeatureCard
-                icon={<Icons.code className="w-12 h-12" />}
+                icon={<Icons.code className="w-10 h-10 sm:w-12 sm:h-12" />}
                 title="Programming & Development"
                 description="Dive into coding challenges, hackathons, and collaborative projects. Master languages like Python, Java, and JavaScript."
               />
               <FeatureCard
-                icon={<Icons.mic className="w-12 h-12" />}
+                icon={<Icons.mic className="w-10 h-10 sm:w-12 sm:h-12" />}
                 title="Public Speaking & Debate"
                 description="Hone your communication skills through workshops, debates, and presentations on cutting-edge tech topics."
               />
               <FeatureCard
-                icon={<Icons.lightbulb className="w-12 h-12" />}
+                icon={<Icons.lightbulb className="w-10 h-10 sm:w-12 sm:h-12" />}
                 title="Innovation Lab"
                 description="Experiment with emerging technologies like AI, Machine Learning, and Blockchain in our state-of-the-art innovation lab."
               />
               <FeatureCard
-                icon={<Icons.network className="w-12 h-12" />}
+                icon={<Icons.network className="w-10 h-10 sm:w-12 sm:h-12" />}
                 title="Networking & Career Growth"
                 description="Connect with industry professionals, attend career fairs, and get guidance on internships and job placements."
               />
@@ -96,37 +99,37 @@ export default function Home() {
           </section>
 
           <section className="mb-16">
-            <Card className="backdrop-blur-lg bg-background/30 border-none shadow-xl">
+            <Card className="backdrop-blur-lg bg-background/30 border-none shadow-xl hover:shadow-2xl transition-shadow duration-300">
               <CardHeader>
-                <CardTitle className="text-3xl sm:text-4xl font-bold text-center">
+                <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold text-center">
                   Why Join Us?
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="grid gap-4 md:grid-cols-2 text-lg">
+                <ul className="grid gap-4 sm:grid-cols-2 text-base sm:text-lg">
                   <li className="flex items-center">
-                    <Icons.check className="w-6 h-6 mr-2 text-green-500" />{" "}
-                    Hands-on learning experiences
+                    <Icons.check className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-green-500 flex-shrink-0" />
+                    <span>Hands-on learning experiences</span>
                   </li>
                   <li className="flex items-center">
-                    <Icons.check className="w-6 h-6 mr-2 text-green-500" />{" "}
-                    Access to cutting-edge resources
+                    <Icons.check className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-green-500 flex-shrink-0" />
+                    <span>Access to cutting-edge resources</span>
                   </li>
                   <li className="flex items-center">
-                    <Icons.check className="w-6 h-6 mr-2 text-green-500" />{" "}
-                    Networking opportunities
+                    <Icons.check className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-green-500 flex-shrink-0" />
+                    <span>Networking opportunities</span>
                   </li>
                   <li className="flex items-center">
-                    <Icons.check className="w-6 h-6 mr-2 text-green-500" />{" "}
-                    Leadership skill development
+                    <Icons.check className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-green-500 flex-shrink-0" />
+                    <span>Leadership skill development</span>
                   </li>
                   <li className="flex items-center">
-                    <Icons.check className="w-6 h-6 mr-2 text-green-500" />{" "}
-                    Industry-recognized certifications
+                    <Icons.check className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-green-500 flex-shrink-0" />
+                    <span>Industry-recognized certifications</span>
                   </li>
                   <li className="flex items-center">
-                    <Icons.check className="w-6 h-6 mr-2 text-green-500" /> Fun
-                    tech events and competitions
+                    <Icons.check className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-green-500 flex-shrink-0" />
+                    <span>Fun tech events and competitions</span>
                   </li>
                 </ul>
               </CardContent>
@@ -134,10 +137,10 @@ export default function Home() {
           </section>
 
           <section className="mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 text-center">
               Upcoming Events
             </h2>
-            <div className="grid gap-8 md:grid-cols-2">
+            <div className="grid gap-8 sm:grid-cols-2">
               <EventCard
                 title="AI Workshop Series"
                 date="July 15-17, 2023"
@@ -152,18 +155,22 @@ export default function Home() {
           </section>
 
           <section className="mb-16">
-            <Card className="backdrop-blur-lg bg-background/30 border-none shadow-xl">
+            <Card className="backdrop-blur-lg bg-background/30 border-none shadow-xl hover:shadow-2xl transition-shadow duration-300">
               <CardHeader>
-                <CardTitle className="text-3xl sm:text-4xl font-bold text-center">
+                <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold text-center">
                   Join Our Community
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-center">
-                <p className="text-lg mb-6">
+                <p className="text-base sm:text-lg mb-6">
                   Be part of a thriving tech community. Learn, grow, and
                   innovate together!
                 </p>
-                <Button asChild size="lg" className="text-lg py-6 px-8">
+                <Button
+                  asChild
+                  size="lg"
+                  className="text-base sm:text-lg py-4 sm:py-6 px-6 sm:px-8"
+                >
                   <Link href="/register">Become a Member</Link>
                 </Button>
               </CardContent>
@@ -171,10 +178,10 @@ export default function Home() {
           </section>
 
           <section className="mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 text-center">
               Our Partners
             </h2>
-            <div className="flex flex-wrap justify-center gap-8">
+            <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
               <PartnerLogo name="TechCorp" />
               <PartnerLogo name="InnovateX" />
               <PartnerLogo name="FutureLab" />
@@ -183,24 +190,24 @@ export default function Home() {
           </section>
 
           <section className="text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6">
               Connect With Us
             </h2>
-            <div className="flex justify-center space-x-4">
+            <div className="flex justify-center space-x-4 sm:space-x-6">
               <SocialIcon
-                icon={<Icons.facebook className="w-6 h-6" />}
+                icon={<Icons.facebook className="w-5 h-5 sm:w-6 sm:h-6" />}
                 href="#"
               />
               <SocialIcon
-                icon={<Icons.twitter className="w-6 h-6" />}
+                icon={<Icons.twitter className="w-5 h-5 sm:w-6 sm:h-6" />}
                 href="#"
               />
               <SocialIcon
-                icon={<Icons.instagram className="w-6 h-6" />}
+                icon={<Icons.instagram className="w-5 h-5 sm:w-6 sm:h-6" />}
                 href="#"
               />
               <SocialIcon
-                icon={<Icons.linkedin className="w-6 h-6" />}
+                icon={<Icons.linkedin className="w-5 h-5 sm:w-6 sm:h-6" />}
                 href="#"
               />
             </div>
@@ -213,17 +220,17 @@ export default function Home() {
 
 function FeatureCard({ icon, title, description }) {
   return (
-    <Card className="backdrop-blur-lg bg-background/30 border-none shadow-xl">
+    <Card className="backdrop-blur-lg bg-background/30 border-none shadow-xl hover:shadow-2xl transition-shadow duration-300">
       <CardHeader>
-        <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-primary/10">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-primary/10">
           {icon}
         </div>
-        <CardTitle className="text-2xl font-bold text-center">
+        <CardTitle className="text-xl sm:text-2xl font-bold text-center">
           {title}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-center">{description}</p>
+        <p className="text-center text-sm sm:text-base">{description}</p>
       </CardContent>
     </Card>
   );
@@ -231,13 +238,15 @@ function FeatureCard({ icon, title, description }) {
 
 function EventCard({ title, date, description }) {
   return (
-    <Card className="backdrop-blur-lg bg-background/30 border-none shadow-xl">
+    <Card className="backdrop-blur-lg bg-background/30 border-none shadow-xl hover:shadow-2xl transition-shadow duration-300">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">{title}</CardTitle>
-        <CardDescription>{date}</CardDescription>
+        <CardTitle className="text-xl sm:text-2xl font-bold">{title}</CardTitle>
+        <CardDescription className="text-sm sm:text-base">
+          {date}
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <p>{description}</p>
+        <p className="text-sm sm:text-base">{description}</p>
       </CardContent>
     </Card>
   );
@@ -245,8 +254,8 @@ function EventCard({ title, date, description }) {
 
 function PartnerLogo({ name }) {
   return (
-    <div className="w-32 h-32 flex items-center justify-center bg-background/50 rounded-lg shadow-md">
-      <span className="text-xl font-bold">{name}</span>
+    <div className="w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center bg-background/50 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+      <span className="text-lg sm:text-xl font-bold">{name}</span>
     </div>
   );
 }
@@ -255,7 +264,7 @@ function SocialIcon({ icon, href }) {
   return (
     <a
       href={href}
-      className="p-2 rounded-full bg-background/50 hover:bg-background/80 transition-colors"
+      className="p-2 rounded-full bg-background/50 hover:bg-background/80 transition-colors duration-300"
     >
       {icon}
     </a>

@@ -16,6 +16,7 @@ const navItems = [
   { name: "Home", href: "/" },
   { name: "Events", href: "/events" },
   { name: "Courses", href: "/courses" },
+  { name: "Members", href: "/members" },
   { name: "Profile", href: "/profile" },
   { name: "Discord", href: "/discord" },
 ];
@@ -30,7 +31,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0">
-              <span className="text-2xl font-bold text-primary">DPIPC</span>
+              <span className="text-2xl font-bold text-primary">CDC</span>
             </Link>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
@@ -95,6 +96,7 @@ export function Navbar() {
           </div>
         </div>
       </div>
+
       {isOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
