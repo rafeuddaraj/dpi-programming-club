@@ -1,0 +1,115 @@
+import { getAllActivitiesByUserId } from "@/app/actions/activities";
+import { getUserById } from "@/app/actions/users";
+import { auth } from "@/app/auth";
+import { MotionDiv } from "@/components/common/motion";
+import { Icons } from "@/components/icons";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { hasPermission, MEMBER } from "@/lib/permissions";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+const ProfileActivities = dynamic(() =>
+  import("./_components/ProfileActivities")
+);
+
+export default async function ProfilePage({ searchParams }) {
+  const userId = (await searchParams).id;
+
+  const session = await auth();
+  const userData = await getUserById(userId || session?.user?.id);
+  const activities = await getAllActivitiesByUserId(userId || session?.user?.id);
+  if (userData?.error || activities?.error) {
+    throw Error("User not found");
+  }
+  return (
+    <div className="container mx-auto py-8">
+      <MotionDiv
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="space-y-8"
+      >
+        <Card className="relative overflow-hidden">
+          <CardHeader className="flex flex-col sm:flex-row items-center gap-4">
+            <Avatar className="w-32 h-32 border-4 border-background">
+              <AvatarImage
+                src={userData?.avatar || "/avatar.svg"}
+                alt={userData?.name}
+              />
+              <AvatarFallback>
+                {userData?.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </AvatarFallback>
+            </Avatar>
+            <div className="text-center sm:text-left">
+              <CardTitle className="text-2xl sm:text-3xl">
+                {userData?.name}
+              </CardTitle>
+              <CardDescription className="text-lg mt-2">
+                {userData?.bio || "No bio available"}
+              </CardDescription>
+              <p>{userData?.address}</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {userData?.department} | {userData?.semester} Semester
+              </p>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-4 justify-center sm:justify-start mt-4">
+              <Button variant="outline" size="sm">
+                <Icons.mail className="mr-2 h-4 w-4" />
+                {userData?.email}
+              </Button>
+              <Button variant="outline" size="sm">
+                <Icons.phone className="mr-2 h-4 w-4" />
+                {userData?.phoneNumber}
+              </Button>
+              <Button variant="outline" size="sm" asChild>
+                <a
+                  href={userData?.linkedin || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Icons.linkedin className="mr-2 h-4 w-4" />
+                  LinkedIn
+                </a>
+              </Button>
+              <Button variant="outline" size="sm" asChild>
+                <a
+                  href={userData?.github || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Icons.github className="mr-2 h-4 w-4" />
+                  GitHub
+                </a>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <ProfileActivities user={userData} activities={activities} />
+        <div className="flex justify-center gap-4">
+          {hasPermission(session?.user?.role, MEMBER["update:own_user"]) &&
+            userData?.id === session.user?.id && (
+              <Button asChild>
+                <Link href="/profile/edit">Edit Profile</Link>
+              </Button>
+            )}
+          <Button variant="outline">Share Profile</Button>
+        </div>
+      </MotionDiv>
+    </div>
+  );
+}
+
+

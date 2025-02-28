@@ -4,6 +4,8 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SessionProvider } from "next-auth/react";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,12 +26,15 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
         >
           <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-grow px-5 md:px-20">
-              <TooltipProvider>{children}</TooltipProvider>
-            </main>
-            <Footer />
+            <SessionProvider>
+              <Navbar />
+              <main className="flex-grow px-5 md:px-20">
+                <TooltipProvider>{children}</TooltipProvider>
+              </main>
+              <Footer />
+            </SessionProvider>
           </div>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

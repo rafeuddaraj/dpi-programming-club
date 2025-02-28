@@ -1,65 +1,92 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import DepartmentList from "@/utils/DepartmentList";
+import { updateUserById } from "@/app/actions/users";
+import { toast } from "sonner";
+import Loader from "./common/loader";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  designation: z.string().min(2, "Designation must be at least 2 characters"),
-  department: z.string().min(2, "Department must be at least 2 characters"),
+  avatar: z.string().optional(),
+  coverImage: z.string().optional(),
+  address: z.string().min(2, "Address Required."),
   semester: z.string().min(1, "Semester is required"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
   linkedin: z.string().url("Invalid LinkedIn URL"),
   github: z.string().url("Invalid GitHub URL"),
   discord: z.string().optional(),
-  bio: z.string().max(500, "Bio must be 500 characters or less"),
+  bio: z.string().max(100, "Bio must be 100 characters or less"),
+  about: z.string().max(500, "About must be 100 characters or less"),
   skills: z.array(z.string()).min(1, "At least one skill is required"),
-})
+});
 
-const userProfile = {
-  name: "John Doe",
-  designation: "IoT Enthusiast",
-  department: "Computer Technology",
-  semester: "5th",
-  email: "john.doe@example.com",
-  phone: "+1234567890",
-  linkedin: "https://linkedin.com/in/johndoe",
-  github: "https://github.com/johndoe",
-  discord: "johndoe#1234",
-  bio: "Passionate about IoT and its applications in solving real-world problems. Always eager to learn and collaborate on innovative projects.",
-  skills: ["React", "Python", "IoT", "Public Speaking", "Machine Learning"],
-}
-
-export function ProfileEditForm() {
-  const [avatarSrc, setAvatarSrc] = useState("/placeholder.svg?height=128&width=128")
-
+export function ProfileEditForm({ user }) {
+  const [avatarSrc, setAvatarSrc] = useState(
+    "/placeholder.svg?height=128&width=128"
+  );
+  user.department = DepartmentList(user.department);
+  for (let key in user) {
+    user[key] = user[key] || "";
+  }
   const form = useForm({
     resolver: zodResolver(profileSchema),
-    defaultValues: userProfile,
-  })
+    defaultValues: user,
+  });
 
-  function onSubmit(values) {
-    console.log(values)
-    // Here you would typically send the data to your backend
+  async function onSubmit(values) {
+    try {
+      const res = await updateUserById(values);
+      if (res.error) {
+        throw new Error("Something went Wrong");
+      }
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+
+      toast.error(err.message);
+    }
   }
 
   return (
-    (<motion.div
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-8">
+      className="space-y-8"
+    >
       <Card>
         <CardHeader>
           <CardTitle>Edit Profile</CardTitle>
@@ -81,7 +108,10 @@ export function ProfileEditForm() {
                 </Avatar>
                 <Button
                   variant="outline"
-                  onClick={() => document.getElementById("avatar-upload")?.click()}>
+                  onClick={() =>
+                    document.getElementById("avatar-upload")?.click()
+                  }
+                >
                   Change Avatar
                 </Button>
                 <Input
@@ -90,19 +120,21 @@ export function ProfileEditForm() {
                   className="hidden"
                   accept="image/*"
                   onChange={(e) => {
-                    const file = e.target.files?.[0]
+                    const file = e.target.files?.[0];
                     if (file) {
-                      const reader = new FileReader()
-                      reader.onload = (e) => setAvatarSrc(e.target?.result)
-                      reader.readAsDataURL(file)
+                      const reader = new FileReader();
+                      reader.onload = (e) => setAvatarSrc(e.target?.result);
+                      reader.readAsDataURL(file);
                     }
-                  }} />
+                  }}
+                />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="name"
+                  disabled
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Full Name</FormLabel>
@@ -111,22 +143,25 @@ export function ProfileEditForm() {
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )} />
+                  )}
+                />
                 <FormField
                   control={form.control}
-                  name="designation"
+                  name="bio"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Designation</FormLabel>
+                      <FormLabel>Bio</FormLabel>
                       <FormControl>
                         <Input placeholder="IoT Enthusiast" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )} />
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="department"
+                  disabled
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Department</FormLabel>
@@ -135,14 +170,18 @@ export function ProfileEditForm() {
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )} />
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="semester"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Semester</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select semester" />
@@ -150,7 +189,11 @@ export function ProfileEditForm() {
                         </FormControl>
                         <SelectContent>
                           {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
-                            <SelectItem key={sem} value={`${sem}`}>
+                            <SelectItem
+                              disabled={field.value > sem}
+                              key={sem}
+                              value={`${sem}`}
+                            >
                               {sem}th Semester
                             </SelectItem>
                           ))}
@@ -158,22 +201,30 @@ export function ProfileEditForm() {
                       </Select>
                       <FormMessage />
                     </FormItem>
-                  )} />
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="email"
+                  disabled
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="john@example.com" {...field} />
+                        <Input
+                          type="email"
+                          placeholder="john@example.com"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )} />
+                  )}
+                />
                 <FormField
                   control={form.control}
-                  name="phone"
+                  name="phoneNumber"
+                  disabled
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Phone</FormLabel>
@@ -182,7 +233,8 @@ export function ProfileEditForm() {
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )} />
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="linkedin"
@@ -190,11 +242,15 @@ export function ProfileEditForm() {
                     <FormItem>
                       <FormLabel>LinkedIn</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://linkedin.com/in/johndoe" {...field} />
+                        <Input
+                          placeholder="https://linkedin.com/in/johndoe"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )} />
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="github"
@@ -202,11 +258,15 @@ export function ProfileEditForm() {
                     <FormItem>
                       <FormLabel>GitHub</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://github.com/johndoe" {...field} />
+                        <Input
+                          placeholder="https://github.com/johndoe"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )} />
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="discord"
@@ -214,26 +274,55 @@ export function ProfileEditForm() {
                     <FormItem>
                       <FormLabel>Discord</FormLabel>
                       <FormControl>
-                        <Input placeholder="johndoe#1234" {...field} />
+                        <Input
+                          placeholder="johndoe#1234"
+                          {...field}
+                          disabled={user.discord}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )} />
+                  )}
+                />
               </div>
 
               <FormField
                 control={form.control}
-                name="bio"
+                name="about"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Bio</FormLabel>
+                    <FormLabel>About</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Tell us about yourself" className="resize-none" {...field} />
+                      <Textarea
+                        placeholder="Tell us about yourself"
+                        className="resize-none"
+                        {...field}
+                      />
                     </FormControl>
-                    <FormDescription>Write a short bio about yourself. Max 500 characters.</FormDescription>
+                    <FormDescription>
+                      Write a short bio about yourself. Max 500 characters.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
-                )} />
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Address</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Polytechnic ave, Dhaka"
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
@@ -245,19 +334,36 @@ export function ProfileEditForm() {
                       <Input
                         placeholder="React, Python, IoT (comma-separated)"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value.split(",").map((skill) => skill.trim()))} />
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value
+                              .split(",")
+                              .map((skill) => skill.trim())
+                          )
+                        }
+                      />
                     </FormControl>
-                    <FormDescription>Enter your skills separated by commas.</FormDescription>
+                    <FormDescription>
+                      Enter your skills separated by commas.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
-                )} />
+                )}
+              />
 
-              <Button type="submit">Save Changes</Button>
+              <Button
+                type="submit"
+                disabled={
+                  form.formState.isSubmitting ||
+                  form.formState.isSubmitSuccessful
+                }
+              >
+                {form.formState.isSubmitting && <Loader />} Save Changes
+              </Button>
             </form>
           </Form>
         </CardContent>
       </Card>
-    </motion.div>)
+    </motion.div>
   );
 }
-

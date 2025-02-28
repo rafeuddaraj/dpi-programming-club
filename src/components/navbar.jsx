@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { signOut } from "next-auth/react";
 
 const navItems = [
   { name: "Home", href: "/" },
@@ -36,7 +37,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0">
-              <span className="text-2xl font-bold text-primary">CDC</span>
+              <span className="text-2xl font-bold text-primary">CCDPI</span>
             </Link>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4 flex-wrap">
@@ -101,6 +102,10 @@ export function Navbar() {
           </div>
         </div>
       </div>
+
+      <Button onClick={() => signOut({ redirectTo: "/auth/register" })}>
+        SignOut
+      </Button>
 
       {isOpen && (
         <div className="md:hidden">

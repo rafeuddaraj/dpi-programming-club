@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,35 +9,36 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/icons";
+import { MotionDiv, MotionH1, MotionP } from "@/components/common/motion";
 
-export default function Home() {
+export default async function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-12 bg-gradient-to-b from-background via-background/90 to-background text-foreground overflow-hidden">
       <main className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 lg:px-8">
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="max-w-7xl mx-auto"
         >
           <header className="text-center mb-16">
-            <motion.h1
+            <MotionH1
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600"
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              Programming Club
-            </motion.h1>
-            <motion.p
+              Computer Club
+            </MotionH1>
+            <MotionP
               className="text-xl sm:text-2xl md:text-3xl mb-8"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
               Dhaka Polytechnic Institute
-            </motion.p>
-            <motion.div
+            </MotionP>
+            <MotionDiv
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.6 }}
@@ -51,7 +49,7 @@ export default function Home() {
               >
                 Est. 2025
               </Badge>
-            </motion.div>
+            </MotionDiv>
           </header>
 
           <section className="mb-16">
@@ -212,7 +210,7 @@ export default function Home() {
               />
             </div>
           </section>
-        </motion.div>
+        </MotionDiv>
       </main>
     </div>
   );
