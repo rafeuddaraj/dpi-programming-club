@@ -1,16 +1,16 @@
 "use client"
 
-import Link from "next/link"
-import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft } from "lucide-react"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/textarea"
+import { ArrowLeft } from "lucide-react"
+import Link from "next/link"
 import { useEffect } from "react"
+import { useForm } from "react-hook-form"
 
 export default function EditSubscriptionPage({ params }) {
   const form = useForm({
@@ -59,7 +59,7 @@ export default function EditSubscriptionPage({ params }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href={`/subscriptions/${params.id}`}>
+        <Link href={`/dashboard/subscriptions/${params.id}`}>
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Plan Details
@@ -263,7 +263,7 @@ export default function EditSubscriptionPage({ params }) {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-              <Link href={`/subscriptions/${params.id}`}>
+              <Link href={`/dashboard/subscriptions/${params.id}`}>
                 <Button variant="outline">Cancel</Button>
               </Link>
               <Button type="submit">Save Changes</Button>

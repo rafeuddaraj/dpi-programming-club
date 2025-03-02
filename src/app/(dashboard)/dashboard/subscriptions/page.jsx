@@ -9,7 +9,7 @@ export default function SubscriptionsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Subscriptions</h1>
-        <Link href="/subscriptions/create">
+        <Link href="/dashboard/subscriptions/create">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Create New Plan
@@ -19,7 +19,7 @@ export default function SubscriptionsPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {/* Example subscription plan cards */}
-        <Link href="/subscriptions/1">
+        <Link href="/dashboard/subscriptions/1">
           <Card className="hover:bg-muted/50 transition-colors">
             <CardHeader>
               <div className="flex justify-between items-start">

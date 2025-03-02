@@ -1,8 +1,18 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Calendar, MapPin, Clock, Users, User, Edit, Trash2, FileText } from "lucide-react"
-import { formatDate } from "@/lib/utils"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDate } from "@/lib/utils";
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  Edit,
+  FileText,
+  MapPin,
+  Trash2,
+  User,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
 
 export default function WorkshopDetailsPage({ params }) {
   // In a real app, you would fetch workshop data based on params.id
@@ -28,27 +38,27 @@ export default function WorkshopDetailsPage({ params }) {
       { id: 4, name: "Diana Miller", role: "Participant" },
       { id: 5, name: "Edward Davis", role: "Participant" },
     ],
-  }
+  };
 
   const getStatusClass = (status) => {
     switch (status) {
       case "Upcoming":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       case "Ongoing":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "Completed":
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
       case "Cancelled":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href="/workshops">
+        <Link href="/dashboard/workshops">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Workshops
@@ -59,7 +69,7 @@ export default function WorkshopDetailsPage({ params }) {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Workshop Details</h1>
         <div className="flex items-center gap-2">
-          <Link href={`/workshops/${workshop.id}/edit`}>
+          <Link href={`/dashboard/workshops/${workshop.id}/edit`}>
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
               Edit Workshop
@@ -77,7 +87,11 @@ export default function WorkshopDetailsPage({ params }) {
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle>{workshop.title}</CardTitle>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(workshop.status)}`}>
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
+                  workshop.status
+                )}`}
+              >
                 {workshop.status}
               </span>
             </div>
@@ -135,7 +149,9 @@ export default function WorkshopDetailsPage({ params }) {
                 <Calendar className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Registration Deadline</p>
-                  <p className="text-sm">{formatDate(workshop.registrationDeadline)}</p>
+                  <p className="text-sm">
+                    {formatDate(workshop.registrationDeadline)}
+                  </p>
                 </div>
               </div>
             </div>
@@ -157,7 +173,10 @@ export default function WorkshopDetailsPage({ params }) {
           <CardContent>
             <div className="space-y-4">
               {workshop.participants.map((participant) => (
-                <div key={participant.id} className="flex items-center justify-between">
+                <div
+                  key={participant.id}
+                  className="flex items-center justify-between"
+                >
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
                       {participant.name
@@ -167,10 +186,12 @@ export default function WorkshopDetailsPage({ params }) {
                     </div>
                     <div>
                       <p className="text-sm font-medium">{participant.name}</p>
-                      <p className="text-xs text-muted-foreground">{participant.role}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {participant.role}
+                      </p>
                     </div>
                   </div>
-                  <Link href={`/users/${participant.id}`}>
+                  <Link href={`/dashboard/users/${participant.id}`}>
                     <Button variant="ghost" size="sm">
                       View
                     </Button>
@@ -187,6 +208,5 @@ export default function WorkshopDetailsPage({ params }) {
         </Card>
       </div>
     </div>
-  )
+  );
 }
-

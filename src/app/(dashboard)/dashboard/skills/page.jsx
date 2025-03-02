@@ -8,7 +8,7 @@ export default function SkillsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Skills</h1>
-        <Link href="/skills/create">
+        <Link href="/dashboard/skills/create">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Add New Skill
@@ -18,7 +18,7 @@ export default function SkillsPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {/* Example skill card */}
-        <Link href="/skills/1">
+        <Link href="/dashboard/skills/1">
           <Card className="hover:bg-muted/50 transition-colors">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">

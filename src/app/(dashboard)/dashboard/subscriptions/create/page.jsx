@@ -40,7 +40,7 @@ export default function CreateSubscriptionPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href="/subscriptions">
+        <Link href="/dashboard/subscriptions">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Subscriptions
@@ -244,7 +244,7 @@ export default function CreateSubscriptionPage() {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-              <Link href="/subscriptions">
+              <Link href="/dashboard/subscriptions">
                 <Button variant="outline">Cancel</Button>
               </Link>
               <Button type="submit">Create Plan</Button>

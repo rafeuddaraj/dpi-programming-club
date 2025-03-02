@@ -1,7 +1,7 @@
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Code, GraduationCap } from "lucide-react"
+import Link from "next/link"
 
 export default function SkillDetailsPage({ params }) {
   // In a real app, you would fetch the skill data here
@@ -17,7 +17,7 @@ export default function SkillDetailsPage({ params }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href="/skills">
+        <Link href="/dashboard/skills">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Skills
@@ -28,7 +28,7 @@ export default function SkillDetailsPage({ params }) {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">{skill.name}</h1>
         <div className="flex gap-2">
-          <Link href={`/skills/${skill.id}/edit`}>
+          <Link href={`/dashboard/skills/${skill.id}/edit`}>
             <Button variant="outline">Edit Skill</Button>
           </Link>
           <Button variant="destructive">Delete Skill</Button>

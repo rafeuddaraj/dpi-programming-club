@@ -1,6 +1,5 @@
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { SessionProvider } from "next-auth/react";
 
 export const metadata = {
@@ -16,7 +15,7 @@ export default function RootLayout({ children }) {
       <SessionProvider>
         <Navbar />
         <main className="flex-grow px-5 md:px-20">
-          <TooltipProvider>{children}</TooltipProvider>
+          {children}
         </main>
         <Footer />
       </SessionProvider>

@@ -24,7 +24,7 @@ export default function AllIncomePage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <h1 className="text-3xl font-bold">Income Transactions</h1>
         <div className="flex flex-wrap gap-2">
-          <Link href="/finance/income/create">
+          <Link href="/dashboard/finance/income/create">
             <Button>
               <TrendingUp className="mr-2 h-4 w-4" />
               Add Income
@@ -65,7 +65,7 @@ export default function AllIncomePage() {
               {incomeList.map((income) => (
                 <Link
                   key={income.id}
-                  href={`/finance/income/${income.id}`}
+                  href={`/dashboard/finance/income/${income.id}`}
                   className="block hover:bg-muted/50 transition-colors"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-6 items-center p-4 text-sm">

@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import {
   Award,
   Bell,
@@ -7,14 +8,19 @@ import {
   Briefcase,
   Calendar,
   CreditCard,
+  DollarSign,
   LayoutDashboard,
   LogOut,
+  PieChart,
   Settings,
+  TrendingDown,
+  TrendingUp,
   Users,
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Button } from "./button";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -26,6 +32,28 @@ export default function Sidebar() {
     { name: "Events", href: "/dashboard/events", icon: Calendar },
     { name: "Projects", href: "/dashboard/projects", icon: Briefcase },
     { name: "Workshops", href: "/dashboard/workshops", icon: Wrench },
+    {
+      name: "Finance",
+      icon: DollarSign,
+      href: "/dashboard/finance",
+      subItems: [
+        {
+          label: "Overview",
+          icon: PieChart,
+          href: "/dashboard/finance",
+        },
+        {
+          label: "Income",
+          icon: TrendingUp,
+          href: "/dashboard/finance/income",
+        },
+        {
+          label: "Expenses",
+          icon: TrendingDown,
+          href: "/dashboard/finance/expenses",
+        },
+      ],
+    },
     { name: "Payments", href: "/dashboard/payments", icon: CreditCard },
     { name: "Skills", href: "/dashboard/skills", icon: Award },
     { name: "Subscriptions", href: "/dashboard/subscriptions", icon: Bell },
@@ -45,16 +73,38 @@ export default function Sidebar() {
 
       <div className="flex-1 px-3 py-2 space-y-1">
         {routes.map((route) => (
-          <Link
-            key={route.href}
-            href={route.href}
-            className={`sidebar-item ${
-              pathname === route.href ? "active" : ""
-            }`}
-          >
-            <route.icon className="sidebar-item-icon" />
-            <span>{route.name}</span>
-          </Link>
+          <div key={route.href}>
+            <Link
+              key={route.href}
+              href={route.href}
+              className={`sidebar-item ${
+                pathname === route.href ? "active" : ""
+              }`}
+            >
+              <route.icon className="sidebar-item-icon" />
+              <span>{route.name}</span>
+            </Link>
+            {route.subItems && (
+              <div className="ml-4 mt-1 grid gap-1">
+                {route.subItems.map((item) => (
+                  <Button
+                    key={item.href}
+                    asChild
+                    variant="ghost"
+                    className={cn(
+                      "h-8 justify-start gap-2",
+                      pathname === item.href && "bg-muted font-medium"
+                    )}
+                  >
+                    <Link href={item.href}>
+                      <item.icon className="h-4 w-4" />
+                      {item.label}
+                    </Link>
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
         ))}
       </div>
 

@@ -1,53 +1,109 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Plus, Search, Filter, MoreHorizontal, UserCheck, UserX, UserCog } from "lucide-react"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Plus,
+  Search,
+  Filter,
+  MoreHorizontal,
+  UserCheck,
+  UserX,
+  UserCog,
+} from "lucide-react";
 
 export default function UsersPage() {
   // Mock data for users
   const users = [
-    { id: 1, name: "John Doe", email: "john@example.com", role: "Admin", status: "Active" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", role: "Member", status: "Active" },
-    { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "Member", status: "Banned" },
-    { id: 4, name: "Alice Brown", email: "alice@example.com", role: "Member", status: "Restricted" },
-    { id: 5, name: "Charlie Wilson", email: "charlie@example.com", role: "Moderator", status: "Active" },
-    { id: 6, name: "Diana Miller", email: "diana@example.com", role: "Member", status: "Active" },
-    { id: 7, name: "Edward Davis", email: "edward@example.com", role: "Member", status: "Banned" },
-    { id: 8, name: "Fiona Clark", email: "fiona@example.com", role: "Member", status: "Active" },
-  ]
+    {
+      id: 1,
+      name: "John Doe",
+      email: "john@example.com",
+      role: "Admin",
+      status: "Active",
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      email: "jane@example.com",
+      role: "Member",
+      status: "Active",
+    },
+    {
+      id: 3,
+      name: "Bob Johnson",
+      email: "bob@example.com",
+      role: "Member",
+      status: "Banned",
+    },
+    {
+      id: 4,
+      name: "Alice Brown",
+      email: "alice@example.com",
+      role: "Member",
+      status: "Restricted",
+    },
+    {
+      id: 5,
+      name: "Charlie Wilson",
+      email: "charlie@example.com",
+      role: "Moderator",
+      status: "Active",
+    },
+    {
+      id: 6,
+      name: "Diana Miller",
+      email: "diana@example.com",
+      role: "Member",
+      status: "Active",
+    },
+    {
+      id: 7,
+      name: "Edward Davis",
+      email: "edward@example.com",
+      role: "Member",
+      status: "Banned",
+    },
+    {
+      id: 8,
+      name: "Fiona Clark",
+      email: "fiona@example.com",
+      role: "Member",
+      status: "Active",
+    },
+  ];
 
   const getStatusIcon = (status) => {
     switch (status) {
       case "Active":
-        return <UserCheck className="h-4 w-4 text-green-500" />
+        return <UserCheck className="h-4 w-4 text-green-500" />;
       case "Banned":
-        return <UserX className="h-4 w-4 text-red-500" />
+        return <UserX className="h-4 w-4 text-red-500" />;
       case "Restricted":
-        return <UserCog className="h-4 w-4 text-amber-500" />
+        return <UserCog className="h-4 w-4 text-amber-500" />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   const getStatusClass = (status) => {
     switch (status) {
       case "Active":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "Banned":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       case "Restricted":
-        return "bg-amber-100 text-amber-800"
+        return "bg-amber-100 text-amber-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Users Management</h1>
-        <Link href="/users/create">
+        <Link href="/dashboard/users/create">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Add User
@@ -64,7 +120,11 @@ export default function UsersPage() {
             <div className="flex items-center gap-2">
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input type="search" placeholder="Search users..." className="w-[250px] pl-8" />
+                <Input
+                  type="search"
+                  placeholder="Search users..."
+                  className="w-[250px] pl-8"
+                />
               </div>
               <Button variant="outline" size="sm">
                 <Filter className="mr-2 h-4 w-4" />
@@ -98,19 +158,23 @@ export default function UsersPage() {
                     <td className="data-table-cell">
                       <div className="flex items-center gap-2">
                         {getStatusIcon(user.status)}
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(user.status)}`}>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
+                            user.status
+                          )}`}
+                        >
                           {user.status}
                         </span>
                       </div>
                     </td>
                     <td className="data-table-cell">
                       <div className="flex items-center gap-2">
-                        <Link href={`/users/${user.id}`}>
+                        <Link href={`/dashboard/users/${user.id}`}>
                           <Button variant="ghost" size="sm">
                             View
                           </Button>
                         </Link>
-                        <Link href={`/users/${user.id}/edit`}>
+                        <Link href={`/dashboard/users/${user.id}/edit`}>
                           <Button variant="ghost" size="sm">
                             Edit
                           </Button>
@@ -128,7 +192,8 @@ export default function UsersPage() {
 
           <div className="data-table-pagination">
             <div className="text-sm text-muted-foreground">
-              Showing <strong>1</strong> to <strong>8</strong> of <strong>100</strong> results
+              Showing <strong>1</strong> to <strong>8</strong> of{" "}
+              <strong>100</strong> results
             </div>
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm" disabled>
@@ -142,6 +207,5 @@ export default function UsersPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

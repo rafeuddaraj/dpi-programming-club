@@ -1,8 +1,8 @@
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { TrendingDown, Calendar, Search, Download, Filter } from "lucide-react"
+import { Calendar, Download, Filter, Search, TrendingDown } from "lucide-react"
+import Link from "next/link"
 
 export default function AllExpensesPage() {
   // Example data - replace with actual data from your API
@@ -24,7 +24,7 @@ export default function AllExpensesPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <h1 className="text-3xl font-bold">Expense Transactions</h1>
         <div className="flex flex-wrap gap-2">
-          <Link href="/finance/expense/create">
+          <Link href="/dashboard/finance/expense/create">
             <Button>
               <TrendingDown className="mr-2 h-4 w-4" />
               Add Expense
@@ -65,7 +65,7 @@ export default function AllExpensesPage() {
               {expenseList.map((expense) => (
                 <Link
                   key={expense.id}
-                  href={`/finance/expenses/${expense.id}`}
+                  href={`/dashboard/finance/expenses/${expense.id}`}
                   className="block hover:bg-muted/50 transition-colors"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-6 items-center p-4 text-sm">

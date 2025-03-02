@@ -1,35 +1,96 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Activity, Users, BookOpen, Calendar, Briefcase, Wrench, CreditCard, Award, Bell } from "lucide-react"
-import Link from "next/link"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Activity,
+  Award,
+  Bell,
+  BookOpen,
+  Briefcase,
+  Calendar,
+  CreditCard,
+  Users,
+  Wrench,
+} from "lucide-react";
+import Link from "next/link";
 
 export default function Dashboard() {
   const stats = [
     { title: "Total Users", value: "1,234", icon: Users, color: "bg-blue-500" },
-    { title: "Active Courses", value: "24", icon: BookOpen, color: "bg-green-500" },
-    { title: "Upcoming Events", value: "8", icon: Calendar, color: "bg-purple-500" },
-    { title: "Ongoing Projects", value: "16", icon: Briefcase, color: "bg-amber-500" },
-  ]
+    {
+      title: "Active Courses",
+      value: "24",
+      icon: BookOpen,
+      color: "bg-green-500",
+    },
+    {
+      title: "Upcoming Events",
+      value: "8",
+      icon: Calendar,
+      color: "bg-purple-500",
+    },
+    {
+      title: "Ongoing Projects",
+      value: "16",
+      icon: Briefcase,
+      color: "bg-amber-500",
+    },
+  ];
 
   const modules = [
-    { name: "Users Management", icon: Users, href: "/users", description: "Manage users, roles and permissions" },
+    {
+      name: "Users Management",
+      icon: Users,
+      href: "/dashboard/users",
+      description: "Manage users, roles and permissions",
+    },
     {
       name: "Course Management",
       icon: BookOpen,
-      href: "/courses",
+      href: "/dashboard/courses",
       description: "Manage courses, assignments and quizzes",
     },
-    { name: "Event Management", icon: Calendar, href: "/events", description: "Create and manage club events" },
-    { name: "Project Management", icon: Briefcase, href: "/projects", description: "Track and manage projects" },
-    { name: "Workshop Management", icon: Wrench, href: "/workshops", description: "Organize and manage workshops" },
-    { name: "Payment Management", icon: CreditCard, href: "/payments", description: "Track payments and transactions" },
-    { name: "Skill Management", icon: Award, href: "/skills", description: "Track and develop member skills" },
+    {
+      name: "Event Management",
+      icon: Calendar,
+      href: "/dashboard/events",
+      description: "Create and manage club events",
+    },
+    {
+      name: "Project Management",
+      icon: Briefcase,
+      href: "/dashboard/projects",
+      description: "Track and manage projects",
+    },
+    {
+      name: "Workshop Management",
+      icon: Wrench,
+      href: "/dashboard/workshops",
+      description: "Organize and manage workshops",
+    },
+    {
+      name: "Payment Management",
+      icon: CreditCard,
+      href: "/dashboard/payments",
+      description: "Track payments and transactions",
+    },
+    {
+      name: "Skill Management",
+      icon: Award,
+      href: "/dashboard/skills",
+      description: "Track and develop member skills",
+    },
     {
       name: "Subscription Management",
       icon: Bell,
-      href: "/subscriptions",
+      href: "/dashboard/subscriptions",
       description: "Manage membership subscriptions",
     },
-  ]
+  ];
 
   return (
     <div className="space-y-6">
@@ -41,7 +102,9 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {stat.title}
+                  </p>
                   <p className="text-3xl font-bold">{stat.value}</p>
                 </div>
                 <div className={`${stat.color} p-3 rounded-full`}>
@@ -59,7 +122,9 @@ export default function Dashboard() {
           <Link href={module.href} key={i}>
             <Card className="h-full transition-all hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-lg font-medium">{module.name}</CardTitle>
+                <CardTitle className="text-lg font-medium">
+                  {module.name}
+                </CardTitle>
                 <module.icon className="h-5 w-5 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -105,7 +170,9 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <p className="text-sm font-medium">Event {i}</p>
-                    <p className="text-xs text-muted-foreground">May {10 + i}, 2023</p>
+                    <p className="text-xs text-muted-foreground">
+                      May {10 + i}, 2023
+                    </p>
                   </div>
                 </div>
               ))}
@@ -114,6 +181,5 @@ export default function Dashboard() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
-

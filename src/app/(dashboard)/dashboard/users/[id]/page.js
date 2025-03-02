@@ -1,7 +1,15 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Mail, Phone, MapPin, Calendar, Edit, Trash2 } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  ArrowLeft,
+  Calendar,
+  Edit,
+  Mail,
+  MapPin,
+  Phone,
+  Trash2,
+} from "lucide-react";
+import Link from "next/link";
 
 export default function UserDetailsPage({ params }) {
   // In a real app, you would fetch user data based on params.id
@@ -27,12 +35,12 @@ export default function UserDetailsPage({ params }) {
       { id: 1, name: "Club Website Redesign" },
       { id: 2, name: "Mobile App Development" },
     ],
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href="/users">
+        <Link href="/dashboard/users">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Users
@@ -43,7 +51,7 @@ export default function UserDetailsPage({ params }) {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">User Details</h1>
         <div className="flex items-center gap-2">
-          <Link href={`/users/${user.id}/edit`}>
+          <Link href={`/dashboard/users/${user.id}/edit`}>
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
               Edit User
@@ -77,8 +85,8 @@ export default function UserDetailsPage({ params }) {
                     user.status === "Active"
                       ? "bg-green-100 text-green-800"
                       : user.status === "Banned"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-amber-100 text-amber-800"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-amber-100 text-amber-800"
                   }`}
                 >
                   {user.status}
@@ -101,11 +109,15 @@ export default function UserDetailsPage({ params }) {
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>Joined: {new Date(user.joinDate).toLocaleDateString()}</span>
+                <span>
+                  Joined: {new Date(user.joinDate).toLocaleDateString()}
+                </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>Last Active: {new Date(user.lastActive).toLocaleDateString()}</span>
+                <span>
+                  Last Active: {new Date(user.lastActive).toLocaleDateString()}
+                </span>
               </div>
             </div>
           </CardContent>
@@ -119,9 +131,12 @@ export default function UserDetailsPage({ params }) {
             <CardContent>
               <ul className="space-y-2">
                 {user.courses.map((course) => (
-                  <li key={course.id} className="flex items-center justify-between">
+                  <li
+                    key={course.id}
+                    className="flex items-center justify-between"
+                  >
                     <span>{course.name}</span>
-                    <Link href={`/courses/${course.id}`}>
+                    <Link href={`/dashboard/courses/${course.id}`}>
                       <Button variant="ghost" size="sm">
                         View
                       </Button>
@@ -139,9 +154,12 @@ export default function UserDetailsPage({ params }) {
             <CardContent>
               <ul className="space-y-2">
                 {user.events.map((event) => (
-                  <li key={event.id} className="flex items-center justify-between">
+                  <li
+                    key={event.id}
+                    className="flex items-center justify-between"
+                  >
                     <span>{event.name}</span>
-                    <Link href={`/events/${event.id}`}>
+                    <Link href={`/dashboard/events/${event.id}`}>
                       <Button variant="ghost" size="sm">
                         View
                       </Button>
@@ -159,9 +177,12 @@ export default function UserDetailsPage({ params }) {
             <CardContent>
               <ul className="space-y-2">
                 {user.projects.map((project) => (
-                  <li key={project.id} className="flex items-center justify-between">
+                  <li
+                    key={project.id}
+                    className="flex items-center justify-between"
+                  >
                     <span>{project.name}</span>
-                    <Link href={`/projects/${project.id}`}>
+                    <Link href={`/dashboard/projects/${project.id}`}>
                       <Button variant="ghost" size="sm">
                         View
                       </Button>
@@ -174,6 +195,5 @@ export default function UserDetailsPage({ params }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

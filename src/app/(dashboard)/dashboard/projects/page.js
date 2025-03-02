@@ -93,7 +93,7 @@ export default function ProjectsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Project Management</h1>
-        <Link href="/projects/create">
+        <Link href="/dashboard/projects/create">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Add Project
@@ -176,12 +176,12 @@ export default function ProjectsPage() {
                     </td>
                     <td className="data-table-cell">
                       <div className="flex items-center gap-2">
-                        <Link href={`/projects/${project.id}`}>
+                        <Link href={`/dashboard/projects/${project.id}`}>
                           <Button variant="ghost" size="sm">
                             View
                           </Button>
                         </Link>
-                        <Link href={`/projects/${project.id}/edit`}>
+                        <Link href={`/dashboard/projects/${project.id}/edit`}>
                           <Button variant="ghost" size="sm">
                             Edit
                           </Button>

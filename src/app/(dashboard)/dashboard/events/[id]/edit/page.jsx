@@ -66,7 +66,7 @@ export default function EditEventPage({ params }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href={`/events/${params.id}`}>
+        <Link href={`/dashboard/events/${params.id}`}>
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Event Details
@@ -172,7 +172,7 @@ export default function EditEventPage({ params }) {
               />
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-              <Link href={`/events/${params.id}`}>
+              <Link href={`/dashboard/events/${params.id}`}>
                 <Button variant="outline">Cancel</Button>
               </Link>
               <Button type="submit">Save Changes</Button>

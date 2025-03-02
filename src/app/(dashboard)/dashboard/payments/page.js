@@ -1,9 +1,17 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Plus, Search, Filter, MoreHorizontal, CreditCard, Calendar, User } from "lucide-react"
-import { formatDate, formatCurrency } from "@/lib/utils"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Plus,
+  Search,
+  Filter,
+  MoreHorizontal,
+  CreditCard,
+  Calendar,
+  User,
+} from "lucide-react";
+import { formatDate, formatCurrency } from "@/lib/utils";
 
 export default function PaymentsPage() {
   // Mock data for payments
@@ -62,28 +70,28 @@ export default function PaymentsPage() {
       purpose: "Workshop Registration",
       status: "Completed",
     },
-  ]
+  ];
 
   const getStatusClass = (status) => {
     switch (status) {
       case "Completed":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "Pending":
-        return "bg-amber-100 text-amber-800"
+        return "bg-amber-100 text-amber-800";
       case "Failed":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       case "Refunded":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Payment Management</h1>
-        <Link href="/payments/create">
+        <Link href="/dashboard/payments/create">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Add Payment
@@ -100,7 +108,11 @@ export default function PaymentsPage() {
             <div className="flex items-center gap-2">
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input type="search" placeholder="Search payments..." className="w-[250px] pl-8" />
+                <Input
+                  type="search"
+                  placeholder="Search payments..."
+                  className="w-[250px] pl-8"
+                />
               </div>
               <Button variant="outline" size="sm">
                 <Filter className="mr-2 h-4 w-4" />
@@ -131,14 +143,18 @@ export default function PaymentsPage() {
               <tbody className="data-table-body">
                 {payments.map((payment) => (
                   <tr key={payment.id} className="data-table-row">
-                    <td className="data-table-cell">#{payment.id.toString().padStart(4, "0")}</td>
+                    <td className="data-table-cell">
+                      #{payment.id.toString().padStart(4, "0")}
+                    </td>
                     <td className="data-table-cell">
                       <div className="flex items-center gap-2">
                         <User className="h-4 w-4 text-muted-foreground" />
                         {payment.user}
                       </div>
                     </td>
-                    <td className="data-table-cell font-medium">{formatCurrency(payment.amount)}</td>
+                    <td className="data-table-cell font-medium">
+                      {formatCurrency(payment.amount)}
+                    </td>
                     <td className="data-table-cell">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -153,18 +169,22 @@ export default function PaymentsPage() {
                     </td>
                     <td className="data-table-cell">{payment.purpose}</td>
                     <td className="data-table-cell">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(payment.status)}`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
+                          payment.status
+                        )}`}
+                      >
                         {payment.status}
                       </span>
                     </td>
                     <td className="data-table-cell">
                       <div className="flex items-center gap-2">
-                        <Link href={`/payments/${payment.id}`}>
+                        <Link href={`/dashboard/payments/${payment.id}`}>
                           <Button variant="ghost" size="sm">
                             View
                           </Button>
                         </Link>
-                        <Link href={`/payments/${payment.id}/edit`}>
+                        <Link href={`/dashboard/payments/${payment.id}/edit`}>
                           <Button variant="ghost" size="sm">
                             Edit
                           </Button>
@@ -182,7 +202,8 @@ export default function PaymentsPage() {
 
           <div className="data-table-pagination">
             <div className="text-sm text-muted-foreground">
-              Showing <strong>1</strong> to <strong>6</strong> of <strong>20</strong> results
+              Showing <strong>1</strong> to <strong>6</strong> of{" "}
+              <strong>20</strong> results
             </div>
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm" disabled>
@@ -196,6 +217,5 @@ export default function PaymentsPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

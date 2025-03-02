@@ -1,7 +1,7 @@
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Calendar } from "lucide-react"
+import { ArrowDownRight, ArrowUpRight, Calendar, DollarSign, TrendingDown, TrendingUp } from "lucide-react"
+import Link from "next/link"
 
 export default function FinancePage() {
   // Example data - replace with actual data from your API
@@ -22,13 +22,13 @@ export default function FinancePage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <h1 className="text-3xl font-bold">Finance Management</h1>
         <div className="flex flex-wrap gap-2">
-          <Link href="/finance/income/create">
+          <Link href="/dashboard/dashboard/finance/income/create">
             <Button className="w-full md:w-auto">
               <TrendingUp className="mr-2 h-4 w-4" />
               Add Income
             </Button>
           </Link>
-          <Link href="/finance/expense/create">
+          <Link href="/dashboard/dashboard/finance/expense/create">
             <Button variant="outline" className="w-full md:w-auto">
               <TrendingDown className="mr-2 h-4 w-4" />
               Add Expense
@@ -75,7 +75,7 @@ export default function FinancePage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Recent Income</CardTitle>
-          <Link href="/finance/income">
+          <Link href="/dashboard/finance/income">
             <Button variant="ghost" size="sm">
               View All
             </Button>
@@ -113,7 +113,7 @@ export default function FinancePage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Recent Expenses</CardTitle>
-          <Link href="/finance/expenses">
+          <Link href="/dashboard/finance/expenses">
             <Button variant="ghost" size="sm">
               View All
             </Button>

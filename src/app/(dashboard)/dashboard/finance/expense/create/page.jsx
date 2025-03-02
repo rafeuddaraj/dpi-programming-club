@@ -36,7 +36,7 @@ export default function CreateExpensePage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href="/finance">
+        <Link href="/dashboard/finance">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Finance
@@ -196,7 +196,7 @@ export default function CreateExpensePage() {
               />
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-              <Link href="/finance">
+              <Link href="/dashboard/finance">
                 <Button variant="outline">Cancel</Button>
               </Link>
               <Button type="submit">Record Expense</Button>

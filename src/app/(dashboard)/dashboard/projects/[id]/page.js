@@ -1,8 +1,18 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Briefcase, Calendar, CheckCircle, Clock, Edit, Trash2, User, Users } from "lucide-react"
-import { formatDate } from "@/lib/utils"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDate } from "@/lib/utils";
+import {
+  ArrowLeft,
+  Briefcase,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Edit,
+  Trash2,
+  User,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
 
 export default function ProjectDetailsPage({ params }) {
   // In a real app, you would fetch project data based on params.id
@@ -24,35 +34,60 @@ export default function ProjectDetailsPage({ params }) {
       { id: 5, name: "Charlie Wilson", role: "QA Tester" },
     ],
     milestones: [
-      { id: 1, title: "Requirements Gathering", dueDate: "2023-03-30", status: "Completed" },
-      { id: 2, title: "Design Phase", dueDate: "2023-04-30", status: "Completed" },
-      { id: 3, title: "Development Phase", dueDate: "2023-05-30", status: "In Progress" },
-      { id: 4, title: "Testing Phase", dueDate: "2023-06-15", status: "Not Started" },
-      { id: 5, title: "Deployment", dueDate: "2023-06-30", status: "Not Started" },
+      {
+        id: 1,
+        title: "Requirements Gathering",
+        dueDate: "2023-03-30",
+        status: "Completed",
+      },
+      {
+        id: 2,
+        title: "Design Phase",
+        dueDate: "2023-04-30",
+        status: "Completed",
+      },
+      {
+        id: 3,
+        title: "Development Phase",
+        dueDate: "2023-05-30",
+        status: "In Progress",
+      },
+      {
+        id: 4,
+        title: "Testing Phase",
+        dueDate: "2023-06-15",
+        status: "Not Started",
+      },
+      {
+        id: 5,
+        title: "Deployment",
+        dueDate: "2023-06-30",
+        status: "Not Started",
+      },
     ],
-  }
+  };
 
   const getStatusClass = (status) => {
     switch (status) {
       case "Not Started":
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
       case "In Progress":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       case "Completed":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "On Hold":
-        return "bg-amber-100 text-amber-800"
+        return "bg-amber-100 text-amber-800";
       case "Cancelled":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href="/projects">
+        <Link href="/dashboard/projects">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Projects
@@ -63,7 +98,7 @@ export default function ProjectDetailsPage({ params }) {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Project Details</h1>
         <div className="flex items-center gap-2">
-          <Link href={`/projects/${project.id}/edit`}>
+          <Link href={`/dashboard/projects/${project.id}/edit`}>
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
               Edit Project
@@ -84,7 +119,11 @@ export default function ProjectDetailsPage({ params }) {
                 <Briefcase className="h-5 w-5 text-primary" />
                 <CardTitle>{project.title}</CardTitle>
               </div>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(project.status)}`}>
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
+                  project.status
+                )}`}
+              >
                 {project.status}
               </span>
             </div>
@@ -101,7 +140,8 @@ export default function ProjectDetailsPage({ params }) {
                 <div>
                   <p className="text-sm font-medium">Timeline</p>
                   <p className="text-sm">
-                    {formatDate(project.startDate)} - {formatDate(project.endDate)}
+                    {formatDate(project.startDate)} -{" "}
+                    {formatDate(project.endDate)}
                   </p>
                 </div>
               </div>
@@ -117,7 +157,10 @@ export default function ProjectDetailsPage({ params }) {
             <div className="space-y-2">
               <h3 className="font-semibold">Progress</h3>
               <div className="w-full bg-muted rounded-full h-2.5">
-                <div className="bg-primary h-2.5 rounded-full" style={{ width: `${project.progress}%` }}></div>
+                <div
+                  className="bg-primary h-2.5 rounded-full"
+                  style={{ width: `${project.progress}%` }}
+                ></div>
               </div>
               <p className="text-sm text-right">{project.progress}% Complete</p>
             </div>
@@ -134,7 +177,10 @@ export default function ProjectDetailsPage({ params }) {
           <CardContent>
             <div className="space-y-4">
               {project.team.map((member) => (
-                <div key={member.id} className="flex items-center justify-between">
+                <div
+                  key={member.id}
+                  className="flex items-center justify-between"
+                >
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
                       {member.name
@@ -144,10 +190,12 @@ export default function ProjectDetailsPage({ params }) {
                     </div>
                     <div>
                       <p className="text-sm font-medium">{member.name}</p>
-                      <p className="text-xs text-muted-foreground">{member.role}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {member.role}
+                      </p>
                     </div>
                   </div>
-                  <Link href={`/users/${member.id}`}>
+                  <Link href={`/dashboard/users/${member.id}`}>
                     <Button variant="ghost" size="sm">
                       View
                     </Button>
@@ -178,7 +226,9 @@ export default function ProjectDetailsPage({ params }) {
                 <tbody className="data-table-body">
                   {project.milestones.map((milestone) => (
                     <tr key={milestone.id} className="data-table-row">
-                      <td className="data-table-cell font-medium">{milestone.title}</td>
+                      <td className="data-table-cell font-medium">
+                        {milestone.title}
+                      </td>
                       <td className="data-table-cell">
                         <div className="flex items-center gap-2">
                           <Clock className="h-4 w-4 text-muted-foreground" />
@@ -187,7 +237,9 @@ export default function ProjectDetailsPage({ params }) {
                       </td>
                       <td className="data-table-cell">
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(milestone.status)}`}
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
+                            milestone.status
+                          )}`}
                         >
                           {milestone.status}
                         </span>
@@ -201,6 +253,5 @@ export default function ProjectDetailsPage({ params }) {
         </Card>
       </div>
     </div>
-  )
+  );
 }
-

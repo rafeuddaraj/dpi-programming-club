@@ -1,8 +1,8 @@
-import Link from "next/link"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, CheckCircle, Users, Calendar } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import { ArrowLeft, Calendar, CheckCircle, Users } from "lucide-react"
+import Link from "next/link"
 
 export default function SubscriptionDetailsPage({ params }) {
   // In a real app, you would fetch the subscription data here
@@ -25,7 +25,7 @@ export default function SubscriptionDetailsPage({ params }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href="/subscriptions">
+        <Link href="/dashboard/subscriptions">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Subscriptions
@@ -36,7 +36,7 @@ export default function SubscriptionDetailsPage({ params }) {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">{subscription.name}</h1>
         <div className="flex gap-2">
-          <Link href={`/subscriptions/${subscription.id}/edit`}>
+          <Link href={`/dashboard/subscriptions/${subscription.id}/edit`}>
             <Button variant="outline">Edit Plan</Button>
           </Link>
           <Button variant="destructive">Delete Plan</Button>

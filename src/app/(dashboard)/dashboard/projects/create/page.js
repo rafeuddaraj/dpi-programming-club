@@ -1,16 +1,35 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft } from "lucide-react"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft } from "lucide-react";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const projectFormSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
@@ -21,7 +40,7 @@ const projectFormSchema = z.object({
   githubUrl: z.string().url("Invalid URL").optional().or(z.literal("")),
   liveUrl: z.string().url("Invalid URL").optional().or(z.literal("")),
   teamSize: z.string().min(1, "Team size is required"),
-})
+});
 
 export default function CreateProjectPage() {
   const form = useForm({
@@ -36,21 +55,21 @@ export default function CreateProjectPage() {
       liveUrl: "",
       teamSize: "",
     },
-  })
+  });
 
   async function onSubmit(data) {
     try {
-      console.log("Form submitted:", data)
+      console.log("Form submitted:", data);
       // Add your API call here
     } catch (error) {
-      console.error("Error creating project:", error)
+      console.error("Error creating project:", error);
     }
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href="/projects">
+        <Link href="/dashboard/projects">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Projects
@@ -90,7 +109,11 @@ export default function CreateProjectPage() {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Enter project description" className="min-h-[100px]" {...field} />
+                      <Textarea
+                        placeholder="Enter project description"
+                        className="min-h-[100px]"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -103,7 +126,10 @@ export default function CreateProjectPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select status" />
@@ -158,7 +184,10 @@ export default function CreateProjectPage() {
                   <FormItem>
                     <FormLabel>GitHub URL (Optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter GitHub repository URL" {...field} />
+                      <Input
+                        placeholder="Enter GitHub repository URL"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -186,7 +215,11 @@ export default function CreateProjectPage() {
                   <FormItem>
                     <FormLabel>Team Size</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="Enter team size" {...field} />
+                      <Input
+                        type="number"
+                        placeholder="Enter team size"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -194,7 +227,7 @@ export default function CreateProjectPage() {
               />
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-              <Link href="/projects">
+              <Link href="/dashboard/projects">
                 <Button variant="outline">Cancel</Button>
               </Link>
               <Button type="submit">Create Project</Button>
@@ -203,6 +236,5 @@ export default function CreateProjectPage() {
         </Form>
       </Card>
     </div>
-  )
+  );
 }
-

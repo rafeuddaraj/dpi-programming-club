@@ -1,11 +1,23 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default function EditUserPage({ params }) {
   // In a real app, you would fetch user data based on params.id
@@ -19,12 +31,12 @@ export default function EditUserPage({ params }) {
     role: "admin",
     status: "active",
     bio: "Full-stack developer with 5 years of experience.",
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href={`/users/${user.id}`}>
+        <Link href={`/dashboard/users/${user.id}`}>
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to User Details
@@ -107,13 +119,12 @@ export default function EditUserPage({ params }) {
           </div>
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
-          <Link href={`/users/${user.id}`}>
+          <Link href={`/dashboard/users/${user.id}`}>
             <Button variant="outline">Cancel</Button>
           </Link>
           <Button>Save Changes</Button>
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
-

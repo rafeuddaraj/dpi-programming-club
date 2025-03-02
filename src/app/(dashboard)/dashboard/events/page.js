@@ -1,9 +1,17 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Plus, Search, Filter, MoreHorizontal, Calendar, MapPin, Users } from "lucide-react"
-import { formatDate } from "@/lib/utils"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { formatDate } from "@/lib/utils";
+import {
+  Calendar,
+  Filter,
+  MapPin,
+  MoreHorizontal,
+  Plus,
+  Search,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
 
 export default function EventsPage() {
   // Mock data for events
@@ -62,28 +70,28 @@ export default function EventsPage() {
       participants: 100,
       status: "Upcoming",
     },
-  ]
+  ];
 
   const getStatusClass = (status) => {
     switch (status) {
       case "Upcoming":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       case "Ongoing":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "Completed":
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
       case "Cancelled":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Event Management</h1>
-        <Link href="/events/create">
+        <Link href="/dashboard/events/create">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Add Event
@@ -100,7 +108,11 @@ export default function EventsPage() {
             <div className="flex items-center gap-2">
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input type="search" placeholder="Search events..." className="w-[250px] pl-8" />
+                <Input
+                  type="search"
+                  placeholder="Search events..."
+                  className="w-[250px] pl-8"
+                />
               </div>
               <Button variant="outline" size="sm">
                 <Filter className="mr-2 h-4 w-4" />
@@ -136,7 +148,9 @@ export default function EventsPage() {
                         {event.title}
                       </div>
                     </td>
-                    <td className="data-table-cell">{formatDate(event.date)}</td>
+                    <td className="data-table-cell">
+                      {formatDate(event.date)}
+                    </td>
                     <td className="data-table-cell">
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -151,18 +165,22 @@ export default function EventsPage() {
                       </div>
                     </td>
                     <td className="data-table-cell">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(event.status)}`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
+                          event.status
+                        )}`}
+                      >
                         {event.status}
                       </span>
                     </td>
                     <td className="data-table-cell">
                       <div className="flex items-center gap-2">
-                        <Link href={`/events/${event.id}`}>
+                        <Link href={`/dashboard/events/${event.id}`}>
                           <Button variant="ghost" size="sm">
                             View
                           </Button>
                         </Link>
-                        <Link href={`/events/${event.id}/edit`}>
+                        <Link href={`/dashboard/events/${event.id}/edit`}>
                           <Button variant="ghost" size="sm">
                             Edit
                           </Button>
@@ -180,7 +198,8 @@ export default function EventsPage() {
 
           <div className="data-table-pagination">
             <div className="text-sm text-muted-foreground">
-              Showing <strong>1</strong> to <strong>6</strong> of <strong>10</strong> results
+              Showing <strong>1</strong> to <strong>6</strong> of{" "}
+              <strong>10</strong> results
             </div>
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm" disabled>
@@ -194,6 +213,5 @@ export default function EventsPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

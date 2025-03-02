@@ -1,8 +1,16 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Plus, Search, Filter, MoreHorizontal, BookOpen, Users, Award } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Award,
+  BookOpen,
+  Filter,
+  MoreHorizontal,
+  Plus,
+  Search,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
 
 export default function CoursesPage() {
   // Mock data for courses
@@ -67,26 +75,26 @@ export default function CoursesPage() {
       certificate: true,
       status: "Active",
     },
-  ]
+  ];
 
   const getStatusClass = (status) => {
     switch (status) {
       case "Active":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "Draft":
-        return "bg-amber-100 text-amber-800"
+        return "bg-amber-100 text-amber-800";
       case "Archived":
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Course Management</h1>
-        <Link href="/courses/create">
+        <Link href="/dashboard/courses/create">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Add Course
@@ -103,7 +111,11 @@ export default function CoursesPage() {
             <div className="flex items-center gap-2">
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input type="search" placeholder="Search courses..." className="w-[250px] pl-8" />
+                <Input
+                  type="search"
+                  placeholder="Search courses..."
+                  className="w-[250px] pl-8"
+                />
               </div>
               <Button variant="outline" size="sm">
                 <Filter className="mr-2 h-4 w-4" />
@@ -148,8 +160,12 @@ export default function CoursesPage() {
                     </td>
                     <td className="data-table-cell">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs">{course.assignments} Assignments</span>
-                        <span className="text-xs">{course.quizzes} Quizzes</span>
+                        <span className="text-xs">
+                          {course.assignments} Assignments
+                        </span>
+                        <span className="text-xs">
+                          {course.quizzes} Quizzes
+                        </span>
                       </div>
                     </td>
                     <td className="data-table-cell">
@@ -163,18 +179,22 @@ export default function CoursesPage() {
                       )}
                     </td>
                     <td className="data-table-cell">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(course.status)}`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
+                          course.status
+                        )}`}
+                      >
                         {course.status}
                       </span>
                     </td>
                     <td className="data-table-cell">
                       <div className="flex items-center gap-2">
-                        <Link href={`/courses/${course.id}`}>
+                        <Link href={`/dashboard/courses/${course.id}`}>
                           <Button variant="ghost" size="sm">
                             View
                           </Button>
                         </Link>
-                        <Link href={`/courses/${course.id}/edit`}>
+                        <Link href={`/dashboard/courses/${course.id}/edit`}>
                           <Button variant="ghost" size="sm">
                             Edit
                           </Button>
@@ -192,7 +212,8 @@ export default function CoursesPage() {
 
           <div className="data-table-pagination">
             <div className="text-sm text-muted-foreground">
-              Showing <strong>1</strong> to <strong>6</strong> of <strong>12</strong> results
+              Showing <strong>1</strong> to <strong>6</strong> of{" "}
+              <strong>12</strong> results
             </div>
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm" disabled>
@@ -206,6 +227,5 @@ export default function CoursesPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

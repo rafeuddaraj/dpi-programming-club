@@ -1,15 +1,28 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft } from "lucide-react"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft } from "lucide-react";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 const eventFormSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
@@ -18,7 +31,7 @@ const eventFormSchema = z.object({
   time: z.string().min(1, "Time is required"),
   location: z.string().min(2, "Location is required"),
   capacity: z.string().min(1, "Capacity is required"),
-})
+});
 
 export default function CreateEventPage() {
   const form = useForm({
@@ -31,12 +44,12 @@ export default function CreateEventPage() {
       location: "",
       capacity: "",
     },
-  })
+  });
 
   async function onSubmit(data) {
     try {
       // Here you would make an API call to create the event
-      console.log("Form submitted:", data)
+      console.log("Form submitted:", data);
       // Example API call:
       // await fetch('/api/events', {
       //   method: 'POST',
@@ -44,14 +57,14 @@ export default function CreateEventPage() {
       //   body: JSON.stringify(data)
       // })
     } catch (error) {
-      console.error("Error creating event:", error)
+      console.error("Error creating event:", error);
     }
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href="/events">
+        <Link href="/dashboard/events">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Events
@@ -91,7 +104,11 @@ export default function CreateEventPage() {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Enter event description" className="min-h-[100px]" {...field} />
+                      <Textarea
+                        placeholder="Enter event description"
+                        className="min-h-[100px]"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -149,7 +166,11 @@ export default function CreateEventPage() {
                   <FormItem>
                     <FormLabel>Capacity</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="Enter maximum capacity" {...field} />
+                      <Input
+                        type="number"
+                        placeholder="Enter maximum capacity"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -157,7 +178,7 @@ export default function CreateEventPage() {
               />
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-              <Link href="/events">
+              <Link href="/dashboard/events">
                 <Button variant="outline">Cancel</Button>
               </Link>
               <Button type="submit">Create Event</Button>
@@ -166,6 +187,5 @@ export default function CreateEventPage() {
         </Form>
       </Card>
     </div>
-  )
+  );
 }
-

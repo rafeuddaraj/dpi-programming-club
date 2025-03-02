@@ -1,16 +1,16 @@
 "use client"
 
-import Link from "next/link"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft } from "lucide-react"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { ArrowLeft } from "lucide-react"
+import Link from "next/link"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
 
 const workshopFormSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
@@ -56,7 +56,7 @@ export default function CreateWorkshopPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href="/workshops">
+        <Link href="/dashboard/workshops">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Workshops
@@ -243,7 +243,7 @@ export default function CreateWorkshopPage() {
               />
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-              <Link href="/workshops">
+              <Link href="/dashboard/workshops">
                 <Button variant="outline">Cancel</Button>
               </Link>
               <Button type="submit">Create Workshop</Button>

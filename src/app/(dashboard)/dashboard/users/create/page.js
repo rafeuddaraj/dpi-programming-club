@@ -1,16 +1,35 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft } from "lucide-react"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 // Form validation schema
 const formSchema = z
@@ -26,7 +45,7 @@ const formSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
-  })
+  });
 
 export default function CreateUserPage() {
   // Initialize form with validation schema
@@ -41,13 +60,13 @@ export default function CreateUserPage() {
       role: "member",
       status: "active",
     },
-  })
+  });
 
   // Form submission handler
   async function onSubmit(data) {
     try {
       // Here you would typically make an API call to create the user
-      console.log("Form submitted:", data)
+      console.log("Form submitted:", data);
 
       // Example API call:
       // const response = await fetch('/api/users', {
@@ -59,14 +78,14 @@ export default function CreateUserPage() {
       // Handle success (e.g., show notification, redirect)
     } catch (error) {
       // Handle error (e.g., show error notification)
-      console.error("Error creating user:", error)
+      console.error("Error creating user:", error);
     }
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href="/users">
+        <Link href="/dashboard/users">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Users
@@ -121,7 +140,11 @@ export default function CreateUserPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="Enter email address" {...field} />
+                      <Input
+                        type="email"
+                        placeholder="Enter email address"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -136,7 +159,11 @@ export default function CreateUserPage() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="Enter password" {...field} />
+                        <Input
+                          type="password"
+                          placeholder="Enter password"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -149,7 +176,11 @@ export default function CreateUserPage() {
                     <FormItem>
                       <FormLabel>Confirm Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="Confirm password" {...field} />
+                        <Input
+                          type="password"
+                          placeholder="Confirm password"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -164,7 +195,10 @@ export default function CreateUserPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Role</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select role" />
@@ -186,7 +220,10 @@ export default function CreateUserPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Status</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select status" />
@@ -210,7 +247,7 @@ export default function CreateUserPage() {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-              <Link href="/users">
+              <Link href="/dashboard/users">
                 <Button variant="outline">Cancel</Button>
               </Link>
               <Button type="submit">Create User</Button>
@@ -219,6 +256,5 @@ export default function CreateUserPage() {
         </Form>
       </Card>
     </div>
-  )
+  );
 }
-

@@ -1,11 +1,23 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default function EditWorkshopPage({ params }) {
   // In a real app, you would fetch workshop data based on params.id
@@ -23,12 +35,12 @@ export default function EditWorkshopPage({ params }) {
     registrationDeadline: "2023-06-15",
     materials:
       "Laptop with any modern browser installed. No other software is required as we will be using online code editors.",
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href={`/workshops/${workshop.id}`}>
+        <Link href={`/dashboard/workshops/${workshop.id}`}>
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Workshop Details
@@ -52,7 +64,11 @@ export default function EditWorkshopPage({ params }) {
 
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
-            <Textarea id="description" defaultValue={workshop.description} rows={4} />
+            <Textarea
+              id="description"
+              defaultValue={workshop.description}
+              rows={4}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -104,17 +120,32 @@ export default function EditWorkshopPage({ params }) {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="max-participants">Maximum Participants</Label>
-              <Input id="max-participants" type="number" min="1" defaultValue={workshop.maxParticipants} />
+              <Input
+                id="max-participants"
+                type="number"
+                min="1"
+                defaultValue={workshop.maxParticipants}
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="registration-deadline">Registration Deadline</Label>
-              <Input id="registration-deadline" type="date" defaultValue={workshop.registrationDeadline} />
+              <Label htmlFor="registration-deadline">
+                Registration Deadline
+              </Label>
+              <Input
+                id="registration-deadline"
+                type="date"
+                defaultValue={workshop.registrationDeadline}
+              />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="materials">Workshop Materials</Label>
-            <Textarea id="materials" defaultValue={workshop.materials} rows={3} />
+            <Textarea
+              id="materials"
+              defaultValue={workshop.materials}
+              rows={3}
+            />
           </div>
 
           <div className="space-y-2">
@@ -130,6 +161,5 @@ export default function EditWorkshopPage({ params }) {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
-
