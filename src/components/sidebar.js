@@ -20,16 +20,16 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   const routes = [
-    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-    { name: "Users", href: "/admin/users", icon: Users },
-    { name: "Courses", href: "/admin/courses", icon: BookOpen },
-    { name: "Events", href: "/admin/events", icon: Calendar },
-    { name: "Projects", href: "/admin/projects", icon: Briefcase },
-    { name: "Workshops", href: "/admin/workshops", icon: Wrench },
-    { name: "Payments", href: "/admin/payments", icon: CreditCard },
-    { name: "Skills", href: "/admin/skills", icon: Award },
-    { name: "Subscriptions", href: "/admin/subscriptions", icon: Bell },
-    { name: "Settings", href: "/admin/settings", icon: Settings },
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Users", href: "/dashboard/users", icon: Users },
+    { name: "Courses", href: "/dashboard/courses", icon: BookOpen },
+    { name: "Events", href: "/dashboard/events", icon: Calendar },
+    { name: "Projects", href: "/dashboard/projects", icon: Briefcase },
+    { name: "Workshops", href: "/dashboard/workshops", icon: Wrench },
+    { name: "Payments", href: "/dashboard/payments", icon: CreditCard },
+    { name: "Skills", href: "/dashboard/skills", icon: Award },
+    { name: "Subscriptions", href: "/dashboard/subscriptions", icon: Bell },
+    { name: "Settings", href: "/dashboard/settings", icon: Settings },
   ];
 
   return (
