@@ -45,7 +45,7 @@ model User {
   address             String?
   status              UserStatus            @default(ACTIVE)
   renewalDate         DateTime
-  renewalFee          Int                   @default(500) // Renewal fee required every 6 months
+  renewalFee          Int                   @default(50)
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt()
   token               Session[]
@@ -108,11 +108,11 @@ model Workshop {
   duration            DateTime
   type                String // Offline Or Online 
   location            String // If Online Store Meeting Link else Offline Store Location 
-  curriculums         String[]
+  curriculums         String[] // For Workshop Module
   author              String // Organizers
   authorsDetails      String[] // Authors Details
   price               Int? // If Premium Event for need Price
-  availableSeat       Int? // Event Set
+  availableSeat       Int? // If Offline Then Event Set Number store else not yet.
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt()
   WorkshopParticipant WorkshopParticipant[]
@@ -125,10 +125,10 @@ model WorkshopParticipant {
   participantId String   @db.ObjectId
   participant   User     @relation(fields: [participantId], references: [id])
   price         Int?
-  score         Int?
-  complete      Boolean  @default(false)
-  certificate   String?
-  feedback      String?
+  score         Int? // - update
+  complete      Boolean  @default(false) // - update
+  certificate   String? // - update
+  feedback      String? // - update
   joining       DateTime @default(now())
 }
 

@@ -19,3 +19,7 @@ export function formatCurrency(amount) {
     currency: "USD",
   }).format(amount);
 }
+
+export function isMembershipExpired(renewalDate) {
+  return new Date(renewalDate) < new Date();
+}

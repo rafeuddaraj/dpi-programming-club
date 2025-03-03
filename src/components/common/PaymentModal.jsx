@@ -1,12 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -15,10 +9,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useToast } from "@/hooks/use-toast";
-import { X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertCircle, X } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { AlertCircle } from "lucide-react";
 
 const formSchema = z.object({
   bkashNumber: z
@@ -26,6 +24,13 @@ const formSchema = z.object({
     .min(11, "Bkash number must be at least 11 digits")
     .max(14, "Bkash number must not exceed 14 digits")
     .regex(/^[0-9]+$/, "Bkash number must contain only digits"),
+  amount: z
+    .preprocess((val) => (val === "" ? undefined : Number(val)), z.number({ required_error: "Amount must be need." }))
+    .refine((val) => val === Number(process.env.NEXT_PUBLIC_REGISTRATION_FEE), {
+      message: "Amount must be exactly 50 Tk.",
+    })
+
+  ,
   transactionNumber: z
     .string()
     .min(10, "Transaction number must be at least 10 characters")
@@ -41,6 +46,7 @@ export default function PaymentModal({ isOpen, onClose, onSubmit, data }) {
     defaultValues: {
       bkashNumber: "",
       transactionNumber: "",
+      amount: undefined,
     },
   });
 
@@ -101,6 +107,22 @@ export default function PaymentModal({ isOpen, onClose, onSubmit, data }) {
                       <FormControl>
                         <Input
                           placeholder="Enter your Bkash number"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Amount</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your amount"
                           {...field}
                         />
                       </FormControl>

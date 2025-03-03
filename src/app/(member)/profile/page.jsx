@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { hasPermission, MEMBER } from "@/lib/permissions";
+import { isMembershipExpired } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 const ProfileActivities = dynamic(() =>
@@ -52,7 +53,7 @@ export default async function ProfilePage({ searchParams }) {
             </Avatar>
             <div className="text-center sm:text-left">
               <CardTitle className="text-2xl sm:text-3xl">
-                {userData?.name}
+                {userData?.name} {userData?.id === session?.user?.id ? (isMembershipExpired(userData?.renewalDate) ? "❌" : "✅") : ("")}
               </CardTitle>
               <CardDescription className="text-lg mt-2">
                 {userData?.bio || "No bio available"}

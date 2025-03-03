@@ -1,10 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { motion } from "framer-motion";
+import { registerAndPaymentAction } from "@/app/actions/auth";
+import { PasswordStrengthMeter } from "@/components/password-strength-meter";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,11 +19,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PasswordStrengthMeter } from "@/components/password-strength-meter";
-import dynamic from "next/dynamic";
-import { toast } from "sonner";
-import { registerAndPaymentAction } from "@/app/actions/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
+import dynamic from "next/dynamic";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 const PaymentModal = dynamic(() => import("@/components/common/PaymentModal"));
 
 const registerSchema = z
@@ -102,8 +102,6 @@ export default function RegisterPage() {
       }
       throw res;
     } catch (err) {
-      console.log(err);
-
       toast.error("Failed to register user");
     }
   };

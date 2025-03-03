@@ -23,14 +23,21 @@ export const registerAndPaymentAction = async (data, paymentData) => {
     data.password = hashedPassword;
 
     const res = await prisma.$transaction(async (db) => {
-      const newUser = await db.user.create({ data });
-      console.log(newUser);
+      data.status = "PROCESSING";
+      const today = new Date();
+      const renewalDate = new Date();
 
+      // 6 Month Subscriptions
+      renewalDate.setMonth(today.getMonth() + 6);
+
+      data.renewalDate = renewalDate.toISOString();
+      data.renewalFee = paymentData.amount;
+      const newUser = await db.user.create({ data });
       const newPayment = await db.payment.create({
         data: {
           userId: newUser.id,
           accountNo: paymentData.bkashNumber,
-          amount: parseInt(process.env.NEXT_PUBLIC_REGISTRATION_FEE),
+          amount: paymentData.amount,
           paymentDetails: "Registration fee",
           paymentMethod: "Bkash",
           transactionId: paymentData?.transactionNumber,
@@ -41,7 +48,6 @@ export const registerAndPaymentAction = async (data, paymentData) => {
     });
     return successResponse("User registered successfully.", 200, res);
   } catch (err) {
-    console.log(err);
     return errorResponse("Failed to register user", 500);
   }
 };
