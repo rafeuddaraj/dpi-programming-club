@@ -105,6 +105,7 @@ model Workshop {
   startTime           DateTime
   endTime             DateTime
   badge               String?
+  whatYouWillLearn    String?
   duration            DateTime
   type                String // Offline Or Online 
   location            String // If Online Store Meeting Link else Offline Store Location 
@@ -126,7 +127,7 @@ model WorkshopParticipant {
   participant   User     @relation(fields: [participantId], references: [id])
   price         Int?
   score         Int? // - update
-  complete      Boolean  @default(false) // - update
+  isComplete    Boolean  @default(false) // - update
   certificate   String? // - update
   feedback      String? // - update
   joining       DateTime @default(now())
