@@ -1,4 +1,4 @@
-import { getEventById } from "@/app/actions/events";
+import { getParticipantByEventId } from "@/app/actions/events";
 import CommonAlert from "@/components/common/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,9 +11,14 @@ export default async function EventParticipantsPage({ params }) {
 
   const param = await params;
 
-  const resp = await getEventById(param?.id);
-  const event = resp?.data;
-  const participants = event?.EventParticipant;
+  const resp = await getParticipantByEventId(param?.id);
+
+  if (resp?.error) {
+    throw Error();
+  }
+
+  const participants = resp?.data;
+  const event = participants[0]?.event;
 
   return (
     <div className="space-y-6">
@@ -61,7 +66,7 @@ export default async function EventParticipantsPage({ params }) {
                 <div>Amount</div>
                 <div>Actions</div>
               </div>
-              {participants.map((participant) => (
+              {participants.map(({ participant }) => (
                 <div
                   key={participant.id}
                   className="grid grid-cols-1 md:grid-cols-7 p-4 border-t"

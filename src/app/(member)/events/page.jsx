@@ -1,18 +1,5 @@
-"use client"
-
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { getAllUpcomingEvent } from "@/app/actions/events";
+import EventCard from "./_components/EventCard";
 
 const events = [
   {
@@ -41,12 +28,20 @@ const events = [
   },
 ]
 
-export default function EventsPage() {
+export default async function EventsPage() {
+  const resp = await getAllUpcomingEvent()
+  if (resp?.error) {
+    throw Error()
+  }
+
+  const events = resp?.data
+
+
   return (
     (<div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold mb-8">Upcoming Events</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {events.map((event) => (
+        {events?.map((event) => (
           <EventCard key={event.id} event={event} />
         ))}
       </div>
@@ -54,48 +49,5 @@ export default function EventsPage() {
   );
 }
 
-function EventCard({ event }) {
-  const [isEnrolled, setIsEnrolled] = useState(false)
 
-  return (
-    (<motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}>
-      <Card>
-        <CardHeader>
-          <CardTitle>{event.title}</CardTitle>
-          <CardDescription>
-            {event.date} | {event.time}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>{event.description}</p>
-          <p className="mt-2 text-sm text-muted-foreground">Location: {event.location}</p>
-        </CardContent>
-        <CardFooter>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant={isEnrolled ? "secondary" : "default"}>{isEnrolled ? "Enrolled" : "Enroll Now"}</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Enroll in {event.title}</DialogTitle>
-                <DialogDescription>
-                  Are you sure you want to enroll in this event? You can cancel your enrollment later if needed.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsEnrolled(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={() => setIsEnrolled(true)}>Confirm Enrollment</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </CardFooter>
-      </Card>
-    </motion.div>)
-  );
-}
 

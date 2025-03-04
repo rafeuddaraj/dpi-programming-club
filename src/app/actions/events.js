@@ -4,12 +4,12 @@ import prisma from "@/lib/prisma";
 import { commonGet } from "@/lib/utils";
 import { errorResponse, successResponse } from "@/utils/req-res";
 import { revalidatePath } from "next/cache";
+import { auth } from "../auth";
 
 export const createEvent = async (data) => {
   try {
     data.price = parseInt(data.price);
     data.availableSeat = parseInt(data.availableSeat);
-    console.log(data);
     data.startTime = new Date(data.startTime);
     data.endTime = new Date(data.endTime);
     data.registrationDeadline = new Date(data.registrationDeadline);
@@ -49,7 +49,6 @@ export const getEventById = async (id) => {
       where: { id },
       include: { EventParticipant: true },
     });
-    console.log(event);
 
     return successResponse("", 200, event);
   } catch (err) {
@@ -63,6 +62,56 @@ export const deleteEvent = async (id) => {
     revalidatePath("/dashboard/events");
     return successResponse("", 200, data);
   } catch {
+    return errorResponse();
+  }
+};
+
+export const getAllUpcomingEvent = async () => {
+  try {
+    const currentTime = new Date(); // Get current time
+
+    const events = await prisma.event.findMany({
+      where: {
+        registrationDeadline: {
+          gte: currentTime,
+        },
+      },
+      orderBy: {
+        registrationDeadline: "asc",
+      },
+    });
+    return successResponse("", 200, events);
+  } catch {
+    return errorResponse();
+  }
+};
+
+export const getParticipantByEventId = async (id) => {
+  try {
+    const participant = await prisma.eventParticipant.findMany({
+      where: { eventId: id },
+      include: { participant: true, event: true },
+    });
+
+    return successResponse("", 200, participant);
+  } catch (err) {
+    return errorResponse();
+  }
+};
+
+export const enrollEvent = async (data) => {
+  try {
+    const session = await auth();
+    const user = session?.user;
+    console.log(user?.id, data, "New Okay");
+
+    const res = await prisma.eventParticipant.create({
+      data: { participantId: user?.id, ...data },
+    });
+    return successResponse("", 201, res);
+  } catch (err) {
+    console.log(err);
+
     return errorResponse();
   }
 };

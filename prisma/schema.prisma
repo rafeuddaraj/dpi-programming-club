@@ -92,7 +92,7 @@ model EventParticipant {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   eventId       String   @db.ObjectId
   event         Event    @relation(fields: [eventId], references: [id])
-  participantId String   @db.ObjectId
+  participantId String   @unique @db.ObjectId
   amount        Int?
   score         Int?
   complete      Boolean  @default(false)

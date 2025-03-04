@@ -1,5 +1,11 @@
 import DeleteAction from "@/app/(dashboard)/dashboard/events/[id]/_components/deleteAction";
-import { deleteEvent, getEventById } from "@/app/actions/events";
+import {
+  deleteEvent,
+  getEventById,
+  getParticipantByEventId,
+} from "@/app/actions/events";
+import CommonAlert from "@/components/common/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate, getStatus } from "@/lib/utils";
@@ -42,6 +48,17 @@ export default async function EventDetailsPage({ params }) {
   const handleDelete = async (id) => {
     return await deleteEvent(id);
   };
+
+  let participants = [];
+
+  if (event?.EventParticipant?.length) {
+    const resp = await getParticipantByEventId(event?.id);
+    if (!resp.error) {
+      participants = resp?.data;
+    }
+  }
+
+  console.log(participants);
 
   return (
     <div className="space-y-6">
@@ -158,36 +175,47 @@ export default async function EventDetailsPage({ params }) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Participants</CardTitle>
+            <CardTitle>
+              Participants <Badge>{participants?.length}</Badge>{" "}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {event.EventParticipant.map((participant) => (
-                <div
-                  key={participant.id}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                      {participant.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+              {participants?.length ? (
+                participants.map(({ participant }) => (
+                  <div
+                    key={participant.id}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
+                        {participant.name
+                          ?.split(" ")
+                          .map((n) => n[0])
+                          .join("")}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">
+                          {participant.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {participant.role}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium">{participant.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {participant.role}
-                      </p>
-                    </div>
+                    <Link href={`/dashboard/users/${participant.id}`}>
+                      <Button variant="ghost" size="sm">
+                        View
+                      </Button>
+                    </Link>
                   </div>
-                  <Link href={`/dashboard/users/${participant.id}`}>
-                    <Button variant="ghost" size="sm">
-                      View
-                    </Button>
-                  </Link>
-                </div>
-              ))}
+                ))
+              ) : (
+                <CommonAlert
+                  description={"There are no participants in this event yet."}
+                  title={"No Participants"}
+                />
+              )}
             </div>
             <div className="mt-4">
               <Button variant="outline" className="w-full">

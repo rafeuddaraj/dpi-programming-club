@@ -1,7 +1,5 @@
-"use client";
-
-import { useParams } from "next/navigation";
-import { motion } from "framer-motion";
+import { getEventById } from "@/app/actions/events";
+import { MotionDiv } from "@/components/common/motion";
 import {
   Card,
   CardContent,
@@ -9,78 +7,89 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 import { Calendar, Clock, MapPin } from "lucide-react";
+import EventEnroll from "../_components/EventEnroll";
+export default async function EventDetailsPage({ params }) {
+  const eventId = (await params).id;
 
-// Mock data for events (in a real app, this would come from an API or database)
-const events = [
-  {
-    id: "1",
-    title: "Web Development Workshop",
-    description:
-      "Learn the latest web development technologies and best practices.",
-    date: "2023-07-15",
-    time: "10:00 AM - 2:00 PM",
-    location: "Computer Lab 1",
-    organizer: "Jane Doe",
-    agenda: [
-      "Introduction to HTML5 and CSS3",
-      "JavaScript fundamentals",
-      "Building responsive layouts",
-      "Introduction to React",
-    ],
-  },
-  // Add more events as needed
-];
+  const resp = await getEventById(eventId)
 
-export default function EventDetailsPage() {
-  const params = useParams();
-  const eventId = params.id;
-
-  const event = events.find((e) => e.id === eventId);
-
-  if (!event) {
-    return <div>Event not found</div>;
+  if (resp?.error) {
+    throw Error()
   }
+  const event = await resp?.data
+
 
   return (
     <div className="container mx-auto py-8">
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl">{event.title}</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-3xl">{event.name}</CardTitle>
+            <CardDescription className="space-y-2">
+              {/* Start Time */}
               <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4" />
-                <span>{event.date}</span>
+                <Clock className="w-4 h-4 text-green-500" />
+                <span className="font-semibold text-gray-700 dark:text-gray-300">
+                  Start Time:
+                </span>
+                <span>{format(new Date(event.startTime), "PPpp")}</span>
               </div>
+
+              {/* End Time */}
               <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4" />
-                <span>{event.time}</span>
+                <Clock className="w-4 h-4 text-red-500" />
+                <span className="font-semibold text-gray-700 dark:text-gray-300">
+                  End Time:
+                </span>
+                <span>{format(new Date(event.endTime), "PPpp")}</span>
               </div>
+
+              {/* Registration Deadline */}
               <div className="flex items-center space-x-2">
-                <MapPin className="w-4 h-4" />
+                <Calendar className="w-4 h-4 text-blue-500" />
+                <span className="font-semibold text-gray-700 dark:text-gray-300">
+                  Registration Deadline:
+                </span>
+                <span>{format(new Date(event.registrationDeadline), "PPpp")}</span>
+              </div>
+
+              {/* Location */}
+              <div className="flex items-center space-x-2">
+                <MapPin className="w-4 h-4 text-purple-500" />
+                <span className="font-semibold text-gray-700 dark:text-gray-300">
+                  Location:
+                </span>
                 <span>{event.location}</span>
               </div>
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="mb-4">{event.description}</p>
+
+            {/* Agenda */}
             <h3 className="text-xl font-semibold mb-2">Agenda</h3>
             <ul className="list-disc list-inside mb-4">
-              {event.agenda.map((item, index) => (
+              {event.curriculums.map((item, index) => (
                 <li key={index}>{item}</li>
               ))}
             </ul>
-            <p className="mb-4">Organized by: {event.organizer}</p>
-            <Button>Register for Event</Button>
+
+            {/* Organized by */}
+            <p className="mb-4">
+              <span className="font-semibold">Organized by:</span> {event.author}
+            </p>
+
+            <EventEnroll eventId={eventId} />
           </CardContent>
         </Card>
-      </motion.div>
+      </MotionDiv>
     </div>
   );
 }
+
