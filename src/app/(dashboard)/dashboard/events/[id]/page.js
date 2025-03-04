@@ -1,41 +1,28 @@
-import Link from "next/link";
+import DeleteAction from "@/app/(dashboard)/dashboard/events/[id]/_components/deleteAction";
+import { deleteEvent, getEventById } from "@/app/actions/events";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDate, getStatus } from "@/lib/utils";
 import {
   ArrowLeft,
   Calendar,
-  MapPin,
   Clock,
-  Users,
-  User,
   Edit,
-  Trash2,
+  MapPin,
+  User,
+  Users,
 } from "lucide-react";
-import { formatDate } from "@/lib/utils";
+import Link from "next/link";
 
-export default function EventDetailsPage({ params }) {
-  // In a real app, you would fetch event data based on params.id
-  const event = {
-    id: params.id,
-    title: "Annual Hackathon 2023",
-    description:
-      "Join us for a 24-hour coding marathon where teams compete to build innovative solutions. Prizes for the top three teams!",
-    date: "2023-06-15",
-    time: "09:00 AM - 09:00 AM (next day)",
-    location: "Main Campus, Building A",
-    organizer: "John Doe",
-    status: "Upcoming",
-    maxParticipants: 100,
-    currentParticipants: 75,
-    registrationDeadline: "2023-06-10",
-    participants: [
-      { id: 1, name: "Alice Brown", role: "Participant" },
-      { id: 2, name: "Bob Johnson", role: "Participant" },
-      { id: 3, name: "Charlie Wilson", role: "Participant" },
-      { id: 4, name: "Diana Miller", role: "Participant" },
-      { id: 5, name: "Edward Davis", role: "Participant" },
-    ],
-  };
+export default async function EventDetailsPage({ params }) {
+  const param = await params;
+
+  const res = await getEventById(param?.id);
+
+  if (res.error) {
+    throw Error();
+  }
+  const event = res?.data;
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -52,6 +39,10 @@ export default function EventDetailsPage({ params }) {
     }
   };
 
+  const handleDelete = async (id) => {
+    return await deleteEvent(id);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -66,16 +57,19 @@ export default function EventDetailsPage({ params }) {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Event Details</h1>
         <div className="flex items-center gap-2">
-          <Link href={`/dashboard/events/${event.id}/edit`}>
-            <Button variant="outline">
-              <Edit className="mr-2 h-4 w-4" />
-              Edit Event
-            </Button>
-          </Link>
-          <Button variant="destructive">
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete Event
-          </Button>
+          {!["Completed", "Ongoing"].includes(
+            getStatus(event?.startTime, event?.endTime)
+          ) && (
+            <>
+              <Link href={`/dashboard/events/${event?.id}/edit`}>
+                <Button variant="outline">
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Event
+                </Button>
+              </Link>
+              <DeleteAction id={param?.id}></DeleteAction>
+            </>
+          )}
         </div>
       </div>
 
@@ -83,13 +77,13 @@ export default function EventDetailsPage({ params }) {
         <Card className="md:col-span-2">
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle>{event.title}</CardTitle>
+              <CardTitle>{event?.name}</CardTitle>
               <span
                 className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
-                  event.status
+                  getStatus(event?.startTime, event?.endTime)
                 )}`}
               >
-                {event.status}
+                {getStatus(event?.startTime, event?.endTime)}
               </span>
             </div>
           </CardHeader>
@@ -104,14 +98,21 @@ export default function EventDetailsPage({ params }) {
                 <Calendar className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Date</p>
-                  <p className="text-sm">{formatDate(event.date)}</p>
+                  <p className="text-sm">
+                    {formatDate(event.startTime, { time: true })}
+                  </p>
+                  <p className="text-sm">
+                    {formatDate(event.endTime, { time: true })}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Time</p>
-                  <p className="text-sm">{event.time}</p>
+                  <p className="text-sm">
+                    {formatDate(event.startTime, { time: true })}
+                  </p>
                 </div>
               </div>
             </div>
@@ -128,7 +129,7 @@ export default function EventDetailsPage({ params }) {
               <User className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Organizer</p>
-                <p className="text-sm">{event.organizer}</p>
+                <p className="text-sm">{event.author}</p>
               </div>
             </div>
 
@@ -138,7 +139,7 @@ export default function EventDetailsPage({ params }) {
                 <div>
                   <p className="text-sm font-medium">Participants</p>
                   <p className="text-sm">
-                    {event.currentParticipants} / {event.maxParticipants}
+                    {event.EventParticipant?.length} / {event?.availableSeat}
                   </p>
                 </div>
               </div>
@@ -147,7 +148,7 @@ export default function EventDetailsPage({ params }) {
                 <div>
                   <p className="text-sm font-medium">Registration Deadline</p>
                   <p className="text-sm">
-                    {formatDate(event.registrationDeadline)}
+                    {formatDate(event?.registrationDeadline, { time: true })}
                   </p>
                 </div>
               </div>
@@ -161,7 +162,7 @@ export default function EventDetailsPage({ params }) {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {event.participants.map((participant) => (
+              {event.EventParticipant.map((participant) => (
                 <div
                   key={participant.id}
                   className="flex items-center justify-between"

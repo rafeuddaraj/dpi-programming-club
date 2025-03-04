@@ -64,24 +64,28 @@ model Session {
   user         User   @relation(fields: [userId], references: [id])
 }
 
+enum EventType {
+  OFFLINE
+  ONLINE
+}
+
 model Event {
-  id               String             @id @default(auto()) @map("_id") @db.ObjectId
-  name             String
-  description      String
-  startTime        DateTime
-  endTime          DateTime
-  badge            String?
-  duration         DateTime
-  type             String // Offline Or Online 
-  location         String // If Online Store Meeting Link else Offline Store Location 
-  curriculums      String[]
-  author           String // Organizers
-  authorsDetails   String[] // Organizers Details
-  price            Int? // If Premium Event for need Price
-  availableSeat    Int? // Event Set
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt()
-  EventParticipant EventParticipant[]
+  id                   String             @id @default(auto()) @map("_id") @db.ObjectId
+  name                 String
+  description          String
+  startTime            DateTime
+  endTime              DateTime
+  type                 EventType          @default(OFFLINE) // Offline Or Online 
+  location             String // If Online Store Meeting Link else Offline Store Location 
+  curriculums          String[]
+  author               String // Organizers
+  authorsDetails       Json? // Organizers Details
+  price                Int? // If Premium Event for need Price
+  availableSeat        Int? // Event Set
+  registrationDeadline DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt()
+  EventParticipant     EventParticipant[]
 }
 
 model EventParticipant {
@@ -89,7 +93,7 @@ model EventParticipant {
   eventId       String   @db.ObjectId
   event         Event    @relation(fields: [eventId], references: [id])
   participantId String   @db.ObjectId
-  price         Int?
+  amount        Int?
   score         Int?
   complete      Boolean  @default(false)
   certificate   String?

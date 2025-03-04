@@ -1,76 +1,25 @@
+import { getEvents } from "@/app/actions/events";
+import FilterAction from "@/components/common/FilterAction";
+import Pagination from "@/components/common/Pagination";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { formatDate } from "@/lib/utils";
-import {
-  Calendar,
-  Filter,
-  MapPin,
-  MoreHorizontal,
-  Plus,
-  Search,
-  Users,
-} from "lucide-react";
+import { formatDate, getStatus } from "@/lib/utils";
+import { Calendar, MapPin, MoreHorizontal, Plus, Users } from "lucide-react";
 import Link from "next/link";
 
-export default function EventsPage() {
+export default async function EventsPage({ params, searchParams }) {
+  const urlSearchParams = await searchParams;
+
   // Mock data for events
-  const events = [
-    {
-      id: 1,
-      title: "Annual Hackathon 2023",
-      date: "2023-06-15",
-      location: "Main Campus, Building A",
-      organizer: "John Doe",
-      participants: 75,
-      status: "Upcoming",
-    },
-    {
-      id: 2,
-      title: "Tech Talk: AI Fundamentals",
-      date: "2023-05-20",
-      location: "Virtual (Zoom)",
-      organizer: "Jane Smith",
-      participants: 120,
-      status: "Completed",
-    },
-    {
-      id: 3,
-      title: "Workshop: Intro to Web Development",
-      date: "2023-07-10",
-      location: "Lab 101",
-      organizer: "Bob Johnson",
-      participants: 30,
-      status: "Upcoming",
-    },
-    {
-      id: 4,
-      title: "Coding Competition",
-      date: "2023-08-05",
-      location: "Main Auditorium",
-      organizer: "Alice Brown",
-      participants: 50,
-      status: "Upcoming",
-    },
-    {
-      id: 5,
-      title: "Industry Visit: Tech Corp",
-      date: "2023-04-15",
-      location: "Tech Corp HQ",
-      organizer: "Charlie Wilson",
-      participants: 25,
-      status: "Completed",
-    },
-    {
-      id: 6,
-      title: "End of Year Celebration",
-      date: "2023-12-20",
-      location: "Student Center",
-      organizer: "Diana Miller",
-      participants: 100,
-      status: "Upcoming",
-    },
-  ];
+  const data = await getEvents(
+    urlSearchParams?.q,
+    parseInt(urlSearchParams?.page) || 1,
+    parseInt(urlSearchParams?.limit) || 10
+  );
+  const events = data.data.data;
+  if (events.error) {
+    throw Error();
+  }
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -106,18 +55,7 @@ export default function EventsPage() {
         <CardContent>
           <div className="data-table-toolbar">
             <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search events..."
-                  className="w-[250px] pl-8"
-                />
-              </div>
-              <Button variant="outline" size="sm">
-                <Filter className="mr-2 h-4 w-4" />
-                Filter
-              </Button>
+              <FilterAction />
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm">
@@ -131,7 +69,8 @@ export default function EventsPage() {
               <thead className="data-table-header">
                 <tr>
                   <th className="data-table-head">Event Name</th>
-                  <th className="data-table-head">Date</th>
+                  <th className="data-table-head">Start Date</th>
+                  <th className="data-table-head">End Date</th>
                   <th className="data-table-head">Location</th>
                   <th className="data-table-head">Organizer</th>
                   <th className="data-table-head">Participants</th>
@@ -145,11 +84,14 @@ export default function EventsPage() {
                     <td className="data-table-cell font-medium">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-primary" />
-                        {event.title}
+                        {event.name}
                       </div>
                     </td>
                     <td className="data-table-cell">
-                      {formatDate(event.date)}
+                      {formatDate(event.startTime)}
+                    </td>
+                    <td className="data-table-cell">
+                      {formatDate(event.endTime)}
                     </td>
                     <td className="data-table-cell">
                       <div className="flex items-center gap-2">
@@ -157,20 +99,25 @@ export default function EventsPage() {
                         {event.location}
                       </div>
                     </td>
-                    <td className="data-table-cell">{event.organizer}</td>
+                    <td className="data-table-cell">{event.author}</td>
                     <td className="data-table-cell">
-                      <div className="flex items-center gap-2">
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                        {event.participants}
-                      </div>
+                      <Link
+                        href={`/dashboard/events/participants/${event?.id}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          {" "}
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          {event.EventParticipant.length}
+                        </div>
+                      </Link>
                     </td>
                     <td className="data-table-cell">
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
-                          event.status
+                          getStatus(event?.startTime, event?.endTime)
                         )}`}
                       >
-                        {event.status}
+                        {getStatus(event?.startTime, event?.endTime)}
                       </span>
                     </td>
                     <td className="data-table-cell">
@@ -180,11 +127,21 @@ export default function EventsPage() {
                             View
                           </Button>
                         </Link>
-                        <Link href={`/dashboard/events/${event.id}/edit`}>
-                          <Button variant="ghost" size="sm">
-                            Edit
-                          </Button>
-                        </Link>
+
+                        {!["Completed", "Ongoing"].includes(
+                          getStatus(event?.startTime, event?.endTime)
+                        ) ? (
+                          <>
+                            {" "}
+                            <Link href={`/dashboard/events/${event.id}/edit`}>
+                              <Button variant="ghost" size="sm">
+                                Edit
+                              </Button>
+                            </Link>
+                          </>
+                        ) : (
+                          <Button>N/A</Button>
+                        )}
                         <Button variant="ghost" size="sm">
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
@@ -196,20 +153,7 @@ export default function EventsPage() {
             </table>
           </div>
 
-          <div className="data-table-pagination">
-            <div className="text-sm text-muted-foreground">
-              Showing <strong>1</strong> to <strong>6</strong> of{" "}
-              <strong>10</strong> results
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" disabled>
-                Previous
-              </Button>
-              <Button variant="outline" size="sm">
-                Next
-              </Button>
-            </div>
-          </div>
+          <Pagination pagination={data?.data?.pagination} />
         </CardContent>
       </Card>
     </div>
