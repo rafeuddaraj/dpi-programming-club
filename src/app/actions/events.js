@@ -86,12 +86,34 @@ export const getAllUpcomingEvent = async () => {
   }
 };
 
-export const getParticipantByEventId = async (id) => {
+export const getParticipantByEventId = async (query, id, page, limit) => {
   try {
-    const participant = await prisma.eventParticipant.findMany({
-      where: { eventId: id },
-      include: { participant: true, event: true },
-    });
+    const where = query
+      ? {
+          OR: [
+            { participant: { name: { contains: query, mode: "insensitive" } } },
+            {
+              participant: { rollNo: { contains: query, mode: "insensitive" } },
+            },
+            {
+              participant: { email: { contains: query, mode: "insensitive" } },
+            },
+            { payment: { transactionId: { contains: query } } },
+          ],
+          eventId: id,
+        }
+      : { eventId: id };
+    const include = { participant: true, event: true, payment: true };
+
+    const orderBy = { payment: { paymentStatus: "asc" } };
+    const participant = await commonGet(
+      "eventParticipant",
+      where,
+      include,
+      page,
+      limit,
+      orderBy
+    );
 
     return successResponse("", 200, participant);
   } catch (err) {
@@ -99,15 +121,46 @@ export const getParticipantByEventId = async (id) => {
   }
 };
 
-export const enrollEvent = async (data) => {
+export const enrollEvent = async (data, isPremium = false) => {
   try {
+    console.log(data);
+
     const session = await auth();
     const user = session?.user;
-    console.log(user?.id, data, "New Okay");
 
-    const res = await prisma.eventParticipant.create({
-      data: { participantId: user?.id, ...data },
-    });
+    let res = null;
+    if (isPremium) {
+      res = await prisma.$transaction(async (db) => {
+        const paymentData = {
+          userId: user?.id,
+          accountNo: data.bkashNumber,
+          amount: data.amount,
+          paymentDetails: `${data?.name} - Event`,
+          paymentMethod: "Bkash",
+          transactionId: data?.transactionNumber,
+        };
+
+        const payment = await db.payment.create({ data: paymentData });
+        const eventData = {
+          eventId: data?.id,
+          participantId: user?.id,
+          paymentId: payment?.id,
+        };
+        console.log(eventData);
+
+        const event = await db.eventParticipant.create({
+          data: eventData,
+          include: { payment: true },
+        });
+        return event;
+      });
+    } else {
+      console.log({ participantId: user?.id, ...data });
+
+      res = await prisma.eventParticipant.create({
+        data: { participantId: user?.id, ...data },
+      });
+    }
     return successResponse("", 201, res);
   } catch (err) {
     console.log(err);

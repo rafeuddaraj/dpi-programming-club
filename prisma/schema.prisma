@@ -92,14 +92,17 @@ model EventParticipant {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   eventId       String   @db.ObjectId
   event         Event    @relation(fields: [eventId], references: [id])
-  participantId String   @unique @db.ObjectId
-  amount        Int?
+  participantId String   @db.ObjectId
   score         Int?
   complete      Boolean  @default(false)
   certificate   String?
   feedback      String?
   participant   User     @relation(fields: [participantId], references: [id])
   joining       DateTime @default(now())
+  paymentId     String?  @db.ObjectId
+  payment       Payment? @relation(fields: [paymentId], references: [id])
+
+  // @@unique([eventId, participantId])
 }
 
 model Workshop {
@@ -130,11 +133,12 @@ model WorkshopParticipant {
   participantId String   @db.ObjectId
   participant   User     @relation(fields: [participantId], references: [id])
   price         Int?
-  score         Int? // - update
-  isComplete    Boolean  @default(false) // - update
-  certificate   String? // - update
-  feedback      String? // - update
-  joining       DateTime @default(now())
+
+  score       Int? // - update
+  isComplete  Boolean  @default(false) // - update
+  certificate String? // - update
+  feedback    String? // - update
+  joining     DateTime @default(now())
 }
 
 model Course {
@@ -174,18 +178,19 @@ model CourseEnrollment {
 // Payments
 
 model Payment {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId          String   @db.ObjectId
-  user            User     @relation(fields: [userId], references: [id])
-  amount          Int
-  paymentMethod   String
-  paymentDetails  String
-  accountNo       String
-  registrationFee Boolean  @default(false)
-  paymentStatus   Boolean  @default(false)
-  transactionId   String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt()
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String             @db.ObjectId
+  user             User               @relation(fields: [userId], references: [id])
+  amount           Int
+  paymentMethod    String
+  paymentDetails   String
+  accountNo        String
+  registrationFee  Boolean            @default(false)
+  paymentStatus    Boolean            @default(false)
+  transactionId    String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt()
+  EventParticipant EventParticipant[]
 }
 
 model Gallery {

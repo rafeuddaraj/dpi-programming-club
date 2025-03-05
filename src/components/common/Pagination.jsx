@@ -7,7 +7,6 @@ import { Button } from "../ui/button";
 export default function Pagination({ pagination }) {
 
     const { onUpdate } = useFilter()
-    console.log(pagination);
 
 
     return (

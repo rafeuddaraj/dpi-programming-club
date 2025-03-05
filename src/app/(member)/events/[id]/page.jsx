@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { format } from "date-fns";
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { Calendar, Clock, DollarSign, MapPin } from "lucide-react";
 import EventEnroll from "../_components/EventEnroll";
 export default async function EventDetailsPage({ params }) {
   const eventId = (await params).id;
@@ -67,6 +67,13 @@ export default async function EventDetailsPage({ params }) {
                 </span>
                 <span>{event.location}</span>
               </div>
+              <div className="flex items-center space-x-2">
+                <DollarSign className="w-4 h-4 text-yellow-400" />
+                <span className="font-semibold text-gray-700 dark:text-gray-300">
+                  Price:
+                </span>
+                <span>{event?.price || "Free"}</span>
+              </div>
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -85,7 +92,7 @@ export default async function EventDetailsPage({ params }) {
               <span className="font-semibold">Organized by:</span> {event.author}
             </p>
 
-            <EventEnroll eventId={eventId} />
+            <EventEnroll eventId={eventId} event={event} />
           </CardContent>
         </Card>
       </MotionDiv>

@@ -18,27 +18,28 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
-const formSchema = z.object({
-  bkashNumber: z
-    .string()
-    .min(11, "Bkash number must be at least 11 digits")
-    .max(14, "Bkash number must not exceed 14 digits")
-    .regex(/^[0-9]+$/, "Bkash number must contain only digits"),
-  amount: z
-    .preprocess((val) => (val === "" ? undefined : Number(val)), z.number({ required_error: "Amount must be need." }))
-    .refine((val) => val === Number(process.env.NEXT_PUBLIC_REGISTRATION_FEE), {
-      message: "Amount must be exactly 50 Tk.",
-    })
 
-  ,
-  transactionNumber: z
-    .string()
-    .min(10, "Transaction number must be at least 10 characters")
-    .max(20, "Transaction number must not exceed 20 characters")
-    .regex(/^[A-Za-z0-9]{10,20}$/, "Invalid transaction number"),
-});
 
-export default function PaymentModal({ isOpen, onClose, onSubmit, data }) {
+export default function PaymentModal({ isOpen, onClose, onSubmit, data, title }) {
+  const formSchema = z.object({
+    bkashNumber: z
+      .string()
+      .min(11, "Bkash number must be at least 11 digits")
+      .max(14, "Bkash number must not exceed 14 digits")
+      .regex(/^[0-9]+$/, "Bkash number must contain only digits"),
+    amount: z
+      .preprocess((val) => (val === "" ? undefined : Number(val)), z.number({ required_error: "Amount must be need." }))
+      .refine((val) => val === (data?.price || Number(process.env.NEXT_PUBLIC_REGISTRATION_FEE)), {
+        message: `Amount must be exactly ${data?.price || Number(process.env.NEXT_PUBLIC_REGISTRATION_FEE)} Tk.`,
+      })
+
+    ,
+    transactionNumber: z
+      .string()
+      .min(10, "Transaction number must be at least 10 characters")
+      .max(20, "Transaction number must not exceed 20 characters")
+      .regex(/^[A-Za-z0-9]{10,20}$/, "Invalid transaction number"),
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm({
@@ -46,7 +47,7 @@ export default function PaymentModal({ isOpen, onClose, onSubmit, data }) {
     defaultValues: {
       bkashNumber: "",
       transactionNumber: "",
-      amount: undefined,
+      amount: "",
     },
   });
 
@@ -86,8 +87,8 @@ export default function PaymentModal({ isOpen, onClose, onSubmit, data }) {
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Payment Amount</AlertTitle>
               <AlertDescription>
-                Please pay <span className="font-bold">50৳</span> to become a
-                member of our club.
+                {title || <>Please pay <span className="font-bold">50৳</span> to become a
+                  member of our club.</>}
               </AlertDescription>
             </Alert>
             <Button className="my-4 mt-0" variant="outline">
@@ -157,7 +158,8 @@ export default function PaymentModal({ isOpen, onClose, onSubmit, data }) {
             </Form>
           </motion.div>
         </motion.div>
-      )}
-    </AnimatePresence>
+      )
+      }
+    </AnimatePresence >
   );
 }

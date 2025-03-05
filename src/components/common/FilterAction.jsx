@@ -1,7 +1,7 @@
 "use client"
 import { Filter, Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../button";
 import { Input } from "../ui/input";
 
@@ -12,6 +12,9 @@ export default function FilterAction() {
     const newSearchParams = new URLSearchParams(searchParams)
     const [searchTerm, setSearchTerm] = useState("")
     const pathname = usePathname()
+    useEffect(() => {
+        setSearchTerm(newSearchParams?.get("q"))
+    }, [])
     return (
         <>
             <div className="relative">
