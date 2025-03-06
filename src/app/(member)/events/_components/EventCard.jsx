@@ -1,4 +1,3 @@
-"use client"
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/card";
 import Deadline from "@/components/common/deadline";
@@ -6,11 +5,8 @@ import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useState } from "react";
 
 export default function EventCard({ event }) {
-    const [isEnrolled, setIsEnrolled] = useState(false)
-
     return (
         (<motion.div
             initial={{ opacity: 0, y: 20 }}
