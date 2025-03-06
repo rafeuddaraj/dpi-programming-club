@@ -1,4 +1,6 @@
 import { getEventById } from "@/app/actions/events";
+import { auth } from "@/app/auth";
+import { Button } from "@/components/button";
 import { MotionDiv } from "@/components/common/motion";
 import {
   Card,
@@ -9,17 +11,21 @@ import {
 } from "@/components/ui/card";
 import { format } from "date-fns";
 import { Calendar, Clock, DollarSign, MapPin } from "lucide-react";
+import Link from "next/link";
 import EventEnroll from "../_components/EventEnroll";
 export default async function EventDetailsPage({ params }) {
   const eventId = (await params).id;
 
   const resp = await getEventById(eventId)
 
+  const { user } = await auth() || {}
+
   if (resp?.error) {
     throw Error()
   }
   const event = await resp?.data
 
+  const hasEnrolled = event?.EventParticipant?.find(({ participantId }) => participantId === user?.id)
 
   return (
     <div className="container mx-auto py-8">
@@ -92,7 +98,7 @@ export default async function EventDetailsPage({ params }) {
               <span className="font-semibold">Organized by:</span> {event.author}
             </p>
 
-            <EventEnroll eventId={eventId} event={event} />
+            {user ? hasEnrolled ? <Link href={"/profile"}><Button>Already Registered</Button></Link> : <EventEnroll eventId={eventId} event={event} /> : <Link href={"/auth/login"}><Button>Login</Button></Link>}
           </CardContent>
         </Card>
       </MotionDiv>

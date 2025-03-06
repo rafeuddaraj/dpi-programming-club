@@ -38,9 +38,17 @@ export const updateEvent = async (id, data) => {
 };
 
 export const getEvents = async (query, page, limit) => {
-  const where = query ? { name: { contains: query, mode: "insensitive" } } : {};
+  const now = new Date();
+  const where = query
+    ? {
+        name: { contains: query, mode: "insensitive" },
+        endTime: { gte: now },
+      }
+    : { endTime: { gte: now } };
   const include = { EventParticipant: true };
-  return commonGet("event", where, include, page, limit, { createdAt: "desc" });
+  return commonGet("event", where, include, page, limit, {
+    createdAt: "desc",
+  });
 };
 
 export const getEventById = async (id) => {
@@ -79,6 +87,7 @@ export const getAllUpcomingEvent = async () => {
       orderBy: {
         registrationDeadline: "asc",
       },
+      include: { EventParticipant: true },
     });
     return successResponse("", 200, events);
   } catch {
@@ -118,6 +127,33 @@ export const getParticipantByEventId = async (query, id, page, limit) => {
     return successResponse("", 200, participant);
   } catch (err) {
     return errorResponse();
+  }
+};
+
+export const getSingleParticipantById = async (userId, eventId) => {
+  try {
+    const eventParticipant = await prisma.eventParticipant.findUnique({
+      where: { id: eventId },
+      include: { participant: true, event: true, payment: true },
+    });
+    return successResponse("success", 200, eventParticipant);
+  } catch (err) {
+    return errorResponse(err.message, 500);
+  }
+};
+
+export const updateEventFeedBack = async (eventId, data, revalidatePathSrc) => {
+  try {
+    const resp = await prisma.eventParticipant.update({
+      where: { id: eventId },
+      data,
+    });
+    revalidatePath(revalidatePathSrc);
+    return successResponse("", 200, resp);
+  } catch (err) {
+    console.log(err);
+
+    return errorResponse(err?.message, 500);
   }
 };
 

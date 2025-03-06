@@ -3,7 +3,6 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/card";
 import Deadline from "@/components/common/deadline";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { formatDate } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -35,28 +34,9 @@ export default function EventCard({ event }) {
 
                 <CardFooter>
 
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button variant={isEnrolled ? "secondary" : "default"}>{isEnrolled ? "Enrolled" : "Enroll Now"}</Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Enroll in {event.title}</DialogTitle>
-                                <DialogDescription>
-                                    Are you sure you want to enroll in this event? You can cancel your enrollment later if needed.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <DialogFooter>
-                                <Button variant="outline" onClick={(e) => {
-                                    e.stopPropagation()
-                                    setIsEnrolled(false)
-                                }}>
-                                    Cancel
-                                </Button>
-                                <Button onClick={() => setIsEnrolled(true)}>Confirm Enrollment</Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
+                    <Button>
+                        <Link href={`/events/${event?.id}`}>Learn More</Link>
+                    </Button>
                 </CardFooter>
             </Card>
         </motion.div>)
