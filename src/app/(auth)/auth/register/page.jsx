@@ -102,6 +102,8 @@ export default function RegisterPage() {
       }
       throw res;
     } catch (err) {
+      console.log(err);
+
       toast.error("Failed to register user");
     }
   };

@@ -18,6 +18,7 @@ enum UserStatus {
   RESTRICTED
   BANNED
   EXPIRED
+  PROCESSING
 }
 
 model User {
@@ -43,7 +44,7 @@ model User {
   shift               String
   role                String                @default("member") // member, moderator, admin
   address             String?
-  status              UserStatus            @default(ACTIVE)
+  status              UserStatus            @default(PROCESSING)
   renewalDate         DateTime
   renewalFee          Int                   @default(50)
   createdAt           DateTime              @default(now())
