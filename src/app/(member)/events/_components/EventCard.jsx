@@ -3,12 +3,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import Deadline from "@/components/common/deadline";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
-import { motion } from "framer-motion";
 import Link from "next/link";
+import { MotionDiv } from "../../../../components/common/motion";
 
 export default function EventCard({ event }) {
     return (
-        (<motion.div
+        (<MotionDiv
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}>
@@ -35,6 +35,6 @@ export default function EventCard({ event }) {
                     </Button>
                 </CardFooter>
             </Card>
-        </motion.div>)
+        </MotionDiv>)
     );
 }
