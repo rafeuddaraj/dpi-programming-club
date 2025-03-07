@@ -53,7 +53,7 @@ export default async function ProfilePage({ searchParams }) {
             </Avatar>
             <div className="text-center sm:text-left">
               <CardTitle className="text-2xl sm:text-3xl">
-                {userData?.name} {userData?.id === session?.user?.id ? (isMembershipExpired(userData?.renewalDate) ? "❌" : "✅") : ("")}
+                {userData?.name} {isMembershipExpired(userData?.renewalDate) ? "❌" : "✅"}
               </CardTitle>
               <CardDescription className="text-lg mt-2">
                 {userData?.bio || "No bio available"}

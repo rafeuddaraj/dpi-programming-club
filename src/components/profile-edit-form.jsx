@@ -36,15 +36,16 @@ import DepartmentList from "@/utils/DepartmentList";
 import { updateUserById } from "@/app/actions/users";
 import { toast } from "sonner";
 import Loader from "./common/loader";
+import { useRouter } from "next/navigation";
 
 const profileSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  name: z.string().min(2, "Name must be at least 2 characters").readonly(),
   avatar: z.string().optional(),
   coverImage: z.string().optional(),
   address: z.string().min(2, "Address Required."),
   semester: z.string().min(1, "Semester is required"),
-  email: z.string().email("Invalid email address"),
-  phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
+  email: z.string().email("Invalid email address").readonly(),
+  phoneNumber: z.string().min(10, "Phone number must be at least 10 digits").readonly(),
   linkedin: z.string().url("Invalid LinkedIn URL"),
   github: z.string().url("Invalid GitHub URL"),
   discord: z.string().optional(),
@@ -66,16 +67,17 @@ export function ProfileEditForm({ user }) {
     defaultValues: user,
   });
 
+  const router = useRouter()
+
   async function onSubmit(values) {
     try {
       const res = await updateUserById(values);
       if (res.error) {
         throw new Error("Something went Wrong");
       }
-      console.log(res);
+      toast.success("Profile Update Success")
+      return router.push("/profile")
     } catch (err) {
-      console.log(err);
-
       toast.error(err.message);
     }
   }

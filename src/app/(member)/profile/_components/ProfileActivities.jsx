@@ -1,9 +1,11 @@
 "use client";
 
+import ComingSoon from "@/components/common/coming-soon";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { COMING_SOON } from "@/lib/utils";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -131,7 +133,7 @@ export default function ProfileActivities({ user, activities }) {
         </TabsContent>
 
         <TabsContent value="education">
-          <Card>
+          {COMING_SOON ? <ComingSoon title="Courses & Semester Results" /> : <Card>
             <CardHeader>
               <CardTitle>Courses & Semester Results</CardTitle>
             </CardHeader>
@@ -176,7 +178,7 @@ export default function ProfileActivities({ user, activities }) {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card>}
         </TabsContent>
       </Tabs >
     </>

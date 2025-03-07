@@ -86,3 +86,5 @@ export const getStatus = (startTime, endTime) => {
     return "Completed";
   }
 };
+
+export const COMING_SOON = true;

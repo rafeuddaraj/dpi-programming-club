@@ -17,11 +17,12 @@ export default function EventEnroll({ eventId, event }) {
             setIsPaymentModal(true)
         } else {
             try {
-                const resp = await enrollEvent({ eventId })
+                const resp = await enrollEvent({ ...event, eventId }, false, `/events/${eventId}`)
                 if (resp?.error) {
                     throw Error()
                 }
                 toast.success("Enroll Successful")
+                setIsPaymentModal(false)
             } catch {
                 toast.error("There was an problem!")
             }
@@ -32,7 +33,7 @@ export default function EventEnroll({ eventId, event }) {
 
     const enrollPremiumEvent = async (_, paymentData) => {
         try {
-            const resp = await enrollEvent({ ...paymentData, ...event }, true)
+            const resp = await enrollEvent({ ...paymentData, ...event }, true, `/events/${eventId}`)
             if (resp?.error) {
                 throw Error()
             }

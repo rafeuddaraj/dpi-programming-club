@@ -51,10 +51,12 @@ export const getEvents = async (query, page, limit) => {
   });
 };
 
-export const getEventById = async (id) => {
+export const getEventById = async (id, isClient = false) => {
   try {
+    const now = new Date();
+    let where = isClient ? { id, registrationDeadline: { gte: now } } : { id };
     const event = await prisma.event.findFirst({
-      where: { id },
+      where,
       include: { EventParticipant: true },
     });
 
@@ -157,46 +159,63 @@ export const updateEventFeedBack = async (eventId, data, revalidatePathSrc) => {
   }
 };
 
-export const enrollEvent = async (data, isPremium = false) => {
+export const enrollEvent = async (
+  data,
+  isPremium = false,
+  revalidatePathSrc
+) => {
   try {
-    console.log(data);
-
     const session = await auth();
     const user = session?.user;
-
     let res = null;
+    const bookedSeat =
+      (await prisma.eventParticipant.findMany({
+        where: { eventId: data?.id },
+      })) || [];
+    const currentEvent = await prisma.event.findUnique({
+      where: { id: data?.id },
+    });
+
     if (isPremium) {
-      res = await prisma.$transaction(async (db) => {
-        const paymentData = {
-          userId: user?.id,
-          accountNo: data.bkashNumber,
-          amount: data.amount,
-          paymentDetails: `${data?.name} - Event`,
-          paymentMethod: "Bkash",
-          transactionId: data?.transactionNumber,
-        };
+      if (currentEvent.availableSeat > bookedSeat?.length)
+        res = await prisma.$transaction(async (db) => {
+          const paymentData = {
+            userId: user?.id,
+            accountNo: data.bkashNumber,
+            amount: data.amount,
+            paymentDetails: `${data?.name} - Event`,
+            paymentMethod: "Bkash",
+            transactionId: data?.transactionNumber,
+          };
 
-        const payment = await db.payment.create({ data: paymentData });
-        const eventData = {
-          eventId: data?.id,
-          participantId: user?.id,
-          paymentId: payment?.id,
-        };
-        console.log(eventData);
+          const payment = await db.payment.create({ data: paymentData });
+          const eventData = {
+            eventId: data?.id,
+            participantId: user?.id,
+            paymentId: payment?.id,
+          };
 
-        const event = await db.eventParticipant.create({
-          data: eventData,
-          include: { payment: true },
+          const event = await db.eventParticipant.create({
+            data: eventData,
+            include: { payment: true },
+          });
+          return event;
         });
-        return event;
-      });
+      else {
+        throw new Error("No seat available");
+      }
     } else {
-      console.log({ participantId: user?.id, ...data });
+      console.log("I am Comming");
 
-      res = await prisma.eventParticipant.create({
-        data: { participantId: user?.id, ...data },
-      });
+      if (currentEvent.availableSeat > bookedSeat?.length) {
+        res = await prisma.eventParticipant.create({
+          data: { participantId: user?.id, eventId: data?.eventId },
+        });
+      } else {
+        throw new Error("No seat available");
+      }
     }
+    revalidatePath(revalidatePathSrc);
     return successResponse("", 201, res);
   } catch (err) {
     console.log(err);

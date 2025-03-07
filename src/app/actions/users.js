@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { errorResponse, successResponse } from "@/utils/req-res";
+import { revalidatePath } from "next/cache";
 import { auth } from "../auth";
 
 export const getUserById = async (id, select = null, include = null) => {
@@ -34,6 +35,7 @@ export const updateUserById = async (data) => {
     const id = session?.user?.id;
     delete data.password;
     const updatedUser = await prisma.user.update({ data, where: { id } });
+    revalidatePath("/profile");
     return successResponse("User Update success", 200, updatedUser);
   } catch {
     return errorResponse();
