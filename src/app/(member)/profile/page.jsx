@@ -29,6 +29,8 @@ export default async function ProfilePage({ searchParams }) {
   if (userData?.error || activities?.error) {
     throw Error("User not found");
   }
+  console.log(userData);
+
   return (
     <div className="container mx-auto py-8">
       <MotionDiv
@@ -98,7 +100,7 @@ export default async function ProfilePage({ searchParams }) {
           </CardContent>
         </Card>
 
-        <ProfileActivities user={userData} activities={activities} />
+        <ProfileActivities user={userData} activities={activities?.data} />
         <div className="flex justify-center gap-4">
           {hasPermission(session?.user?.role, MEMBER["update:own_user"]) &&
             userData?.id === session.user?.id && (

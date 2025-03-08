@@ -223,3 +223,14 @@ export const enrollEvent = async (
     return errorResponse();
   }
 };
+
+export const getEventParticipantResult = async (participantId, eventId) => {
+  try {
+    return await prisma.eventParticipant.findFirst({
+      where: { eventId, participantId },
+      include: { event: true, participant: true, payment: true },
+    });
+  } catch {
+    return errorResponse();
+  }
+};

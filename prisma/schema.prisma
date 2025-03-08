@@ -134,12 +134,11 @@ model WorkshopParticipant {
   participantId String   @db.ObjectId
   participant   User     @relation(fields: [participantId], references: [id])
   price         Int?
-
-  score       Int? // - update
-  isComplete  Boolean  @default(false) // - update
-  certificate String? // - update
-  feedback    String? // - update
-  joining     DateTime @default(now())
+  score         Int? // - update
+  complete      Boolean  @default(false) // - update
+  certificate   String? // - update
+  feedback      String? // - update
+  joining       DateTime @default(now())
 }
 
 model Course {
