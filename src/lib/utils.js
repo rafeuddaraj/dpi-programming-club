@@ -37,7 +37,7 @@ export const commonGet = async (
   include = {},
   page = 1,
   pageSize = 10,
-  orderBy
+  orderBy = {}
 ) => {
   try {
     const skip = (page - 1) * pageSize;
@@ -87,4 +87,4 @@ export const getStatus = (startTime, endTime) => {
   }
 };
 
-export const COMING_SOON = true;
+export const COMING_SOON = process?.env?.NODE_ENV === "production";

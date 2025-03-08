@@ -1,13 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { motion } from "framer-motion";
+import { updateUserById } from "@/app/actions/users";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Card,
   CardContent,
@@ -24,7 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -32,11 +27,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import DepartmentList from "@/utils/DepartmentList";
-import { updateUserById } from "@/app/actions/users";
-import { toast } from "sonner";
-import Loader from "./common/loader";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+import Loader from "./common/loader";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").readonly(),
@@ -109,6 +109,7 @@ export function ProfileEditForm({ user }) {
                   </AvatarFallback>
                 </Avatar>
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={() =>
                     document.getElementById("avatar-upload")?.click()

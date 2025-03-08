@@ -234,3 +234,15 @@ export const getEventParticipantResult = async (participantId, eventId) => {
     return errorResponse();
   }
 };
+
+export const getOwnEvents = async (participantId, query, page, limit) => {
+  const now = new Date();
+  const where = query
+    ? {
+        name: { contains: query, mode: "insensitive" },
+        participantId,
+      }
+    : { participantId };
+  const include = { event: true, participant: true };
+  return commonGet("eventParticipant", where, include, page, limit);
+};
