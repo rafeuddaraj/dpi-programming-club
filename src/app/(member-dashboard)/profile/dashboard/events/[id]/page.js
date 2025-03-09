@@ -1,11 +1,5 @@
 import DeleteAction from "@/app/(dashboard)/dashboard/events/[id]/_components/deleteAction";
-import {
-  deleteEvent,
-  getEventById,
-  getParticipantByEventId,
-} from "@/app/actions/events";
-import CommonAlert from "@/components/common/alert";
-import { Badge } from "@/components/ui/badge";
+import { getEventById, getParticipantByEventId } from "@/app/actions/events";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate, getStatus } from "@/lib/utils";
@@ -45,10 +39,6 @@ export default async function EventDetailsPage({ params }) {
     }
   };
 
-  const handleDelete = async (id) => {
-    return await deleteEvent(id);
-  };
-
   let participants = [];
 
   if (event?.EventParticipant?.length) {
@@ -57,8 +47,7 @@ export default async function EventDetailsPage({ params }) {
       participants = resp?.data;
     }
   }
-
-  console.log(participants);
+  console.log(event);
 
   return (
     <div className="space-y-6">
@@ -90,8 +79,8 @@ export default async function EventDetailsPage({ params }) {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-2">
+      <div>
+        <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle>{event?.name}</CardTitle>
@@ -160,67 +149,6 @@ export default async function EventDetailsPage({ params }) {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Registration Deadline</p>
-                  <p className="text-sm">
-                    {formatDate(event?.registrationDeadline, { time: true })}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              Participants <Badge>{participants?.length}</Badge>{" "}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {participants?.length ? (
-                participants.map(({ participant }) => (
-                  <div
-                    key={participant.id}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                        {participant.name
-                          ?.split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium">
-                          {participant.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {participant.role}
-                        </p>
-                      </div>
-                    </div>
-                    <Link href={`/dashboard/users/${participant.id}`}>
-                      <Button variant="ghost" size="sm">
-                        View
-                      </Button>
-                    </Link>
-                  </div>
-                ))
-              ) : (
-                <CommonAlert
-                  description={"There are no participants in this event yet."}
-                  title={"No Participants"}
-                />
-              )}
-            </div>
-            <div className="mt-4">
-              <Button variant="outline" className="w-full">
-                View All Participants
-              </Button>
             </div>
           </CardContent>
         </Card>
