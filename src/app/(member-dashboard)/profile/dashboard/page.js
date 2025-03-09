@@ -6,34 +6,37 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Activity,
   Award,
   BookOpen,
   Briefcase,
   Calendar,
   CreditCard,
-  Users,
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
 
 export default function Dashboard() {
   const stats = [
-    { title: "Total Users", value: "1,234", icon: Users, color: "bg-blue-500" },
     {
-      title: "Active Courses",
+      title: "Total Courses",
       value: "24",
       icon: BookOpen,
       color: "bg-green-500",
     },
     {
-      title: "Upcoming Events",
+      title: "Total Events",
       value: "8",
       icon: Calendar,
       color: "bg-purple-500",
     },
     {
-      title: "Ongoing Projects",
+      title: "Total Workshops",
+      value: "8",
+      icon: Calendar,
+      color: "bg-purple-500",
+    },
+    {
+      title: "Projects",
       value: "16",
       icon: Briefcase,
       color: "bg-amber-500",
@@ -125,25 +128,26 @@ export default function Dashboard() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Recent Activities</CardTitle>
+            <CardTitle>Upcoming Workshops</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div key={i} className="flex items-center gap-4">
-                  <div className="bg-primary/10 p-2 rounded-full">
-                    <Activity className="h-4 w-4 text-primary" />
+                  <div className="bg-purple-500/10 p-2 rounded-full">
+                    <Calendar className="h-4 w-4 text-purple-500" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Activity {i}</p>
-                    <p className="text-xs text-muted-foreground">2 hours ago</p>
+                    <p className="text-sm font-medium">Event {i}</p>
+                    <p className="text-xs text-muted-foreground">
+                      May {10 + i}, 2023
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader>
             <CardTitle>Upcoming Events</CardTitle>

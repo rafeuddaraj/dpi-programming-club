@@ -55,11 +55,6 @@ export default async function EventsPage({ params, searchParams }) {
             <div className="flex items-center gap-2">
               <FilterAction />
             </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                Export
-              </Button>
-            </div>
           </div>
 
           <div className="data-table-container">

@@ -1,7 +1,7 @@
 const { auth } = require("./app/auth");
 
 const adminRoute = "/dashboard";
-const memberRoute = ["/profile/edit"];
+const memberRoute = ["/profile/edit", "/profile/dashboard"];
 const authPath = "/auth";
 const root = "/";
 

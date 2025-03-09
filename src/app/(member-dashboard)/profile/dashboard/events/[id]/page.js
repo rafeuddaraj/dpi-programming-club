@@ -1,21 +1,16 @@
-import DeleteAction from "@/app/(dashboard)/dashboard/events/[id]/_components/deleteAction";
 import { getEventById, getParticipantByEventId } from "@/app/actions/events";
+import { auth } from "@/app/auth";
+import { CardDescription } from "@/components/card";
+import { MotionDiv } from "@/components/common/motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDate, getStatus } from "@/lib/utils";
-import {
-  ArrowLeft,
-  Calendar,
-  Clock,
-  Edit,
-  MapPin,
-  User,
-  Users,
-} from "lucide-react";
+import { format } from "date-fns";
+import { ArrowLeft, Clock, DollarSign, MapPin } from "lucide-react";
 import Link from "next/link";
 
 export default async function EventDetailsPage({ params }) {
   const param = await params;
+  const { user } = (await auth()) || {};
 
   const res = await getEventById(param?.id);
 
@@ -47,12 +42,13 @@ export default async function EventDetailsPage({ params }) {
       participants = resp?.data;
     }
   }
-  console.log(event);
+
+  console.log("I am covered", event);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href="/dashboard/events">
+        <Link href="/profile/dashboard/events">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Events
@@ -60,98 +56,76 @@ export default async function EventDetailsPage({ params }) {
         </Link>
       </div>
 
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Event Details</h1>
-        <div className="flex items-center gap-2">
-          {!["Completed", "Ongoing"].includes(
-            getStatus(event?.startTime, event?.endTime)
-          ) && (
-            <>
-              <Link href={`/dashboard/events/${event?.id}/edit`}>
-                <Button variant="outline">
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit Event
-                </Button>
+      <div className="container mx-auto py-8">
+        <MotionDiv
+          MotionDiv
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="space-y-6 max-w-4xl mx-auto"
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-3xl">{event.name}</CardTitle>
+              <CardDescription className="space-y-2">
+                {/* Start Time */}
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4 text-green-500" />
+                  <span className="font-semibold text-gray-700 dark:text-gray-300">
+                    Start Time:
+                  </span>
+                  <span>{format(new Date(event.startTime), "PPpp")}</span>
+                </div>
+
+                {/* End Time */}
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4 text-red-500" />
+                  <span className="font-semibold text-gray-700 dark:text-gray-300">
+                    End Time:
+                  </span>
+                  <span>{format(new Date(event.endTime), "PPpp")}</span>
+                </div>
+
+                {/* Location */}
+                <div className="flex items-center space-x-2">
+                  <MapPin className="w-4 h-4 text-purple-500" />
+                  <span className="font-semibold text-gray-700 dark:text-gray-300">
+                    Location:
+                  </span>
+                  <span>
+                    {event?.type === "OFFLINE" ? event.location : "ONLINE"}
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <DollarSign className="w-4 h-4 text-yellow-400" />
+                  <span className="font-semibold text-gray-700 dark:text-gray-300">
+                    Price:
+                  </span>
+                  <span>{event?.price || "Free"}</span>
+                </div>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-4">{event.description}</p>
+              {/* Agenda */}
+              <h3 className="text-xl font-semibold mb-2">Agenda</h3>
+              <ul className="list-disc list-inside mb-4">
+                {event.curriculums.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
+
+              {/* Organized by */}
+              <p className="mb-4">
+                <span className="font-semibold">Organized by:</span>{" "}
+                {event.author}
+              </p>
+              <Link href={`/profile/dashboard/events/${event?.id}/result`}>
+                <Button size="lg">Result</Button>
               </Link>
-              <DeleteAction id={param?.id}></DeleteAction>
-            </>
-          )}
-        </div>
-      </div>
-
-      <div>
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>{event?.name}</CardTitle>
-              <span
-                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(
-                  getStatus(event?.startTime, event?.endTime)
-                )}`}
-              >
-                {getStatus(event?.startTime, event?.endTime)}
-              </span>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <h3 className="font-semibold">Description</h3>
-              <p>{event.description}</p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Date</p>
-                  <p className="text-sm">
-                    {formatDate(event.startTime, { time: true })}
-                  </p>
-                  <p className="text-sm">
-                    {formatDate(event.endTime, { time: true })}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Time</p>
-                  <p className="text-sm">
-                    {formatDate(event.startTime, { time: true })}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Location</p>
-                <p className="text-sm">{event.location}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <User className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Organizer</p>
-                <p className="text-sm">{event.author}</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Participants</p>
-                  <p className="text-sm">
-                    {event.EventParticipant?.length} / {event?.availableSeat}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </MotionDiv>
       </div>
     </div>
   );

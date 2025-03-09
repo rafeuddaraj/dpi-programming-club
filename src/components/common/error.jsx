@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { XCircle, AlertCircle, Ban, RefreshCcw } from "lucide-react";
+import { motion } from "framer-motion";
+import { AlertCircle, Ban, RefreshCcw, XCircle } from "lucide-react";
+import Link from "next/link";
 
 const errorTypes = {
   404: {
