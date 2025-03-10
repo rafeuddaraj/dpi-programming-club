@@ -1,3 +1,4 @@
+import { getUserAllParticipants, getUserById } from "@/app/actions/users";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -6,36 +7,38 @@ import {
   Edit,
   Mail,
   MapPin,
+  PenSquare,
   Phone,
+  Store,
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
+import DeleteUserDialog from "./_components/delete";
 
-export default function UserDetailsPage({ params }) {
-  // In a real app, you would fetch user data based on params.id
-  const user = {
-    id: params.id,
-    name: "John Doe",
-    email: "john@example.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Main St, Anytown, USA",
-    role: "Admin",
-    status: "Active",
-    joinDate: "2023-01-15",
-    lastActive: "2023-05-20",
-    courses: [
-      { id: 1, name: "Web Development Fundamentals" },
-      { id: 2, name: "Advanced JavaScript" },
-    ],
-    events: [
-      { id: 1, name: "Annual Hackathon 2023" },
-      { id: 2, name: "Tech Talk: AI Fundamentals" },
-    ],
-    projects: [
-      { id: 1, name: "Club Website Redesign" },
-      { id: 2, name: "Mobile App Development" },
-    ],
+export default async function UserDetailsPage({ params }) {
+  const param = await params;
+
+  const resp = await getUserById(param?.id, null, {
+    CourseEnrollment: true,
+    WorkshopParticipant: true,
+    EventParticipant: true,
+  });
+  if (resp?.error) {
+    throw Error();
+  }
+  const user = resp;
+
+  const statusClasses = {
+    ACTIVE: "bg-green-100 text-green-800",
+    RESTRICTED: "bg-yellow-100 text-yellow-800",
+    BANNED: "bg-red-100 text-red-800",
+    EXPIRED: "bg-purple-100 text-purple-800",
+    PROCESSING: "bg-blue-100 text-blue-800",
+    EX: "bg-amber-100 text-amber-800",
   };
+
+  const participants = await getUserAllParticipants(user?.id);
+  console.log(participants);
 
   return (
     <div className="space-y-6">
@@ -57,10 +60,7 @@ export default function UserDetailsPage({ params }) {
               Edit User
             </Button>
           </Link>
-          <Button variant="destructive">
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete User
-          </Button>
+          <DeleteUserDialog />
         </div>
       </div>
 
@@ -72,21 +72,17 @@ export default function UserDetailsPage({ params }) {
           <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
               <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">
-                {user.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {user?.name
+                  ?.split(" ")
+                  ?.map((n) => n[0])
+                  ?.join("")}
               </div>
               <div>
                 <h2 className="text-xl font-bold">{user.name}</h2>
                 <p className="text-sm text-muted-foreground">{user.role}</p>
                 <span
                   className={`mt-1 inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                    user.status === "Active"
-                      ? "bg-green-100 text-green-800"
-                      : user.status === "Banned"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-amber-100 text-amber-800"
+                    statusClasses[user.status]
                   }`}
                 >
                   {user.status}
@@ -101,7 +97,17 @@ export default function UserDetailsPage({ params }) {
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Phone className="h-4 w-4 text-muted-foreground" />
-                <span>{user.phone}</span>
+                <span>{user.phoneNumber}</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <PenSquare className="h-4 w-4 text-muted-foreground" />
+                <span>{user.rollNo}</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Store className="h-4 w-4 text-muted-foreground" />
+                <span>
+                  {user?.session} ({user.semester})
+                </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -110,13 +116,7 @@ export default function UserDetailsPage({ params }) {
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span>
-                  Joined: {new Date(user.joinDate).toLocaleDateString()}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>
-                  Last Active: {new Date(user.lastActive).toLocaleDateString()}
+                  Joined: {new Date(user.createdAt).toLocaleDateString()}
                 </span>
               </div>
             </div>
@@ -130,7 +130,7 @@ export default function UserDetailsPage({ params }) {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
-                {user.courses.map((course) => (
+                {participants?.courses?.map(({ course }) => (
                   <li
                     key={course.id}
                     className="flex items-center justify-between"
@@ -153,7 +153,7 @@ export default function UserDetailsPage({ params }) {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
-                {user.events.map((event) => (
+                {participants?.events?.map(({ event }) => (
                   <li
                     key={event.id}
                     className="flex items-center justify-between"
@@ -172,17 +172,17 @@ export default function UserDetailsPage({ params }) {
 
           <Card>
             <CardHeader>
-              <CardTitle>Projects</CardTitle>
+              <CardTitle>Enrolled Workshops</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
-                {user.projects.map((project) => (
+                {participants?.workshop?.map(({ workshop }) => (
                   <li
-                    key={project.id}
+                    key={workshop.id}
                     className="flex items-center justify-between"
                   >
-                    <span>{project.name}</span>
-                    <Link href={`/dashboard/projects/${project.id}`}>
+                    <span>{workshop.name}</span>
+                    <Link href={`/dashboard/workshops/${workshop.id}`}>
                       <Button variant="ghost" size="sm">
                         View
                       </Button>

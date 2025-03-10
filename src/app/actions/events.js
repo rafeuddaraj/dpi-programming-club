@@ -132,6 +132,23 @@ export const getParticipantByEventId = async (query, id, page, limit) => {
   }
 };
 
+export const getParticipantByEventIdOne = async (id) => {
+  try {
+    const where = { eventId: id };
+    const include = { participant: true, event: true, payment: true };
+
+    const orderBy = { payment: { paymentStatus: "asc" } };
+    const participant = await prisma.eventParticipant.findMany({
+      where,
+      include,
+    });
+
+    return successResponse("", 200, participant);
+  } catch (err) {
+    return errorResponse();
+  }
+};
+
 export const getSingleParticipantById = async (userId, eventId) => {
   try {
     const eventParticipant = await prisma.eventParticipant.findUnique({

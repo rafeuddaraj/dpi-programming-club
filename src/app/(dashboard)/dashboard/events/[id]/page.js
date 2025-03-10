@@ -2,7 +2,7 @@ import DeleteAction from "@/app/(dashboard)/dashboard/events/[id]/_components/de
 import {
   deleteEvent,
   getEventById,
-  getParticipantByEventId,
+  getParticipantByEventIdOne,
 } from "@/app/actions/events";
 import CommonAlert from "@/components/common/alert";
 import { Badge } from "@/components/ui/badge";
@@ -52,13 +52,13 @@ export default async function EventDetailsPage({ params }) {
   let participants = [];
 
   if (event?.EventParticipant?.length) {
-    const resp = await getParticipantByEventId(event?.id);
+    const resp = await getParticipantByEventIdOne(event?.id);
     if (!resp.error) {
       participants = resp?.data;
     }
   }
 
-  console.log(participants);
+  console.log(event);
 
   return (
     <div className="space-y-6">

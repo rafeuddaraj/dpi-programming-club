@@ -19,6 +19,7 @@ enum UserStatus {
   BANNED
   EXPIRED
   PROCESSING
+  EX
 }
 
 model User {
