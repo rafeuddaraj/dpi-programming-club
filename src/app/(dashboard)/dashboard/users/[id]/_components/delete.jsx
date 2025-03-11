@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader } from '@/components/
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react'; // Import ShadCN Dialog components
 import { toast } from 'sonner';
-export default function DeleteUserDialog() {
+export default function DeleteUserDialog({ userId }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     // Open dialog

@@ -10,7 +10,6 @@ import {
   PenSquare,
   Phone,
   Store,
-  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import DeleteUserDialog from "./_components/delete";
@@ -60,7 +59,7 @@ export default async function UserDetailsPage({ params }) {
               Edit User
             </Button>
           </Link>
-          <DeleteUserDialog />
+          <DeleteUserDialog userId={param?.id} />
         </div>
       </div>
 

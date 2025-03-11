@@ -99,22 +99,30 @@ export const getAllUsers = async (query, page, limit) => {
 export const deleteUser = async (userId) => {
   try {
     const user = await prisma.$transaction(async (db) => {
-      const user = await db.user.delete({ where: userId });
-      const event = await db.eventParticipant.deleteMany({
+      // ইউজার মুছে ফেলা হচ্ছে
+      await db.user.delete({
+        where: { id: userId }, // এখানে সঠিকভাবে where ব্যবহার করা হচ্ছে
+      });
+
+      // রিলেটেড রেকর্ড মুছে ফেলা হচ্ছে
+      await db.eventParticipant.deleteMany({
         where: { participantId: userId },
       });
-      const courses = await db.courseEnrollment.deleteMany({
+
+      await db.courseEnrollment.deleteMany({
         where: { participantId: userId },
       });
-      const workshops = await db.workshopParticipant.deleteMany({
+
+      await db.workshopParticipant.deleteMany({
         where: { participantId: userId },
       });
+
       return true;
     });
+
     return true;
   } catch (err) {
     console.log(err);
-
-    return errorResponse();
+    return { error: "Something went wrong!" };
   }
 };
