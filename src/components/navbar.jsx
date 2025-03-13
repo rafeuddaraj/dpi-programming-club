@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Moon, Sun } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Moon, Sun, CircleUser, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +13,6 @@ import {
 import { signOut } from "next-auth/react";
 
 const navItems = [
-  { name: "Home", href: "/" },
   { name: "Events", href: "/events" },
   { name: "Courses", href: "/courses" },
   { name: "Members", href: "/members" },
@@ -23,7 +21,6 @@ const navItems = [
   { name: "Workshop", href: "/workshop" },
   { name: "Gallery", href: "/gallery" },
   { name: "Contact", href: "/contact" },
-  { name: "Profile", href: "/profile" },
   { name: "Discord", href: "/discord" },
 ];
 
@@ -35,77 +32,53 @@ export function Navbar() {
     <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b border-border/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0">
-              <span className="text-2xl font-bold text-primary">CCDPI</span>
+          {/* Logo aligned to the left */}
+          <div className="flex items-center space-x-6">
+            <Link href="/" className="flex-shrink-0 text-2xl font-bold text-primary">
+              CCDPI
             </Link>
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-4 flex-wrap">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="text-foreground/60 hover:text-foreground px-3 py-2 rounded-md text-sm font-medium"
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
           </div>
-          <div className="hidden md:block">
-            <div className="ml-4 flex items-center md:ml-6">
-              <ThemeToggle />
-            </div>
+
+          {/* Navigation items centered */}
+          <div className="hidden md:flex space-x-6 items-center justify-center flex-grow">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="text-foreground/60 hover:text-foreground px-3 py-2 rounded-md text-sm font-medium"
+              >
+                {item.name}
+              </Link>
+            ))}
           </div>
-          <div className="-mr-2 flex md:hidden">
-            <Button
-              variant="ghost"
-              className="inline-flex items-center justify-center p-2 rounded-md text-foreground/60 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+
+          {/* Icons aligned to the right */}
+          <div className="flex items-center ml-auto gap-3">
+            <Link href="/profile" className="text-foreground/60 hover:text-foreground flex items-center">
+              <CircleUser className="h-6 w-6" />
+            </Link>
+            <ThemeToggle />
+            <Link href="/auth/register" onClick={() => signOut()} className="text-foreground/60 hover:text-foreground">
+              <LogOut className="w-6 h-6" />
+            </Link>
+            <Link
+              href="#"
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-foreground/60 hover:text-foreground focus:outline-none"
               onClick={() => setIsOpen(!isOpen)}
             >
-              <span className="sr-only">Open main menu</span>
               {isOpen ? (
-                <svg
-                  className="block h-6 w-6"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               ) : (
-                <svg
-                  className="block h-6 w-6"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
+                <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
-            </Button>
+            </Link>
           </div>
         </div>
       </div>
-
-      <Button onClick={() => signOut({ redirectTo: "/auth/register" })}>
-        SignOut
-      </Button>
 
       {isOpen && (
         <div className="md:hidden">
@@ -120,11 +93,12 @@ export function Navbar() {
                 {item.name}
               </Link>
             ))}
+            <Link href="/profile" className="text-foreground/60 hover:text-foreground flex items-center">
+              <CircleUser className="h-6 w-6" />
+            </Link>
           </div>
-          <div className="pt-4 pb-3 border-t border-border/40">
-            <div className="flex items-center px-5">
-              <ThemeToggle />
-            </div>
+          <div className="flex justify-center">
+            <ThemeToggle />
           </div>
         </div>
       )}
@@ -138,22 +112,16 @@ function ThemeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <Link href="#" className="text-foreground/60 hover:text-foreground">
+          <Sun className="mt-10 h-6 w-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute -mt-11 h-6 w-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>
-        </Button>
+        </Link>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("light")}>Light</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("dark")}>Dark</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("system")}>System</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
