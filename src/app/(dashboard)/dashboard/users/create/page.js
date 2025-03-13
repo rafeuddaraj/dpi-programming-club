@@ -1,5 +1,7 @@
 "use client";
 
+import { createUser } from "@/app/actions/users";
+import Loader from "@/components/common/loader";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,7 +19,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -28,19 +29,30 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
 
 // Form validation schema
 const formSchema = z
   .object({
-    firstName: z.string().min(2, "First name must be at least 2 characters"),
-    lastName: z.string().min(2, "Last name must be at least 2 characters"),
+    name: z.string().min(4, "Name must be at least 4 characters"),
+    rollNo: z.string().min(1, "Roll number is required"),
+    registrationNo: z.string().min(1, "Registration number is required"),
+    phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
     email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string(),
+    department: z.string().min(1, "Department is required"),
+    semester: z.string().min(1, "Semester is required"),
+    gender: z.string().min(1, "Gender is required"),
+    shift: z.string().min(1, "Shift is required"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters"),
+    session: z.string().min(1, "Session is required"),
     role: z.enum(["admin", "moderator", "member"]),
-    status: z.enum(["active", "restricted", "banned"]),
+    status: z.enum(["ACTIVE"]),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -49,14 +61,22 @@ const formSchema = z
 
 export default function CreateUserPage() {
   // Initialize form with validation schema
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      name: "",
+      rollNo: "",
+      registrationNo: "",
+      phoneNumber: "",
       email: "",
+      department: "",
+      semester: "",
+      shift: "",
+      gender: "",
       password: "",
       confirmPassword: "",
+      session: "",
       role: "member",
       status: "active",
     },
@@ -67,6 +87,13 @@ export default function CreateUserPage() {
     try {
       // Here you would typically make an API call to create the user
       console.log("Form submitted:", data);
+      delete data?.confirmPassword;
+      const resp = await createUser(data);
+      if (resp?.error) {
+        throw Error();
+      }
+      toast.success("User Create Successfully.");
+      router.push(`/dashboard/users/${resp?.data?.id}`);
 
       // Example API call:
       // const response = await fetch('/api/users', {
@@ -77,8 +104,7 @@ export default function CreateUserPage() {
 
       // Handle success (e.g., show notification, redirect)
     } catch (error) {
-      // Handle error (e.g., show error notification)
-      console.error("Error creating user:", error);
+      toast.error("There was an problem!");
     }
   }
 
@@ -104,35 +130,95 @@ export default function CreateUserPage() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First Name</FormLabel>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Rafe Uddaraj" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="rollNo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Roll Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="123456" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="registrationNo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Registration Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="123456789" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Gender</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
-                        <Input placeholder="Enter first name" {...field} />
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select gender" />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter last name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
+                      <SelectContent>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="session"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Session</FormLabel>
+                    <FormControl>
+                      <Input placeholder="21-22" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="+1234567890" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="email"
@@ -142,7 +228,7 @@ export default function CreateUserPage() {
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="Enter email address"
+                        placeholder="rafe@uddaraj.com"
                         {...field}
                       />
                     </FormControl>
@@ -150,43 +236,115 @@ export default function CreateUserPage() {
                   </FormItem>
                 )}
               />
-
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
+              <FormField
+                control={form.control}
+                name="department"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Department</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="Enter password"
-                          {...field}
-                        />
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select department" />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
+                      <SelectContent>
+                        <SelectItem value="cst">Computer Science</SelectItem>
+                        <SelectItem disabled value="ee">
+                          Electrical Engineering
+                        </SelectItem>
+                        <SelectItem disabled value="me">
+                          Mechanical Engineering
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="semester"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Semester</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="Confirm password"
-                          {...field}
-                        />
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select semester" />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                      <SelectContent>
+                        <SelectItem value="1">1st Semester</SelectItem>
+                        <SelectItem value="2">2nd Semester</SelectItem>
+                        <SelectItem value="3">3rd Semester</SelectItem>
+                        <SelectItem value="4">4th Semester</SelectItem>
+                        <SelectItem value="5">5th Semester</SelectItem>
+                        <SelectItem value="6">6th Semester</SelectItem>
+                        <SelectItem value="7">7th Semester</SelectItem>
+                        <SelectItem value="8">8th Semester</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="shift"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Shift</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select shift" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="morning">Morning</SelectItem>
+                        <SelectItem value="evening">Evening</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <div className="grid grid-cols-2 gap-4">
                 <FormField
@@ -230,9 +388,7 @@ export default function CreateUserPage() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="active">Active</SelectItem>
-                          <SelectItem value="restricted">Restricted</SelectItem>
-                          <SelectItem value="banned">Banned</SelectItem>
+                          <SelectItem value="ACTIVE">Active</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -240,17 +396,21 @@ export default function CreateUserPage() {
                   )}
                 />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="profile-image">Profile Image</Label>
-                <Input id="profile-image" type="file" />
-              </div>
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
               <Link href="/dashboard/users">
                 <Button variant="outline">Cancel</Button>
               </Link>
-              <Button type="submit">Create User</Button>
+              <Button
+                disabled={
+                  form.formState.isSubmitting ||
+                  form.formState.isSubmitSuccessful
+                }
+                type="submit"
+              >
+                {" "}
+                {form.formState.isSubmitting && <Loader />} Create User
+              </Button>
             </CardFooter>
           </form>
         </Form>

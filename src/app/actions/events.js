@@ -37,24 +37,32 @@ export const updateEvent = async (id, data) => {
   }
 };
 
-export const getEvents = async (query, page, limit) => {
+export const getEvents = async (query, status, page, limit) => {
   const now = new Date();
+  const finding =
+    status === "all"
+      ? {}
+      : status === "up-coming"
+      ? { endTime: { gte: now } }
+      : status === "complete"
+      ? { endTime: { lte: now } }
+      : {};
   const where = query
     ? {
         name: { contains: query, mode: "insensitive" },
-        endTime: { gte: now },
+        ...finding,
       }
-    : { endTime: { gte: now } };
+    : { ...finding };
   const include = { EventParticipant: true };
   return commonGet("event", where, include, page, limit, {
     createdAt: "desc",
   });
 };
 
-export const getEventById = async (id, isClient = false) => {
+export const getEventById = async (id) => {
   try {
     const now = new Date();
-    let where = isClient ? { id, registrationDeadline: { gte: now } } : { id };
+    let where = { id };
     const event = await prisma.event.findFirst({
       where,
       include: { EventParticipant: true },
@@ -269,4 +277,64 @@ async () => {
   await prisma.eventParticipant.findMany({
     where: { event: { name: { contains: query, mode: "insensitive" } } },
   });
+};
+
+export const distributeAllEventsByModerator = async (eventId) => {
+  try {
+    const resp = await prisma?.$transaction(async (db) => {
+      const moderators = await db?.user?.findMany({
+        where: { role: "moderator" },
+        select: { id: true },
+      });
+      if (!moderators.length) throw Error("No moderators found");
+
+      const participants = await db?.eventParticipant?.findMany({
+        where: { eventId, examinerId: null }, // Only fetch participants without examiner
+      });
+      if (!participants.length)
+        throw Error("No participants found without examiner");
+
+      // Distribute participants among moderators in a round-robin fashion
+      const updates = participants.map((participant, index) => {
+        const moderatorId = moderators[index % moderators.length].id;
+
+        return db.eventParticipant.update({
+          where: { id: participant.id },
+          data: { examinerId: moderatorId },
+        });
+      });
+
+      // Execute all update operations
+      await Promise.all(updates);
+
+      return { message: "Participants distributed successfully" };
+    });
+
+    return resp;
+  } catch (error) {
+    console.log(error);
+    return errorResponse();
+  }
+};
+
+export const removeAllExaminersByEvent = async (eventId) => {
+  try {
+    const resp = await prisma?.$transaction(async (db) => {
+      // Remove all examiner assignments for the given event
+      const result = await db.eventParticipant.updateMany({
+        where: { eventId, examinerId: { not: null } },
+        data: { examinerId: null },
+      });
+
+      return {
+        message: "All examiners removed successfully",
+        count: result.count,
+      };
+    });
+
+    return resp;
+  } catch (error) {
+    console.error(error);
+    return errorResponse();
+  }
 };

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { AlertCircle, Ban, RefreshCcw, XCircle } from "lucide-react";
+import { AlertCircle, Ban, Loader, RefreshCcw, XCircle } from "lucide-react";
 import Link from "next/link";
 
 const errorTypes = {
@@ -31,6 +31,12 @@ const errorTypes = {
     description: "An unexpected error occurred. Please try again.",
     icon: <RefreshCcw className="w-16 h-16 text-muted-foreground" />,
   },
+  pending: {
+    code: "Pending",
+    title: "Please wait",
+    description: "Your request is being processed.",
+    icon: <Loader className="w-16 h-16 text-muted-foreground animate-spin" />,
+  },
 };
 
 export default function ErrorPage({ errorType = "default", message }) {
@@ -57,7 +63,7 @@ export default function ErrorPage({ errorType = "default", message }) {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <motion.div
         className="text-center space-y-8"
         variants={containerVariants}

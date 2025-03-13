@@ -99,30 +99,54 @@ export const getAllUsers = async (query, page, limit) => {
 export const deleteUser = async (userId) => {
   try {
     const user = await prisma.$transaction(async (db) => {
-      // ইউজার মুছে ফেলা হচ্ছে
-      await db.user.delete({
-        where: { id: userId }, // এখানে সঠিকভাবে where ব্যবহার করা হচ্ছে
-      });
+      await db.session.delete({ where: { userId } }).catch(() => {});
 
-      // রিলেটেড রেকর্ড মুছে ফেলা হচ্ছে
-      await db.eventParticipant.deleteMany({
-        where: { participantId: userId },
-      });
+      await db.eventParticipant
+        .deleteMany({
+          where: { participantId: userId },
+        })
+        .catch(() => {});
 
-      await db.courseEnrollment.deleteMany({
-        where: { participantId: userId },
-      });
+      await db.courseEnrollment
+        .deleteMany({
+          where: { participantId: userId },
+        })
+        .catch(() => {});
 
-      await db.workshopParticipant.deleteMany({
-        where: { participantId: userId },
-      });
+      await db.workshopParticipant
+        .deleteMany({
+          where: { participantId: userId },
+        })
+        .catch(() => {});
+
+      await db.user.delete({ where: { id: userId } }).catch(() => {});
 
       return true;
     });
+    revalidatePath("/dashboard/users");
 
     return true;
   } catch (err) {
     console.log(err);
     return { error: "Something went wrong!" };
+  }
+};
+
+export const createUser = async (data) => {
+  try {
+    const today = new Date();
+    const renewalDate = new Date();
+
+    // 6 Month Subscriptions
+    renewalDate.setMonth(today.getMonth() + 6);
+    const user = await prisma.user.create({
+      data: { renewalDate, ...data },
+    });
+    revalidatePath("/dashboard/users");
+    return successResponse("Create user  success", 201, user);
+  } catch (err) {
+    console.log(err);
+
+    return errorResponse();
   }
 };

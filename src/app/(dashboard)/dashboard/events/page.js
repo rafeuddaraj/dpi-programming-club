@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate, getStatus } from "@/lib/utils";
 import { Calendar, MapPin, MoreHorizontal, Plus, Users } from "lucide-react";
 import Link from "next/link";
+import StatusFilter from "../../../../components/common/StatusFilter";
 
 export default async function EventsPage({ params, searchParams }) {
   const urlSearchParams = await searchParams;
@@ -13,6 +14,7 @@ export default async function EventsPage({ params, searchParams }) {
   // Mock data for events
   const data = await getEvents(
     urlSearchParams?.q,
+    urlSearchParams?.status,
     parseInt(urlSearchParams?.page) || 1,
     parseInt(urlSearchParams?.limit) || 10
   );
@@ -56,6 +58,7 @@ export default async function EventsPage({ params, searchParams }) {
           <div className="data-table-toolbar">
             <div className="flex items-center gap-2">
               <FilterAction />
+              <StatusFilter />
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm">

@@ -1,5 +1,7 @@
 import { getEventParticipantResult } from "@/app/actions/events"
 import { auth } from "@/app/auth"
+import ErrorPage from "@/components/common/error"
+import FeedbackPreview from "@/components/common/feedback-preview"
 import { MotionDiv } from "@/components/common/motion"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -26,7 +28,12 @@ export default async function ParticipantResultPage({ params }) {
     const participant = data?.participant
     const payment = data?.payment
     // Calculate average score
-    console.log(data);
+    if (data?.score === null) {
+        return <ErrorPage errorType="pending" message={"Your marking is currently pending. Once we complete the review process, we will provide you with the marks."} />
+    }
+
+
+
 
 
     return (
@@ -203,7 +210,8 @@ export default async function ParticipantResultPage({ params }) {
 
                                         <Card className="bg-muted/50">
                                             <CardContent className="p-4">
-                                                <p className="text-sm italic">"{data.feedback}"</p>
+                                                {/* <p className="text-sm italic">"{}"</p> */}
+                                                <FeedbackPreview markdownText={data.feedback} />
                                             </CardContent>
                                         </Card>
                                     </div>

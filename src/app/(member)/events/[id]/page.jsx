@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { isExpiredDate } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar, Clock, DollarSign, MapPin } from "lucide-react";
 import Link from "next/link";
@@ -29,6 +30,9 @@ export default async function EventDetailsPage({ params }) {
 
   const seatsLeft = event?.availableSeat - event?.EventParticipant?.length
   const participationPercentage = (event?.EventParticipant?.length / event?.availableSeat) * 100
+
+  console.log("Event", event);
+
 
 
   return (
@@ -136,14 +140,14 @@ export default async function EventDetailsPage({ params }) {
             {event?.availableSeat > event?.EventParticipant?.length ? (
               user ? (
                 hasEnrolled ? (
-                  <Link href={"/profile"}>
+                  <Link href={"/profile/dashboard/events"}>
                     <Button>Already Registered</Button>
                   </Link>
                 ) : (
-                  <EventEnroll eventId={eventId} event={event} />
+                  isExpiredDate(event?.registrationDeadline) ? null : <EventEnroll eventId={eventId} event={event} />
                 )
               ) : (
-                <Link href={"/auth/login"}>
+                isExpiredDate(event?.registrationDeadline) ? null : <Link href={"/auth/login"}>
                   <Button>Login</Button>
                 </Link>
               )

@@ -24,6 +24,7 @@ import {
 import { formatDate } from "@/lib/utils";
 import { ArrowLeft, Eye, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
+import DistributeEventsParticipant from "../../_components/DistributeEventsParticipant";
 
 export default async function EventParticipantsPage({ params, searchParams }) {
   // In a real app, you would fetch the event and participants data here
@@ -41,9 +42,10 @@ export default async function EventParticipantsPage({ params, searchParams }) {
 
   const data = resp?.data?.data;
   const participants = data?.data;
-  console.log(participants);
 
   const event = participants[0]?.event;
+
+  console.log(event);
 
   return (
     <div className="space-y-6">
@@ -66,6 +68,7 @@ export default async function EventParticipantsPage({ params, searchParams }) {
             <CardTitle>All Participants</CardTitle>
             <div className="flex gap-2">
               <FilterAction />
+              <DistributeEventsParticipant eventId={event?.id} />
               <AllApproved
                 participants={participants}
                 revalidatePath={`dashboard/events/participants/${param?.id}`}

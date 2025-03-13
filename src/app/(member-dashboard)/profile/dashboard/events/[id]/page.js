@@ -4,6 +4,7 @@ import { CardDescription } from "@/components/card";
 import { MotionDiv } from "@/components/common/motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { isExpiredDate } from "@/lib/utils";
 import { format } from "date-fns";
 import { ArrowLeft, Clock, DollarSign, MapPin } from "lucide-react";
 import Link from "next/link";
@@ -120,9 +121,11 @@ export default async function EventDetailsPage({ params }) {
                 <span className="font-semibold">Organized by:</span>{" "}
                 {event.author}
               </p>
-              <Link href={`/profile/dashboard/events/${event?.id}/result`}>
-                <Button size="lg">Result</Button>
-              </Link>
+              {isExpiredDate(event?.endTime) && (
+                <Link href={`/profile/dashboard/events/${event?.id}/result`}>
+                  <Button size="lg">Result</Button>
+                </Link>
+              )}
             </CardContent>
           </Card>
         </MotionDiv>

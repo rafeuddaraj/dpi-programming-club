@@ -23,39 +23,44 @@ enum UserStatus {
 }
 
 model User {
-  id                  String                @id @default(auto()) @map("_id") @db.ObjectId
-  name                String
-  email               String                @unique
-  password            String
-  phoneNumber         String                @unique
-  gender              String
-  avatar              String?
-  semester            String
-  coverImage          String?
-  session             String
-  department          String
-  rollNo              String
-  skills              String[]              @default([])
-  registrationNo      String
-  discord             String?
-  bio                 String?
-  about               String?
-  linkedin            String?
-  github              String?
-  shift               String
-  role                String                @default("member") // member, moderator, admin
-  address             String?
-  status              UserStatus            @default(PROCESSING)
-  renewalDate         DateTime
-  renewalFee          Int                   @default(50)
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt()
-  token               Session[]
-  Payment             Payment[]
-  Gallery             Gallery[]
-  EventParticipant    EventParticipant[]
-  WorkshopParticipant WorkshopParticipant[]
-  CourseEnrollment    CourseEnrollment[]
+  id                     String                 @id @default(auto()) @map("_id") @db.ObjectId
+  name                   String
+  email                  String                 @unique
+  password               String
+  phoneNumber            String                 @unique
+  gender                 String
+  avatar                 String?
+  semester               String
+  coverImage             String?
+  session                String
+  department             String
+  rollNo                 String
+  skills                 String[]               @default([])
+  registrationNo         String
+  discord                String?
+  bio                    String?
+  about                  String?
+  linkedin               String?
+  github                 String?
+  shift                  String
+  role                   String                 @default("member") // member, moderator, admin
+  address                String?
+  status                 UserStatus             @default(PROCESSING)
+  renewalDate            DateTime
+  renewalFee             Int                    @default(50)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt()
+  token                  Session[]
+  Payment                Payment[]
+  gallery                Gallery[]
+  EventParticipant       EventParticipant[]
+  workshopParticipants   WorkshopParticipant[]
+  courseEnrollments      CourseEnrollment[]
+  eventExaminers         EventParticipant[]     @relation("Examiner")
+  examiners              AssignmentSubmission[] @relation("Examiner")
+  assignmentSubmissions  AssignmentSubmission[]
+  quizResults            QuizResults[]
+  assignmentSubmissionId String                 @db.ObjectId
 }
 
 model Session {
@@ -103,29 +108,64 @@ model EventParticipant {
   joining       DateTime @default(now())
   paymentId     String?  @db.ObjectId
   payment       Payment? @relation(fields: [paymentId], references: [id])
+  examinerId    String?  @db.ObjectId
+  examiner      User?    @relation("Examiner", fields: [examinerId], references: [id])
 
   // @@unique([eventId, participantId])
 }
 
+enum ActivityType {
+  OFFLINE
+  ONLINE
+}
+
 model Workshop {
-  id                  String                @id @default(auto()) @map("_id") @db.ObjectId
-  name                String
-  description         String
-  startTime           DateTime
-  endTime             DateTime
-  badge               String?
-  whatYouWillLearn    String?
-  duration            DateTime
-  type                String // Offline Or Online 
-  location            String // If Online Store Meeting Link else Offline Store Location 
-  curriculums         String[] // For Workshop Module
-  author              String // Organizers
-  authorsDetails      String[] // Authors Details
-  price               Int? // If Premium Event for need Price
-  availableSeat       Int? // If Offline Then Event Set Number store else not yet.
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt()
-  WorkshopParticipant WorkshopParticipant[]
+  id                   String                @id @default(auto()) @map("_id") @db.ObjectId
+  name                 String
+  description          String
+  outline              String[]
+  registrationDeadline DateTime
+  startingDate         DateTime
+  endingDate           DateTime
+  price                Int?
+  type                 ActivityType          @default(OFFLINE)
+  totalSeats           Int? // if offline mention it. otherwise not need. 
+  instructor           String? // Instructor name
+  instructorDetails    String? // Instructor Details
+  instructorUrl        String? // Instructor Details or portfolio or Profile
+  isActive             Boolean               @default(false) // status
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt()
+  modules              WorkshopModule[]
+  participants         WorkshopParticipant[]
+}
+
+model WorkshopModule {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  workshopId  String           @db.ObjectId
+  workshop    Workshop         @relation(fields: [workshopId], references: [id])
+  lessons     WorkshopLesson[]
+  isActive    Boolean          @default(false)
+  position    Int              @default(0)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt()
+}
+
+model WorkshopLesson {
+  id               String         @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  description      String?
+  liveLink         String? // This is Live Link for Online workshop 
+  recordedLink     String? // This is Online workshop recorded link 
+  location         String? // This is only use to Offline workshop
+  workshopModuleId String         @db.ObjectId
+  WorkshopModule   WorkshopModule @relation(fields: [workshopModuleId], references: [id])
+  isActive         Boolean        @default(false)
+  position         Int            @default(0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt()
 }
 
 model WorkshopParticipant {
@@ -143,23 +183,50 @@ model WorkshopParticipant {
 }
 
 model Course {
-  id               String             @id @default(auto()) @map("_id") @db.ObjectId
-  name             String
-  description      String
-  startTime        DateTime
-  endTime          DateTime
-  type             String // Offline Or Online 
-  level            String // Beginner/ Advance
-  duration         DateTime
-  curriculums      String[] // Array of Object
-  author           String // Organizers
-  authorsDetails   String[] // Authors Details
-  price            Int? // If Premium Event for need Price
-  availableSeat    Int? // Event Set
-  badge            String?
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt()
-  CourseEnrollment CourseEnrollment[]
+  id                   String             @id @default(auto()) @map("_id") @db.ObjectId
+  name                 String
+  description          String
+  instructor           String? // Instructor name
+  instructorDetails    String? // Instructor Details 
+  instructorUrl        String? // Instructor Profile
+  price                Int? // If price has premium or Free
+  registrationDeadline DateTime
+  outline              String[]
+  type                 ActivityType       @default(OFFLINE) // Online or Offline
+  startingDate         DateTime
+  ending               DateTime
+  isActive             Boolean            @default(false) // published or not published
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt()
+  participants         CourseEnrollment[]
+  modules              CourseModule[]
+}
+
+model CourseModule {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  courseId    String         @db.ObjectId
+  course      Course         @relation(fields: [courseId], references: [id])
+  lessons     CourseLesson[]
+  isActive    Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt()
+}
+
+model CourseLesson {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  liveLink    String? // if course online live class for store. 
+  videoUrl    String? // if course online live recorded class for store link
+  location    String? // if course are totally offline and class room to start course then store class room no or address.
+
+  courseModuleId String       @db.ObjectId
+  courseModule   CourseModule @relation(fields: [courseModuleId], references: [id])
+  isActive       Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt()
 }
 
 model CourseEnrollment {
@@ -203,4 +270,88 @@ model Gallery {
   images      String[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt()
+}
+
+// Assignments 
+
+enum ASSIGNABLE_TYPES {
+  Workshop
+  Course
+}
+
+model Assignments {
+  id             String                 @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  description    String
+  assignableType ASSIGNABLE_TYPES
+  totalMarks     Int                    @default(100)
+  submissions    AssignmentSubmission[]
+  deuDate        DateTime
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt()
+  relatedId      String                 @db.ObjectId // ID of the related entity (e.g., Workshop ID or Course ID)
+}
+
+model AssignmentSubmission {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String      @db.ObjectId
+  submissionDate DateTime    @default(now())
+  marks          Int? // Null if not marked yet
+  feedback       String? // Feedback from the Admin/Moderator
+  assignmentId   String      @db.ObjectId
+  assignment     Assignments @relation(fields: [assignmentId], references: [id])
+  user           User        @relation(fields: [userId], references: [id])
+  examiner       User        @relation("Examiner", fields: [id], references: [id]) // reviews
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt()
+}
+
+// Quizzes
+
+model Quizzes {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  totalMarks  Int      @default(100)
+  duration    Int // Duration in minutes
+  isActive    Boolean  @default(false)
+  startTime   DateTime // When the quiz will be available
+  endTime     DateTime // When the quiz will end
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt()
+
+  questions QuizQuestions[]
+  results   QuizResults[]
+  links     QuizLinks[]
+}
+
+model QuizQuestions {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  quizId       String   @db.ObjectId
+  question     String
+  options      String[] // ["Option 1", "Option 2", "Option 3", "Option 4"]
+  isActive     Boolean  @default(false)
+  correctIndex Int // Index of the correct answer in the options array
+  marks        Int // Marks for this question
+  quiz         Quizzes  @relation(fields: [quizId], references: [id])
+}
+
+model QuizResults {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  quizId      String   @db.ObjectId
+  userId      String   @db.ObjectId
+  score       Int
+  completedAt DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt()
+  quiz        Quizzes  @relation(fields: [quizId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model QuizLinks {
+  id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  quizId    String       @db.ObjectId
+  type      ActivityType // "Workshop", "Course", etc.
+  relatedId String       @db.ObjectId // ID of the related entity (e.g., Workshop ID or Course ID)
+  quiz      Quizzes      @relation(fields: [quizId], references: [id])
 }

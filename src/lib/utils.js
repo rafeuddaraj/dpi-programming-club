@@ -30,6 +30,9 @@ export function formatCurrency(amount) {
 export function isMembershipExpired(renewalDate) {
   return new Date(renewalDate) < new Date();
 }
+export function isExpiredDate(renewalDate) {
+  return new Date(renewalDate) < new Date();
+}
 
 export const commonGet = async (
   model,

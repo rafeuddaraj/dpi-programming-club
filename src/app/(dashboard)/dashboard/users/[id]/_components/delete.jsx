@@ -2,12 +2,16 @@
 'use client'
 import { deleteUser } from '@/app/actions/users';
 import { Button } from '@/components/button';
+import Loader from '@/components/common/loader';
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from '@/components/ui/dialog';
 import { Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react'; // Import ShadCN Dialog components
 import { toast } from 'sonner';
 export default function DeleteUserDialog({ userId }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const [loading, setLoading] = useState(false)
 
     // Open dialog
     const handleDeleteClick = () => {
@@ -20,18 +24,23 @@ export default function DeleteUserDialog({ userId }) {
         setIsDialogOpen(false);
     };
 
+    const router = useRouter()
+
     // Confirm delete
     const handleConfirmDelete = async () => {
+        setLoading(true)
         try {
             const resp = await deleteUser(userId)
             if (resp?.error) {
                 throw Error()
             }
             toast.success("User Delete!");
+            router.push("/dashboard/users")
         } catch {
             toast.error("Something went wrong!")
         }
         setIsDialogOpen(false);
+        setLoading(false)
     };
 
     return (
@@ -46,8 +55,8 @@ export default function DeleteUserDialog({ userId }) {
                     <DialogHeader>Are you sure you want to delete this user?</DialogHeader>
                     <p>This action cannot be undone.</p>
                     <DialogFooter>
-                        <Button variant="destructive" onClick={handleConfirmDelete}>
-                            OK
+                        <Button disabled={loading} variant="destructive" onClick={handleConfirmDelete}>
+                            {loading && <Loader />} OK
                         </Button>
                         <Button onClick={handleCancelClick}>Cancel</Button>
                     </DialogFooter>
