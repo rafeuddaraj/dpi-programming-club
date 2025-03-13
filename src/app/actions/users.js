@@ -6,11 +6,10 @@ import { errorResponse, successResponse } from "@/utils/req-res";
 import { revalidatePath } from "next/cache";
 import { auth } from "../auth";
 
-export const getUserById = async (id, select = null, include = null) => {
+export const getUserById = async (id, select = {}, include = {}) => {
   try {
     const user = await prisma.user.findFirst({
       where: { OR: [{ id }, { rollNo: id }] },
-      ...(select && { select }),
       ...(include && { include }),
     });
 
@@ -22,7 +21,7 @@ export const getUserById = async (id, select = null, include = null) => {
 
     return user;
   } catch (err) {
-    console.log(err);
+    console.log("Error form Get User By Id", err);
     return errorResponse();
   }
 };

@@ -26,11 +26,11 @@ export default async function ProfilePage({ searchParams }) {
   const session = await auth();
   const userData = await getUserById(userId || session?.user?.id);
   const activities = await getAllActivitiesByUserId(userId || session?.user?.id);
+  console.log({ userData, activities });
+
   if (userData?.error || activities?.error) {
     throw Error("User not found");
   }
-  console.log(userData);
-
   return (
     <div className="container mx-auto py-8">
       <MotionDiv

@@ -23,44 +23,43 @@ enum UserStatus {
 }
 
 model User {
-  id                     String                 @id @default(auto()) @map("_id") @db.ObjectId
-  name                   String
-  email                  String                 @unique
-  password               String
-  phoneNumber            String                 @unique
-  gender                 String
-  avatar                 String?
-  semester               String
-  coverImage             String?
-  session                String
-  department             String
-  rollNo                 String
-  skills                 String[]               @default([])
-  registrationNo         String
-  discord                String?
-  bio                    String?
-  about                  String?
-  linkedin               String?
-  github                 String?
-  shift                  String
-  role                   String                 @default("member") // member, moderator, admin
-  address                String?
-  status                 UserStatus             @default(PROCESSING)
-  renewalDate            DateTime
-  renewalFee             Int                    @default(50)
-  createdAt              DateTime               @default(now())
-  updatedAt              DateTime               @updatedAt()
-  token                  Session[]
-  Payment                Payment[]
-  gallery                Gallery[]
-  EventParticipant       EventParticipant[]
-  workshopParticipants   WorkshopParticipant[]
-  courseEnrollments      CourseEnrollment[]
-  eventExaminers         EventParticipant[]     @relation("Examiner")
-  examiners              AssignmentSubmission[] @relation("Examiner")
-  assignmentSubmissions  AssignmentSubmission[]
-  quizResults            QuizResults[]
-  assignmentSubmissionId String                 @db.ObjectId
+  id                    String                 @id @default(auto()) @map("_id") @db.ObjectId
+  name                  String
+  email                 String                 @unique
+  password              String
+  phoneNumber           String                 @unique
+  gender                String
+  avatar                String?
+  semester              String
+  coverImage            String?
+  session               String
+  department            String
+  rollNo                String
+  skills                String[]               @default([])
+  registrationNo        String
+  discord               String?
+  bio                   String?
+  about                 String?
+  linkedin              String?
+  github                String?
+  shift                 String
+  role                  String                 @default("member") // member, moderator, admin
+  address               String?
+  status                UserStatus             @default(PROCESSING)
+  renewalDate           DateTime
+  renewalFee            Int                    @default(50)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt()
+  token                 Session[]
+  Payment               Payment[]
+  gallery               Gallery[]
+  EventParticipant      EventParticipant[]
+  workshopParticipants  WorkshopParticipant[]
+  courseEnrollments     CourseEnrollment[]
+  eventExaminers        EventParticipant[]     @relation("Examiner")
+  examiners             AssignmentSubmission[] @relation("Examiner")
+  assignmentSubmissions AssignmentSubmission[]
+  quizResults           QuizResults[]
 }
 
 model Session {
