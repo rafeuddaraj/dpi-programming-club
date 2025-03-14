@@ -3,6 +3,8 @@
 import prisma from "@/lib/prisma";
 import { commonGet } from "@/lib/utils";
 import { errorResponse, successResponse } from "@/utils/req-res";
+import { revalidatePath } from "next/cache";
+import { auth } from "../auth";
 // Workshop Managements
 export const createWorkshop = async (data) => {
   try {
@@ -44,12 +46,33 @@ export const getWorkshops = async (query, status, type, page, limit) => {
         ...typeFinding,
       }
     : { ...statusFinding, ...typeFinding };
-  console.log(query);
-
   const include = { participants: true, modules: true };
   return commonGet("workshop", where, include, page, limit, {
     createdAt: "desc",
   });
+};
+
+// Upcoming Workshop Fetching
+export const getAllUpcomingWorkshop = async () => {
+  try {
+    const workshops = await prisma.workshop.findMany({
+      where: {
+        registrationDeadline: {
+          gte: new Date(),
+        },
+        isActive: true,
+      },
+      include: { modules: { include: { lessons: true } }, participants: true },
+      orderBy: {
+        registrationDeadline: "asc",
+      },
+    });
+
+    return successResponse("Workshop retrieved successfully", 200, workshops);
+  } catch (error) {
+    console.error("Error fetching upcoming workshops:", error);
+    errorResponse("Failed to fetch upcoming workshops");
+  }
 };
 
 export const updateWorkshop = async ({ workshopId, data }) => {
@@ -209,4 +232,78 @@ export const deleteWorkshopLesson = async (workshopLessonId) => {
   } catch (error) {
     return errorResponse(error.message || "Failed to delete workshop lesson");
   }
+};
+
+// Enroll Workshop
+
+export const enrollWorkshop = async (
+  data,
+  isPremium = false,
+  revalidatePathSrc
+) => {
+  try {
+    const session = await auth();
+    const user = session?.user;
+    let res = null;
+    const bookedSeat =
+      (await prisma.workshopParticipant.findMany({
+        where: { workshopId: data?.id },
+      })) || [];
+    const currentWorkshop = await prisma.workshop.findUnique({
+      where: { id: data?.id },
+    });
+
+    if (isPremium) {
+      if (currentWorkshop.totalSeats > bookedSeat?.length)
+        res = await prisma.$transaction(async (db) => {
+          const paymentData = {
+            userId: user?.id,
+            accountNo: data.bkashNumber,
+            amount: data.amount,
+            paymentDetails: `${data?.name} - Workshop`,
+            paymentMethod: "Bkash",
+            transactionId: data?.transactionNumber,
+          };
+
+          const payment = await db.payment.create({ data: paymentData });
+          const workshopData = {
+            workshopId: data?.id,
+            participantId: user?.id,
+            paymentId: payment?.id,
+          };
+
+          const workshop = await db.workshopParticipant.create({
+            data: workshopData,
+            include: { payment: true },
+          });
+          return workshop;
+        });
+      else {
+        throw new Error("No seat available");
+      }
+    } else {
+      if (currentWorkshop.totalSeats > bookedSeat?.length) {
+        res = await prisma.workshopParticipant.create({
+          data: { participantId: user?.id, workshopId: data?.id },
+        });
+      } else {
+        throw new Error("No seat available");
+      }
+    }
+    revalidatePath(revalidatePathSrc);
+    return successResponse("", 201, res);
+  } catch (err) {
+    console.log(err);
+
+    return errorResponse();
+  }
+};
+
+export const getWorkshopParticipant = async (workshopId) => {
+  const session = await auth();
+  const { user } = session || {};
+  const participant = await prisma.workshopParticipant.findFirst({
+    where: { workshopId, participantId: user?.id },
+  });
+  return participant;
 };

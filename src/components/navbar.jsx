@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useTheme } from "next-themes";
-import { Moon, Sun, CircleUser, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { CircleUser, LogOut, Moon, Sun } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { useTheme } from "next-themes";
+import Link from "next/link";
+import { useState } from "react";
 
 const navItems = [
   { name: "Events", href: "/events" },
@@ -18,7 +18,7 @@ const navItems = [
   { name: "Members", href: "/members" },
   { name: "Membership", href: "/membership" },
   { name: "About", href: "/about" },
-  { name: "Workshop", href: "/workshop" },
+  { name: "Workshops", href: "/workshops" },
   { name: "Gallery", href: "/gallery" },
   { name: "Contact", href: "/contact" },
   { name: "Discord", href: "/discord" },
