@@ -112,7 +112,7 @@ export const getModuleByWorkshopId = async (workshopId) => {
   try {
     const resp = await prisma.workshopModule.findMany({
       where: { workshopId },
-      include: { lessons: true, workshop: true },
+      include: { lessons: { orderBy: { position: "desc" } }, workshop: true },
     });
     if (!resp) return errorResponse("Workshop module not found", 404);
     return successResponse("Workshop module retrieved successfully", 200, resp);
@@ -135,7 +135,17 @@ export const updateWorkshopModule = async ({ workshopModuleId, data }) => {
 
 export const deleteWorkshopModule = async (workshopModuleId) => {
   try {
-    await prisma.workshopModule.delete({ where: { id: workshopModuleId } });
+    await prisma.$transaction(async (db) => {
+      await db.workshopLesson
+        .deleteMany({ where: { workshopModuleId } })
+        .then(() => {})
+        .catch(() => {});
+      await db.workshopModule
+        .delete({ where: { id: workshopModuleId } })
+        .then(() => {})
+        .catch(() => {});
+      return true;
+    });
     return successResponse("Workshop module deleted successfully", 200);
   } catch (error) {
     return errorResponse(error.message || "Failed to delete workshop module");
@@ -146,8 +156,16 @@ export const deleteWorkshopModule = async (workshopModuleId) => {
 
 export const createWorkshopLesson = async ({ workshopModuleId, data }) => {
   try {
+    let position = 0;
+    const workshopLesson = await prisma.workshopLesson.findFirst({
+      where: { workshopModuleId },
+      orderBy: { position: "desc" },
+    });
+    if (workshopLesson) {
+      position = workshopLesson.position + 1;
+    }
     const resp = await prisma.workshopLesson.create({
-      data: { workshopModuleId, ...data },
+      data: { workshopModuleId, position, ...data },
     });
     return successResponse("Workshop lesson created successfully", 201, resp);
   } catch (error) {
@@ -159,6 +177,7 @@ export const getWorkshopLessonById = async (workshopLessonId) => {
   try {
     const lesson = await prisma.workshopLesson.findUnique({
       where: { id: workshopLessonId },
+      include: { module: true },
     });
     if (!lesson) return errorResponse("Workshop lesson not found", 404);
     return successResponse(

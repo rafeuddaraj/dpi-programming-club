@@ -1,4 +1,5 @@
 import { getWorkshopById } from "@/app/actions/workshops"
+import FeedbackPreview from "@/components/common/feedback-preview"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -92,7 +93,7 @@ export default async function WorkshopDetailsPage({ params: param, searchParams:
               <CardContent className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Description</h3>
-                  <p className="text-muted-foreground">{workshop.description}</p>
+                  <p className="text-muted-foreground"><FeedbackPreview markdownText={workshop.description} /></p>
                 </div>
 
                 {workshop?.outline?.length > 0 && (

@@ -1,15 +1,18 @@
+import { deleteWorkshopLesson } from "@/app/actions/workshops"
 import { Button } from "@/components/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { Pencil } from "lucide-react"
+import { Delete, Pencil } from "lucide-react"
 import Link from "next/link"
+import { toast } from "sonner"
 
 const SortableLesson = ({
     lesson,
     lessonIndex,
     isLastItem,
+    onDeleteLesson
 }) => {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: lesson.id })
 
@@ -47,7 +50,23 @@ const SortableLesson = ({
                 <Badge variant={lesson.isActive ? "outline" : "destructive"} className="text-xs">
                     {lesson.isActive ? "Active" : "Inactive"}
                 </Badge>
-                <Link href={`/lessons/edit/${lesson.id}`}>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={async () => {
+                    try {
+                        if (confirm("Are you sure delete this lesson")) {
+                            const resp = await deleteWorkshopLesson(lesson?.id)
+                            if (resp?.error) {
+                                throw Error()
+                            }
+                            toast.success("Lesson Delete Success.")
+                            return onDeleteLesson(lesson?.id)
+                        }
+                    } catch {
+                        toast.error("There was and problem!")
+                    }
+                }}>
+                    <Delete className="h-3 w-3" />
+                </Button>
+                <Link href={`/dashboard/workshops/lessons/edit/${lesson.id}`}>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Pencil className="h-3 w-3" />
                     </Button>

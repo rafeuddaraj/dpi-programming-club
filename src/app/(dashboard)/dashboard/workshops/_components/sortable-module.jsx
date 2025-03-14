@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core"
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { Eye, GripVertical, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react"
+import { GripVertical, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import SortableLesson from "./sortable-lesson"
@@ -45,6 +45,10 @@ const SortableModule = ({
         }
     }
 
+    const handleDeleteLesson = (lessonId) => {
+        setLessons(lessons => lessons?.filter(lesson => lesson?.id !== lessonId))
+    }
+
     // Sensors for lesson drag and drop
     const lessonSensors = useSensors(
         useSensor(PointerSensor),
@@ -81,13 +85,7 @@ const SortableModule = ({
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <Link href={`/modules/${module.id}`}>
-                                    <DropdownMenuItem>
-                                        <Eye className="mr-2 h-4 w-4" />
-                                        View
-                                    </DropdownMenuItem>
-                                </Link>
-                                <Link href={`/modules/edit/${module.id}`}>
+                                <Link href={`/dashboard/workshops/modules/edit/${module.id}`}>
                                     <DropdownMenuItem>
                                         <Pencil className="mr-2 h-4 w-4" />
                                         Edit
@@ -107,7 +105,7 @@ const SortableModule = ({
                     <div className="text-sm text-muted-foreground">
                         {lessons.length} {lessons.length === 1 ? "lesson" : "lessons"}
                     </div>
-                    <Link href={`/lessons/create?moduleId=${module.id}`}>
+                    <Link href={`/dashboard/workshops/lessons/create?moduleId=${module.id}`}>
                         <Button variant="outline" size="sm">
                             <Plus className="mr-2 h-3 w-3" />
                             Add Lesson
@@ -129,6 +127,7 @@ const SortableModule = ({
                                         key={lesson.id}
                                         lesson={lesson}
                                         lessonIndex={lessonIndex}
+                                        onDeleteLesson={handleDeleteLesson}
                                         isLastItem={lessonIndex === lessons.length - 1}
                                     />
                                 ))}

@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { WorkshopPreview } from "@/components/workshops/workshop-preview"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
+import MDEditor from "@uiw/react-md-editor"
 import { format } from "date-fns"
 import { CalendarIcon, Loader2, Plus, X } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -144,15 +145,19 @@ export default function AddAndEditForm({ data, onSubmitHandler, typeOfUse }) {
                                         control={form.control}
                                         name="description"
                                         render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Description</FormLabel>
+                                            <FormItem className="space-y-2">
+                                                <FormLabel>Description (Optional)</FormLabel>
                                                 <FormControl>
-                                                    <Textarea placeholder={`Enter ${typeOfUse} description`} className="min-h-[120px]" {...field} />
+                                                    <MDEditor
+                                                        value={field.value}
+                                                        onChange={(value) => form.setValue("description", value)}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
+
 
                                     <FormField
                                         control={form.control}

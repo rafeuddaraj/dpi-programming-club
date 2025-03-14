@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Pencil, Trash2, MoreHorizontal, Plus, GripVertical, Eye } from "lucide-react"
 import { modulesData } from "@/data/modules"
+import { Eye, GripVertical, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
 
 
 export function ModulesList({ workshopId }) {
@@ -100,7 +100,7 @@ export function ModulesList({ workshopId }) {
                 <div className="text-sm text-muted-foreground">
                   {module.lessons.length} {module.lessons.length === 1 ? "lesson" : "lessons"}
                 </div>
-                <Link href={`/lessons/create?moduleId=${module.id}`}>
+                <Link href={`/dashboard/workshops/lessons/create?moduleId=${module.id}`}>
                   <Button variant="outline" size="sm">
                     <Plus className="mr-2 h-3 w-3" />
                     Add Lesson
@@ -131,7 +131,7 @@ export function ModulesList({ workshopId }) {
                         <Badge variant={lesson.isActive ? "outline" : "destructive"} className="text-xs">
                           {lesson.isActive ? "Active" : "Inactive"}
                         </Badge>
-                        <Link href={`/lessons/edit/${lesson.id}`}>
+                        <Link href={`/dashboard/workshops/lessons/edit/${lesson.id}`}>
                           <Button variant="ghost" size="icon" className="h-8 w-8">
                             <Pencil className="h-3 w-3" />
                           </Button>

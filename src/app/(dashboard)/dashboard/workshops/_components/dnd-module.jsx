@@ -1,6 +1,6 @@
 "use client"
 
-import { updateWorkshopModule } from "@/app/actions/workshops"
+import { deleteWorkshopModule, updateWorkshopLesson, updateWorkshopModule } from "@/app/actions/workshops"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/card"
 import {
     closestCenter,
@@ -43,8 +43,19 @@ export function DndModule({ modules: module, workshopId }) {
     )
 
     // Handle module deletion
-    const handleDeleteModule = (moduleId) => {
-        setModules(modules.filter((module) => module.id !== moduleId))
+    const handleDeleteModule = async (moduleId) => {
+        if (confirm("Are you sure delete this Module")) {
+            try {
+                const resp = await deleteWorkshopModule(moduleId)
+                if (resp?.error) {
+                    throw Error()
+                }
+                setModules(modules.filter((module) => module.id !== moduleId))
+                return toast.success("Module successfully deleting.")
+            } catch {
+                toast.error("Something went wrong!")
+            }
+        }
     }
 
     // Handle module drag start
@@ -111,7 +122,7 @@ export function DndModule({ modules: module, workshopId }) {
     }
 
     // Handle lesson drag end within a module
-    const handleDragLessonEnd = (event, moduleId) => {
+    const handleDragLessonEnd = async (event, moduleId) => {
         const { active, over } = event
 
         if (over && active.id !== over.id) {
@@ -122,7 +133,37 @@ export function DndModule({ modules: module, workshopId }) {
                 .find((module) => module.id === moduleId)
                 .lessons.findIndex((lesson) => lesson.id === over.id);
 
+
+            const oldObj = modules
+                .find((module) => module.id === moduleId)
+                .lessons[oldIndex]
+            const newObj = modules
+                .find((module) => module.id === moduleId)
+                .lessons[newIndex]
+
+            const oldPos = oldObj.position
+            const newPos = newObj.position
+
+            oldObj.position = newPos
+            newObj.position = oldPos
+
+            const reqQueue = await Promise.all([updateWorkshopLesson({ workshopLessonId: oldObj?.id, data: { position: newPos } })
+                , updateWorkshopLesson({ workshopLessonId: newObj?.id, data: { position: oldPos } })])
+            if (reqQueue[0].error || reqQueue[1].error) {
+                toast.error("There was an problem!")
+                return
+            }
+
+
+
+
+
+
             const newLessonsOrder = arrayMove(modules.find((module) => module.id === moduleId).lessons, oldIndex, newIndex);
+
+
+
+
 
             // Log the data that would be sent to the backend
             console.log("Lesson reorder data to send to API:", {

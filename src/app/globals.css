@@ -188,3 +188,7 @@ body {
     transform: scaleY(-1) rotate(-135deg);
   }
 }
+
+.feedbackMdPreview ui {
+  list-style: inherit !important;
+}

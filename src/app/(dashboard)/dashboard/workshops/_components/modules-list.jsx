@@ -27,7 +27,7 @@ export async function ModulesList({ workshopId }) {
                 </CardHeader>
                 <CardContent className="flex flex-col items-center justify-center py-8">
                     <p className="text-muted-foreground mb-4">Create your first module to get started</p>
-                    <Link href={`/modules/create?workshopId=${workshopId}`}>
+                    <Link href={`/dashboard/workshops/modules/create?workshopId=${workshopId}`}>
                         <Button>
                             <Plus className="mr-2 h-4 w-4" />
                             Create Module
@@ -42,7 +42,7 @@ export async function ModulesList({ workshopId }) {
         <div className="space-y-4">
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold">Modules</h2>
-                <Link href={`/modules/create?workshopId=${workshopId}`}>
+                <Link href={`/dashboard/workshops/modules/create?workshopId=${workshopId}`}>
                     <Button>
                         <Plus className="mr-2 h-4 w-4" />
                         Add Module

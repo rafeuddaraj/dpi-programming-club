@@ -160,7 +160,7 @@ model WorkshopLesson {
   recordedLink     String? // This is Online workshop recorded link 
   location         String? // This is only use to Offline workshop
   workshopModuleId String         @db.ObjectId
-  WorkshopModule   WorkshopModule @relation(fields: [workshopModuleId], references: [id])
+  module           WorkshopModule @relation(fields: [workshopModuleId], references: [id])
   isActive         Boolean        @default(false)
   position         Int            @default(0)
   createdAt        DateTime       @default(now())

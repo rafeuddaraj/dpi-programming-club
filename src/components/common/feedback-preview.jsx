@@ -1,6 +1,7 @@
 "use client"
 
-import '@uiw/react-md-editor/markdown-editor.css';
+import "@uiw/react-md-editor/markdown-editor.css";
+
 import dynamic from 'next/dynamic';
 
 const Markdown = dynamic(
@@ -11,6 +12,7 @@ const FeedbackPreview = ({ markdownText }) => {
     return (
         <div style={{ backgroundColor: 'transparent' }}>
             <Markdown
+                className="feedbackMdPreview"
                 source={markdownText}
                 style={{ backgroundColor: 'transparent', padding: 0 }}
             />
