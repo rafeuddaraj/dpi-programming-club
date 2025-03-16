@@ -1,15 +1,34 @@
 "use client"
 
 import { updateLastModuleAndLesson } from "@/app/actions/workshops";
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
 import { CheckCircle } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
+
+// Helper function to format date and time
+const formatDateTime = (dateTimeString) => {
+    if (!dateTimeString) return "Not scheduled"
+
+    const date = new Date(dateTimeString)
+    return new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+    }).format(date)
+}
+
 export default function Lessons({ lessons, activeLesson, children, workshopParticipantId, module }) {
     const router = useRouter()
     const params = useParams()
     const workshopId = params?.id
+
     const handleNextLesson = async (lesson) => {
         try {
             setCurrentLessonId(lesson?.id)
@@ -35,12 +54,20 @@ export default function Lessons({ lessons, activeLesson, children, workshopParti
                 onClick={() => handleNextLesson(lesson)}
             >
 
-                {lesson.id === currentLessonId ? (
+                {lesson?.status === "Completed" ? (
                     <CheckCircle className="h-4 w-4 text-primary" />
                 ) : (
                     <div className="h-4 w-4 rounded-full border border-muted-foreground/30"></div>
                 )}
-                <span className="text-sm">{lesson.name}</span>
+                <div className="flex flex-col">
+                    <span className="text-sm">{lesson.name} {lesson?.status !== "Completed" && <Badge className={lesson?.statusClasses}>{lesson?.status}</Badge>}</span>
+                    {lesson.startingDate && (
+                        <div className="mt-1 text-xs text-muted-foreground">
+                            {format(lesson.startingDate, "M/d/yyyy h:mm a")} -
+                            {format(lesson.endingDate, "M/d/yyyy h:mm a")}
+                        </div>
+                    )}
+                </div>
             </div>)}
         </>
     );

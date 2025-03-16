@@ -1,4 +1,4 @@
-import { getAllWorkshopModulesAndLessons } from "@/app/actions/workshops";
+import { getAllWorkshopModulesAndLessons, withTimeStatus } from "@/app/actions/workshops";
 import ModuleCollapsible from "./module-collapsible";
 
 
@@ -9,7 +9,9 @@ export default async function WorkshopContent({ params, searchParams, activeModu
         throw Error()
     }
 
-    const modules = resp?.data?.modules
+    const modules = await withTimeStatus(resp?.data?.modules)
+
+
 
 
     return (

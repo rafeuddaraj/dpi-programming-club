@@ -1,12 +1,29 @@
 "use client"
 
 import { Separator } from "@/components/separator";
+import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import Lessons from "./lessons";
 
+
+
+// Helper function to format date and time
+const formatDateTime = (dateTimeString) => {
+    if (!dateTimeString) return "Not scheduled"
+
+    const date = new Date(dateTimeString)
+    return new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+    }).format(date)
+}
 
 export default function ModuleCollapsible({ activeModule, modules, children, workshopParticipantId, activeLesson, enrollment }) {
     const router = useRouter()
@@ -27,7 +44,16 @@ export default function ModuleCollapsible({ activeModule, modules, children, wor
                 <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-xs">
                     {modules.indexOf(module) + 1}
                 </div>
-                <span className="font-medium">{module.name}</span>
+                <div className="flex flex-col">
+                    <span className="font-medium">{module.name}  {module?.status !== "Completed" && <Badge className={module?.statusClasses}>{module?.status}</Badge>}</span>
+                    {module.startingDate && (
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                            {new Date(module.startingDate).toLocaleDateString()} -{" "}
+                            {new Date(module.endingDate).toLocaleDateString()}
+                        </div>
+                    )}
+
+                </div>
             </div>
             {module?.id === activeModule?.id ? (
                 <ChevronUp className="h-4 w-4" />

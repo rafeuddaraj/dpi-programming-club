@@ -21,8 +21,6 @@ export default function WorkshopLessonAddEditForm({ module, lessonData }) {
     } else {
         module.type = workshopType
     }
-    console.log({ lessonData, module });
-
     const onSubmit = async (data) => {
         delete data?.type
         if (workshopType === "OFFLINE") {

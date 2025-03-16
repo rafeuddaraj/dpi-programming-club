@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { commonGet } from "@/lib/utils";
+import { commonGet, getStatus, getStatusClass } from "@/lib/utils";
 import { errorResponse, successResponse } from "@/utils/req-res";
 import { revalidatePath } from "next/cache";
 import { auth } from "../auth";
@@ -302,6 +302,7 @@ export const enrollWorkshop = async (
 export const getWorkshopParticipant = async (workshopId) => {
   const session = await auth();
   const { user } = session || {};
+
   const participant = await prisma.workshopParticipant.findFirst({
     where: { workshopId, participantId: user?.id },
     include: { workshop: true },
@@ -367,13 +368,79 @@ export const getAllWorkshopModulesAndLessons = async (workshopId) => {
       where: { id: workshopId },
       include: {
         modules: {
-          orderBy: { position: "asc" },
-          include: { lessons: { orderBy: { position: "asc" } } },
+          orderBy: { position: "desc" },
+          include: { lessons: { orderBy: { position: "desc" } } },
         },
       },
     });
     return successResponse("success", 200, resp);
   } catch {
     return errorResponse();
+  }
+};
+
+// Just cycle to running server
+export const withTimeStatus = async (modules = []) => {
+  return modules?.map((module) => {
+    const status = getStatus(module?.startingDate, module?.endingDate);
+    const statusClasses = getStatusClass(status);
+
+    const updatedLessons = module?.lessons?.map((lesson) => {
+      const lessonStatus = getStatus(lesson?.startingDate, lesson?.endingDate);
+      const lessonStatusClasses = getStatusClass(lessonStatus);
+      return {
+        ...lesson,
+        status: lessonStatus,
+        statusClasses: lessonStatusClasses,
+      };
+    });
+
+    return { ...module, status, statusClasses, lessons: updatedLessons };
+  });
+};
+
+export const getWorkshopProgress = async (workshopId) => {
+  try {
+    const workshop = await prisma.workshop.findUnique({
+      where: { id: workshopId },
+      include: {
+        modules: {
+          where: { isActive: true },
+          include: {
+            lessons: {
+              where: { isActive: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!workshop) {
+      throw new Error("Workshop not found");
+    }
+
+    const now = new Date();
+    let totalLessons = 0;
+    let completedLessons = 0;
+
+    workshop.modules.forEach((module) => {
+      module.lessons.forEach((lesson) => {
+        totalLessons++;
+        const lessonEnd = new Date(lesson.endingDate);
+
+        if (lessonEnd <= now) {
+          completedLessons++;
+        }
+      });
+    });
+
+    const progress =
+      totalLessons > 0
+        ? Math.round((completedLessons / totalLessons) * 100)
+        : 0;
+    return progress;
+  } catch (error) {
+    console.error("Error fetching progress:", error);
+    return 0;
   }
 };

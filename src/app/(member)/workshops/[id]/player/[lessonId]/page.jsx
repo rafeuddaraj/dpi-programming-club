@@ -2,8 +2,9 @@ import { ArrowLeft, Clock, Play } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-import { getActiveLessonAndModule, getWorkshopParticipant } from "@/app/actions/workshops"
+import { getActiveLessonAndModule, getWorkshopParticipant, getWorkshopProgress } from "@/app/actions/workshops"
 import { auth } from "@/app/auth"
+import FeedbackPreview from "@/components/common/feedback-preview"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -42,6 +43,9 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
   const expandedModules = {
     [activeModule.id]: true,
   }
+
+  const progress = await getWorkshopProgress(workshopId)
+
 
   return (
     <div className="container mx-auto py-6">
@@ -110,9 +114,6 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
 
             <div className="p-6">
               <h2 className="text-xl font-bold">{activeLesson.name}</h2>
-              <p className="text-muted-foreground mt-2">
-                {activeLesson.description || "No description available for this lesson."}
-              </p>
             </div>
           </Card>
 
@@ -129,23 +130,7 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
                   <CardDescription>Detailed information about this lesson</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p>
-                    {activeLesson.description ||
-                      "This lesson covers important concepts related to " +
-                      activeLesson.name +
-                      ". The content is designed to help you understand the core principles and apply them in real-world scenarios."}
-                  </p>
-                  <p>
-                    This lesson is part of the module: <span className="font-medium">{activeModule.name}</span>
-                  </p>
-                  <div className="space-y-2">
-                    <h3 className="font-medium">Learning Objectives:</h3>
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>Understand the fundamental concepts of {activeLesson.name}</li>
-                      <li>Learn how to apply these concepts in practical scenarios</li>
-                      <li>Develop skills to solve related problems independently</li>
-                    </ul>
-                  </div>
+                  <FeedbackPreview markdownText={activeLesson.description || "No description available for this lesson."} />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -195,26 +180,17 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
 
           <Card>
             <CardHeader>
-              <CardTitle>About This Lesson</CardTitle>
+              <CardTitle>About This Module</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <h3 className="font-medium">Description</h3>
                 <p className="text-muted-foreground mt-1">
-                  {activeLesson.description || "This lesson is part of the module: " + activeModule.name}
+                  <FeedbackPreview markdownText={activeModule?.description || "This lesson is part of the module: " + activeModule.name} />
                 </p>
               </div>
 
-              <Separator />
-
-              <div>
-                <h3 className="font-medium">Module Information</h3>
-                <p className="text-muted-foreground mt-1">{activeModule.description}</p>
-              </div>
-
-              <Separator />
-
-              <div>
+              {/* <div>
                 <h3 className="font-medium">Resources</h3>
                 <div className="mt-2 space-y-2">
                   <Button variant="outline" className="w-full justify-start">
@@ -254,7 +230,7 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
                     Additional Resources
                   </Button>
                 </div>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
         </div>
@@ -269,14 +245,14 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span>Overall Progress</span>
-                  <span>{enrollment?.progress || 0}%</span>
+                  <span>{progress || 0}%</span>
                 </div>
-                <Progress value={enrollment?.progress || 0} className="h-2" />
+                <Progress value={progress || 0} className="h-2" />
               </div>
 
               <div className="pt-2">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium">Course Content</h3>
+                  <h3 className="text-sm font-medium">Workshop Content</h3>
                   <WorkshopSearch />
                 </div>
                 {/* <Suspense fallback={<>Loading....</>}> */}

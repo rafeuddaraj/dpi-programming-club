@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core"
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
+import { format } from "date-fns"
 import { GripVertical, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
@@ -72,7 +73,23 @@ const SortableModule = ({
                         <CardTitle className="text-lg">
                             {index + 1}. {module.name}
                         </CardTitle>
-                        <CardDescription>{module.description}</CardDescription>
+                        <CardDescription>{module.description}
+
+                            <div className="mt-4 justify-between items-center">
+                                <div className="flex flex-col">
+                                    <span className="font-semibold text-sm text-gray-600">Starting Date</span>
+                                    <span className="text-sm text-gray-800">
+                                        {module.startingDate ? format(new Date(module.startingDate), "PPP hh:mm aa") : "Not set"}
+                                    </span>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="font-semibold text-sm text-gray-600">Ending Date</span>
+                                    <span className="text-sm text-gray-800">
+                                        {module.endingDate ? format(new Date(module.endingDate), "PPP hh:mm aa") : "Not set"}
+                                    </span>
+                                </div>
+                            </div>
+                        </CardDescription>
                     </div>
                     <div className="flex items-center gap-2">
                         <Badge variant={module.isActive ? "default" : "destructive"}>

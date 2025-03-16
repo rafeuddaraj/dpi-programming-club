@@ -31,7 +31,6 @@ export default async function EventDetailsPage({ params }) {
   const seatsLeft = event?.availableSeat - event?.EventParticipant?.length
   const participationPercentage = (event?.EventParticipant?.length / event?.availableSeat) * 100
 
-  console.log("Event", event);
 
 
 

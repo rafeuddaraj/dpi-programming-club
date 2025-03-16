@@ -140,16 +140,18 @@ model Workshop {
 }
 
 model WorkshopModule {
-  id          String           @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  description String?
-  workshopId  String           @db.ObjectId
-  workshop    Workshop         @relation(fields: [workshopId], references: [id])
-  lessons     WorkshopLesson[]
-  isActive    Boolean          @default(false)
-  position    Int              @default(0)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt()
+  id           String           @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  description  String?
+  workshopId   String           @db.ObjectId
+  workshop     Workshop         @relation(fields: [workshopId], references: [id])
+  lessons      WorkshopLesson[]
+  isActive     Boolean          @default(false)
+  position     Int              @default(0)
+  startingDate DateTime
+  endingDate   DateTime
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt()
 }
 
 model WorkshopLesson {
@@ -163,6 +165,8 @@ model WorkshopLesson {
   module           WorkshopModule @relation(fields: [workshopModuleId], references: [id])
   isActive         Boolean        @default(false)
   position         Int            @default(0)
+  startingDate     DateTime
+  endingDate       DateTime
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt()
 }

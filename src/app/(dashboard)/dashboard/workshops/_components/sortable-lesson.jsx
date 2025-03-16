@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
+import { format } from "date-fns"
 import { Delete, Pencil } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
@@ -44,6 +45,20 @@ const SortableLesson = ({
                 <div>
                     <p className="font-medium">{lesson.name}</p>
                     <p className="text-xs text-muted-foreground">{lesson.type === "ONLINE" ? "Online" : "Offline"} Lesson</p>
+                    <div className="mt-4 justify-between items-center">
+                        <div className="flex flex-col">
+                            <span className="font-semibold text-sm text-gray-600">Starting Date</span>
+                            <span className="text-sm text-gray-800">
+                                {lesson.startingDate ? format(new Date(lesson.startingDate), "PPP hh:mm aa") : "Not set"}
+                            </span>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="font-semibold text-sm text-gray-600">Ending Date</span>
+                            <span className="text-sm text-gray-800">
+                                {lesson.endingDate ? format(new Date(lesson.endingDate), "PPP hh:mm aa") : "Not set"}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className="flex items-center gap-2">

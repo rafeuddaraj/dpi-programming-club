@@ -8,10 +8,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Switch } from "@/components/ui/switch"
 import { zodResolver } from "@hookform/resolvers/zod"
 import MDEditor from "@uiw/react-md-editor"
-import { ArrowLeft, Loader2 } from "lucide-react"
+import { format } from "date-fns"
+import { ArrowLeft, CalendarIcon, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 // Define the lesson schema with Zod
 const lessonSchema = z.object({
@@ -22,6 +26,8 @@ const lessonSchema = z.object({
     recordedLink: z.string().url({ message: "Please enter a valid URL" }).optional().or(z.literal("")),
     location: z.string().optional(),
     isActive: z.boolean(),
+    startingDate: z.date().optional(),
+    endingDate: z.date().optional(),
 })
 
 export default function LessonCreateAndEditForm({ data, onSubmitHandler, module }) {
@@ -37,9 +43,11 @@ export default function LessonCreateAndEditForm({ data, onSubmitHandler, module 
             recordedLink: "",
             location: "",
             isActive: true,
+            startingDate: undefined,
+            endingDate: undefined,
         },
     })
-
+    const { control } = form
     // Watch the type field to conditionally render form elements
     const lessonType = form.watch("type")
 
@@ -181,6 +189,79 @@ export default function LessonCreateAndEditForm({ data, onSubmitHandler, module 
                                     )}
                                 />
                             )}
+
+                            <FormField
+                                control={control}
+                                name="startingDate"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel>Start Date & Time</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant="outline"
+                                                        className={`w-full justify-start text-left font-normal ${!field.value && "text-muted-foreground"
+                                                            }`}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.value ? format(field.value, "PPP p") : <span>Pick a date & time</span>}
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-2">
+                                                <DatePicker
+                                                    selected={field.value}
+                                                    onChange={field.onChange}
+                                                    showTimeSelect
+                                                    timeFormat="hh:mm aa"
+                                                    timeIntervals={1}
+                                                    inline
+                                                    dateFormat="Pp"
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={control}
+                                name="endingDate"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel>End Date</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant="outline"
+                                                        className={`w-full justify-start text-left font-normal ${!field.value && "text-muted-foreground"
+                                                            }`}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.value ? format(field.value, "PPP p") : <span>Pick a date</span>}
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-2">
+                                                <DatePicker
+                                                    selected={field.value}
+                                                    onChange={field.onChange}
+                                                    dateFormat="Pp"
+                                                    showTimeSelect
+                                                    timeFormat="hh:mm aa"
+                                                    timeIntervals={1}
+                                                    inline
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
                             <FormField
                                 control={form.control}
                                 name="isActive"

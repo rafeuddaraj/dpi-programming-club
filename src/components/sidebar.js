@@ -18,6 +18,7 @@ import {
   Users,
   Wrench,
 } from "lucide-react";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "./button";
@@ -110,7 +111,7 @@ export default function Sidebar() {
 
       <div className="p-4 border-t">
         <button className="sidebar-item w-full justify-start text-destructive hover:text-destructive">
-          <LogOut className="sidebar-item-icon" />
+          <LogOut onClick={() => signOut()} className="sidebar-item-icon" />
           <span>Logout</span>
         </button>
       </div>
