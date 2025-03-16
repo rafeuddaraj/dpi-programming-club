@@ -179,6 +179,8 @@ model WorkshopParticipant {
   certificate   String? // - update
   feedback      String? // - update
   paymentId     String   @db.ObjectId
+  lastModuleId  String?  @db.ObjectId
+  lastLessonId  String?  @db.ObjectId
   payment       Payment? @relation(fields: [paymentId], references: [id])
   joining       DateTime @default(now())
 }

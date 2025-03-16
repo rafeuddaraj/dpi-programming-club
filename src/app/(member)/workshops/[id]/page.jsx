@@ -42,6 +42,11 @@ export default async function WorkshopDetailPage({ params: param }) {
 
   // const outlineItems = workshop.outline.split("\n")
 
+  const module = workshop?.modules[0]
+  const lesson = module?.lessons[0]
+
+  console.log(participant);
+
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -56,7 +61,7 @@ export default async function WorkshopDetailPage({ params: param }) {
               </div>
             </div>
             {session?.user ? isEnrolled ? (
-              <Link href={`/workshops/${id}/player`}>
+              <Link href={`/workshops/${id}/player/${participant?.lastLessonId || lesson?.id}`}>
                 <Button>Continue Learning</Button>
               </Link>
             ) : (
@@ -203,7 +208,7 @@ export default async function WorkshopDetailPage({ params: param }) {
               {session?.user ? isEnrolled ? (
                 <div className="pt-4 border-t">
                   <h3 className="font-medium mb-2">You're enrolled!</h3>
-                  <Link href={`/workshops/${id}/player`}>
+                  <Link href={`/workshops/${id}/player/${participant?.lastLessonId || lesson?.id}`}>
                     <Button className="w-full">
                       Continue Learning
                     </Button>

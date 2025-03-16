@@ -19,7 +19,7 @@ export const getWorkshopById = async (workshopId) => {
   try {
     const workshop = await prisma.workshop.findUnique({
       where: { id: workshopId },
-      include: { modules: true, participants: true },
+      include: { modules: { include: { lessons: true } }, participants: true },
     });
     if (!workshop) return errorResponse("Workshop not found", 404);
     return successResponse("Workshop retrieved successfully", 200, workshop);
@@ -304,6 +304,76 @@ export const getWorkshopParticipant = async (workshopId) => {
   const { user } = session || {};
   const participant = await prisma.workshopParticipant.findFirst({
     where: { workshopId, participantId: user?.id },
+    include: { workshop: true },
   });
   return participant;
+};
+
+// Updating Last Module and Lesson Id
+export const updateLastModuleAndLesson = async (
+  workshopParticipantId,
+  data
+) => {
+  try {
+    const session = await auth();
+
+    const resp = await prisma.workshopParticipant.update({
+      where: { participantId: session?.user?.id, id: workshopParticipantId },
+      data,
+    });
+    return successResponse("Active Lesson and Module updated", 200);
+  } catch {
+    return errorResponse();
+  }
+};
+
+export const getActiveLessonAndModule = async (workshopId) => {
+  try {
+    const session = await auth();
+    const active = await prisma.workshopParticipant.findFirst({
+      where: { workshopId, participantId: session?.user?.id },
+    });
+
+    if (active?.lastLessonId && active?.lastLessonId) {
+      const lesson = await prisma.workshopLesson.findFirst({
+        where: { id: active?.lastLessonId },
+        orderBy: { position: "asc" },
+      });
+      const workshopModule = await prisma.workshopModule.findFirst({
+        where: { id: active.lastModuleId },
+        orderBy: { position: "asc" },
+      });
+      const data = { lesson, module: workshopModule };
+      return successResponse("success", 200, data);
+    } else {
+      const workshopModule = await prisma.workshopModule.findFirst({
+        where: { workshopId },
+        include: { lessons: { orderBy: { position: "asc" } } },
+      });
+      const { lessons, ...module } = workshopModule;
+      const lesson = lessons[0];
+      return successResponse("success", 200, { lesson, module });
+    }
+  } catch (err) {
+    console.log(err);
+
+    return errorResponse();
+  }
+};
+
+export const getAllWorkshopModulesAndLessons = async (workshopId) => {
+  try {
+    const resp = await prisma.workshop.findFirst({
+      where: { id: workshopId },
+      include: {
+        modules: {
+          orderBy: { position: "asc" },
+          include: { lessons: { orderBy: { position: "asc" } } },
+        },
+      },
+    });
+    return successResponse("success", 200, resp);
+  } catch {
+    return errorResponse();
+  }
 };
