@@ -8,7 +8,7 @@ import { useEffect } from "react";
 export default function WorkshopTabs({ children }) {
 
     const searchParams = useSearchParams()
-    const newUrlSearchParams = new URLSearchParams()
+    const newUrlSearchParams = new URLSearchParams(searchParams)
     const redirect = useRedirect(newUrlSearchParams)
 
     const handleType = (type) => {
@@ -17,6 +17,8 @@ export default function WorkshopTabs({ children }) {
     }
     useEffect(() => {
         const type = newUrlSearchParams.get("type")
+        console.log(type);
+
         if (!type) {
             newUrlSearchParams.set("type", "overview")
             redirect()

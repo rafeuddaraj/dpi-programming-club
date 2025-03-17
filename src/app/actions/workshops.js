@@ -19,7 +19,10 @@ export const getWorkshopById = async (workshopId) => {
   try {
     const workshop = await prisma.workshop.findUnique({
       where: { id: workshopId },
-      include: { modules: { include: { lessons: true } }, participants: true },
+      include: {
+        modules: { include: { lessons: true } },
+        participants: { include: { participant: true } },
+      },
     });
     if (!workshop) return errorResponse("Workshop not found", 404);
     return successResponse("Workshop retrieved successfully", 200, workshop);

@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { getStatus } from "@/lib/utils"
 import { Map } from "lucide-react"
 import VideoPlayer from "./_components/videoPlayer"
 import WorkshopContent from "./_components/workshop-content"
@@ -47,8 +48,7 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
   }
 
   const progress = await getWorkshopProgress(workshopId)
-
-  console.log(activeLesson);
+  console.log(getStatus(activeLesson?.startingDate, activeLesson?.endingDate));
 
 
   return (
@@ -77,16 +77,22 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
                 // Live Session for Online Workshop
                 <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-lg">
                   <p className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Live Session</p>
-                  <Button asChild className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
+                  {getStatus(activeLesson?.startingDate, activeLesson?.endingDate) === "Completed" ? <Button
+                    className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200 dark:bg-red-500 dark:hover:bg-red-600"
                   >
-                    <a
-                      href={activeLesson.liveLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Join Live Session
-                    </a>
+                    End Session
                   </Button>
+                    : <Button asChild className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
+                    >
+                      <a
+                        href={activeLesson.liveLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Join Live Session
+                      </a>
+                    </Button>}
+
                 </div>
               ) : enrollment.workshop.type === "OFFLINE" ? (
                 // Offline Session with Recorded Link Priority

@@ -1,33 +1,25 @@
-"use client"
-
-import { useState } from "react"
+import { getWorkshopById } from "@/app/actions/workshops"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Pencil, MoreHorizontal, Search, Filter, Download } from "lucide-react"
+import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { participantsData } from "@/data/participants"
+import { Download, Filter, MoreHorizontal, Pencil, Search } from "lucide-react"
 
 
-export function ParticipantsList({ workshopId }) {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
+export async function ParticipantsList({ workshopId }) {
+  const resp = await getWorkshopById(workshopId)
+  if (resp?.error) {
+    throw Error()
+  }
+  const participants = resp?.data?.participants
 
-  const participants = participantsData.filter(
-    (participant) =>
-      participant.workshopId === workshopId &&
-      (searchTerm === "" ||
-        participant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        participant.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (statusFilter === "all" ||
-        (statusFilter === "completed" && participant.completionStatus === "COMPLETED") ||
-        (statusFilter === "incomplete" && participant.completionStatus === "INCOMPLETE")),
-  )
+  console.log(participants);
 
-  if (participants.length === 0 && searchTerm === "" && statusFilter === "all") {
+
+  if (participants.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -53,12 +45,14 @@ export function ParticipantsList({ workshopId }) {
           <Input
             placeholder="Search participants..."
             className="pl-8"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+          // value={searchTerm}
+          // onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="flex gap-2">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select
+          // value={statusFilter} onValueChange={setStatusFilter}
+          >
             <SelectTrigger className="w-[180px]">
               <Filter className="mr-2 h-4 w-4" />
               <SelectValue placeholder="Filter by status" />
@@ -94,7 +88,7 @@ export function ParticipantsList({ workshopId }) {
             {participants.length === 0 ? (
               <div className="p-4 text-center text-muted-foreground">No participants match your search criteria</div>
             ) : (
-              participants.map((participant) => (
+              participants.map(({ participant }) => (
                 <div key={participant.id} className="grid grid-cols-12 p-4 items-center border-b last:border-b-0">
                   <div className="col-span-4">
                     <div className="flex items-center gap-3">

@@ -1,5 +1,6 @@
 import { getWorkshopById } from "@/app/actions/workshops"
 import FeedbackPreview from "@/components/common/feedback-preview"
+import { ParticipantsList } from "@/components/participants/participants-list"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -25,7 +26,7 @@ export default async function WorkshopDetailsPage({ params: param, searchParams:
       <div className="container mx-auto py-12 text-center">
         <h1 className="text-2xl font-bold mb-4">Workshop not found</h1>
         <p className="mb-6">The workshop you are looking for does not exist.</p>
-        <Button onClick={() => router.push("/dashboard/workshops")}>Back to Workshops</Button>
+        <Link href={"/dashboard/workshops"}>Back to Workshops</Link>
       </div>
     )
   }
@@ -181,7 +182,7 @@ export default async function WorkshopDetailsPage({ params: param, searchParams:
         </TabsContent>
 
         <TabsContent value="participants">
-          {/* <ParticipantsList workshopId={workshop.id} /> */}
+          <ParticipantsList workshopId={workshop.id} />
         </TabsContent>
       </WorkshopTabs>
     </div>
