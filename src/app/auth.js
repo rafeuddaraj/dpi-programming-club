@@ -1,7 +1,7 @@
+import JWT from "jsonwebtoken";
 import NextAuth from "next-auth";
 import CredentialProvider from "next-auth/providers/credentials";
 import { loginAction, refreshTokenAction } from "./actions/auth";
-import JWT from "jsonwebtoken";
 
 export const {
   auth,

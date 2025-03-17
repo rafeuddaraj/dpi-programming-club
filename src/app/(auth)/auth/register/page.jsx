@@ -23,6 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -82,6 +83,7 @@ export default function RegisterPage() {
   const [paymentModalOpen, setPaymentModal] = useState(false);
 
   const [values, setValues] = useState(null);
+  const router = useRouter()
 
   async function onSubmit(values) {
     setValues(values);
@@ -97,12 +99,13 @@ export default function RegisterPage() {
         await signIn("credentials", {
           email: values.email,
           password: values.password,
+          redirect: false
         });
-        return;
+        router.push("/profile")
       }
       throw res;
     } catch (err) {
-      console.log(err);
+      // console.log(err);
 
       toast.error("Failed to register user");
     }

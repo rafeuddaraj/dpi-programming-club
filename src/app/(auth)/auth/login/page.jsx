@@ -1,9 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { motion } from "framer-motion";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,13 +10,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { signIn } from "next-auth/react";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
+import { signIn } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { redirect, useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -42,11 +42,12 @@ export default function LoginPage() {
     try {
       let res = await signIn("credentials", {
         ...values,
-        redirectTo: "/profile",
+        redirect: false
       });
       if (res?.error) {
         throw new Error(res?.error);
       }
+      return router.push("/profile")
     } catch {
       setError("There was an error while trying to login.");
     }
