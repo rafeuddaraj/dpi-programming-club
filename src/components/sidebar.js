@@ -29,7 +29,6 @@ export default function Sidebar() {
   const routes = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Users", href: "/dashboard/users", icon: Users },
-    { name: "Courses", href: "/dashboard/courses", icon: BookOpen },
     { name: "Events", href: "/dashboard/events", icon: Calendar },
     { name: "Projects", href: "/dashboard/projects", icon: Briefcase },
     { name: "Workshops", href: "/dashboard/workshops", icon: Wrench },
