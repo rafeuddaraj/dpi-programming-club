@@ -55,7 +55,6 @@ model User {
   gallery               Gallery[]
   EventParticipant      EventParticipant[]
   workshopParticipants  WorkshopParticipant[]
-  courseEnrollments     CourseEnrollment[]
   eventExaminers        EventParticipant[]     @relation("Examiner")
   examiners             AssignmentSubmission[] @relation("Examiner")
   assignmentSubmissions AssignmentSubmission[]
@@ -189,67 +188,6 @@ model WorkshopParticipant {
   joining       DateTime @default(now())
 }
 
-model Course {
-  id                   String             @id @default(auto()) @map("_id") @db.ObjectId
-  name                 String
-  description          String
-  instructor           String? // Instructor name
-  instructorDetails    String? // Instructor Details 
-  instructorUrl        String? // Instructor Profile
-  price                Int? // If price has premium or Free
-  registrationDeadline DateTime
-  outline              String[]
-  type                 ActivityType       @default(OFFLINE) // Online or Offline
-  startingDate         DateTime
-  ending               DateTime
-  isActive             Boolean            @default(false) // published or not published
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt()
-  participants         CourseEnrollment[]
-  modules              CourseModule[]
-}
-
-model CourseModule {
-  id          String         @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  description String?
-  courseId    String         @db.ObjectId
-  course      Course         @relation(fields: [courseId], references: [id])
-  lessons     CourseLesson[]
-  isActive    Boolean        @default(false)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt()
-}
-
-model CourseLesson {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  description String?
-  liveLink    String? // if course online live class for store. 
-  videoUrl    String? // if course online live recorded class for store link
-  location    String? // if course are totally offline and class room to start course then store class room no or address.
-
-  courseModuleId String       @db.ObjectId
-  courseModule   CourseModule @relation(fields: [courseModuleId], references: [id])
-  isActive       Boolean      @default(false)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt()
-}
-
-model CourseEnrollment {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  courseId      String   @db.ObjectId
-  course        Course   @relation(fields: [courseId], references: [id])
-  participantId String   @db.ObjectId
-  price         Int?
-  score         Int?
-  complete      Boolean  @default(false)
-  certificate   String?
-  feedback      String?
-  participant   User     @relation(fields: [participantId], references: [id])
-  joining       DateTime @default(now())
-}
-
 // Payments
 
 model Payment {
@@ -284,7 +222,6 @@ model Gallery {
 
 enum ASSIGNABLE_TYPES {
   Workshop
-  Course
 }
 
 model Assignments {

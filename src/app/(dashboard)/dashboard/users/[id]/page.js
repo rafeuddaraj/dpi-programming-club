@@ -18,8 +18,7 @@ export default async function UserDetailsPage({ params }) {
   const param = await params;
 
   const resp = await getUserById(param?.id, null, {
-    CourseEnrollment: true,
-    WorkshopParticipant: true,
+    workshopParticipants: true,
     EventParticipant: true,
   });
   if (resp?.error) {
