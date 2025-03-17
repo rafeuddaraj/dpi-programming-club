@@ -1,6 +1,6 @@
 "use client"
 
-import { deleteWorkshopModule, updateWorkshopLesson, updateWorkshopModule } from "@/app/actions/workshops"
+import { deleteWorkshopModule, updateWorkshopLessons, updateWorkshopModule } from "@/app/actions/workshops"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/card"
 import {
     closestCenter,
@@ -86,111 +86,76 @@ export function DndModule({ modules: module, workshopId }) {
 
     // Handle module drag end
     const handleDragEnd = async (event) => {
-        const { active, over } = event
+        const { active, over } = event;
 
         if (over && active.id !== over.id) {
-            const oldIndex = modules.findIndex((item) => item.id === active.id)
-            const newIndex = modules.findIndex((item) => item.id === over.id)
+            const oldIndex = modules.findIndex((item) => item.id === active.id);
+            const newIndex = modules.findIndex((item) => item.id === over.id);
 
-            const oldObj = modules[oldIndex]
-            const newObj = modules[newIndex]
-
-            const oldPos = oldObj.position
-            const newPos = newObj.position
-
-            oldObj.position = newPos
-            newObj.position = oldPos
-
-            const reqQueue = await Promise.all([updateWorkshopModule({ workshopModuleId: oldObj?.id, data: { position: newPos } })
-                , updateWorkshopModule({ workshopModuleId: newObj?.id, data: { position: oldPos } })])
-            if (reqQueue[0].error || reqQueue[1].error) {
-                toast.error("There was an problem!")
-                return
+            if (oldIndex === -1 || newIndex === -1) {
+                return;
             }
-            const newOrder = arrayMove(modules, oldIndex, newIndex)
 
-            // Log the data that would be sent to the backend
-            console.log(newOrder);
+            const newOrder = arrayMove(modules, oldIndex, newIndex);
 
+            const updatedModules = newOrder.map((item, index) => ({
+                ...item,
+                position: index + 1,
+            }));
 
-            setModules(newOrder)
+            try {
+                const response = await updateWorkshopModule(updatedModules);
 
+                if (response.error) {
+                    toast.error("There was a problem updating positions!");
+                    return;
+                }
+
+                setModules(updatedModules);
+
+            } catch (error) {
+                toast.error("An unexpected error occurred!");
+            }
         }
 
-        setActiveId(null)
-        setActiveModule(null)
-    }
+        setActiveId(null);
+        setActiveModule(null);
+    };
+
 
     // Handle lesson drag end within a module
     const handleDragLessonEnd = async (event, moduleId) => {
-        const { active, over } = event
+        const { active, over } = event;
 
         if (over && active.id !== over.id) {
-            const oldIndex = modules
-                .find((module) => module.id === moduleId)
-                .lessons.findIndex((lesson) => lesson.id === active.id);
-            const newIndex = modules
-                .find((module) => module.id === moduleId)
-                .lessons.findIndex((lesson) => lesson.id === over.id);
+            const module = modules.find((module) => module.id === moduleId);
+            const oldIndex = module.lessons.findIndex((lesson) => lesson.id === active.id);
+            const newIndex = module.lessons.findIndex((lesson) => lesson.id === over.id);
 
+            const newLessonsOrder = arrayMove(module.lessons, oldIndex, newIndex).map(
+                (lesson, index) => ({
+                    ...lesson,
+                    position: index + 1,
+                })
+            );
+            const response = await updateWorkshopLessons(newLessonsOrder);
 
-            const oldObj = modules
-                .find((module) => module.id === moduleId)
-                .lessons[oldIndex]
-            const newObj = modules
-                .find((module) => module.id === moduleId)
-                .lessons[newIndex]
-
-            const oldPos = oldObj.position
-            const newPos = newObj.position
-
-            oldObj.position = newPos
-            newObj.position = oldPos
-
-            const reqQueue = await Promise.all([updateWorkshopLesson({ workshopLessonId: oldObj?.id, data: { position: newPos } })
-                , updateWorkshopLesson({ workshopLessonId: newObj?.id, data: { position: oldPos } })])
-            if (reqQueue[0].error || reqQueue[1].error) {
-                toast.error("There was an problem!")
-                return
+            if (response.error) {
+                toast.error("There was a problem updating lesson positions!");
+                return;
             }
 
-
-
-
-
-
-            const newLessonsOrder = arrayMove(modules.find((module) => module.id === moduleId).lessons, oldIndex, newIndex);
-
-
-
-
-
-            // Log the data that would be sent to the backend
-            console.log("Lesson reorder data to send to API:", {
-                moduleId,
-                lessons: newLessonsOrder.map((lesson, index) => ({
-                    id: lesson.id,
-                    position: index + 1,
-                })),
-            });
-
-            // Update the state without the callback pattern
-            const updatedModules = modules.map((module) => {
-                if (module.id === moduleId) {
-                    return {
-                        ...module,
-                        lessons: newLessonsOrder,
-                    };
-                }
-                return module;
-            });
+            const updatedModules = modules.map((mod) =>
+                mod.id === moduleId ? { ...mod, lessons: newLessonsOrder } : mod
+            );
 
             setModules(updatedModules);
         }
 
-        setActiveLessonId(null)
-        setActiveLesson(null)
-    }
+        setActiveLessonId(null);
+        setActiveLesson(null);
+    };
+
 
 
 

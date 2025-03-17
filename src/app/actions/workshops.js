@@ -135,7 +135,10 @@ export const getModuleByWorkshopId = async (workshopId) => {
   try {
     const resp = await prisma.workshopModule.findMany({
       where: { workshopId },
-      include: { lessons: { orderBy: { position: "desc" } }, workshop: true },
+      include: {
+        lessons: { orderBy: { position: "asc" }, where: { isActive: true } },
+        workshop: true,
+      },
     });
     if (!resp) return errorResponse("Workshop module not found", 404);
     return successResponse("Workshop module retrieved successfully", 200, resp);
@@ -144,15 +147,24 @@ export const getModuleByWorkshopId = async (workshopId) => {
   }
 };
 
-export const updateWorkshopModule = async ({ workshopModuleId, data }) => {
+export const updateWorkshopModule = async (modules) => {
   try {
-    const resp = await prisma.workshopModule.update({
-      where: { id: workshopModuleId },
-      data,
-    });
-    return successResponse("Workshop module updated successfully", 200, resp);
+    const updatePromises = modules.map((module) =>
+      prisma.workshopModule.update({
+        where: { id: module.id },
+        data: { position: module.position },
+      })
+    );
+
+    const updatedModules = await Promise.all(updatePromises);
+
+    return successResponse(
+      "Workshop modules updated successfully",
+      200,
+      updatedModules
+    );
   } catch (error) {
-    return errorResponse(error.message || "Failed to update workshop module");
+    return errorResponse(error.message || "Failed to update workshop modules");
   }
 };
 
@@ -225,6 +237,27 @@ export const updateWorkshopLesson = async ({ workshopLessonId, data }) => {
   }
 };
 
+export const updateWorkshopLessons = async (lessons) => {
+  try {
+    const updatePromises = lessons.map((lesson) =>
+      prisma.workshopLesson.update({
+        where: { id: lesson.id },
+        data: { position: lesson.position },
+      })
+    );
+
+    const updatedLessons = await Promise.all(updatePromises);
+
+    return successResponse(
+      "Workshop lessons updated successfully",
+      200,
+      updatedLessons
+    );
+  } catch (error) {
+    return errorResponse(error.message || "Failed to update workshop lessons");
+  }
+};
+
 export const deleteWorkshopLesson = async (workshopLessonId) => {
   try {
     await prisma.workshopLesson.delete({ where: { id: workshopLessonId } });
@@ -254,7 +287,10 @@ export const enrollWorkshop = async (
     });
 
     if (isPremium) {
-      if (currentWorkshop.totalSeats > bookedSeat?.length)
+      if (
+        currentWorkshop.totalSeats > bookedSeat?.length ||
+        currentWorkshop?.type === "ONLINE"
+      )
         res = await prisma.$transaction(async (db) => {
           const paymentData = {
             userId: user?.id,
@@ -368,8 +404,14 @@ export const getAllWorkshopModulesAndLessons = async (workshopId) => {
       where: { id: workshopId },
       include: {
         modules: {
-          orderBy: { position: "desc" },
-          include: { lessons: { orderBy: { position: "desc" } } },
+          orderBy: { position: "asc" },
+          where: { isActive: true },
+          include: {
+            lessons: {
+              orderBy: { position: "asc" },
+              where: { isActive: true },
+            },
+          },
         },
       },
     });

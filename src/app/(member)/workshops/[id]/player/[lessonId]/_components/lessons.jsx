@@ -36,7 +36,7 @@ export default function Lessons({ lessons, activeLesson, children, workshopParti
             if (resp?.error) {
                 throw Error()
             }
-            router.push(`/workshops/${workshopId}/player/${lesson?.id}`, { scroll: false })
+            router.push(`/workshops/${workshopId}/player/${lesson?.id}`)
         } catch {
             toast.error("Something went wrong!")
         }
@@ -50,8 +50,8 @@ export default function Lessons({ lessons, activeLesson, children, workshopParti
             {allLessons?.map(lesson => <div
                 key={lesson.id}
                 className={`flex items-center gap-2 p-2 rounded-md cursor-pointer ${currentLessonId === lesson?.id ? "bg-muted" : "hover:bg-muted/50"
-                    }`}
-                onClick={() => handleNextLesson(lesson)}
+                    } ${lesson?.status === "Upcoming" ? "cursor-not-allowed" : ""}`}
+                onClick={lesson?.status !== "Upcoming" ? () => handleNextLesson(lesson) : () => { }}
             >
 
                 {lesson?.status === "Completed" ? (
@@ -68,7 +68,8 @@ export default function Lessons({ lessons, activeLesson, children, workshopParti
                         </div>
                     )}
                 </div>
-            </div>)}
+            </div >)
+            }
         </>
     );
 }

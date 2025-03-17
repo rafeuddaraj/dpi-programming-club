@@ -1,4 +1,4 @@
-import { ArrowLeft, Clock, Play } from "lucide-react"
+import { ArrowLeft, Play } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
@@ -10,6 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Map } from "lucide-react"
+import VideoPlayer from "./_components/videoPlayer"
 import WorkshopContent from "./_components/workshop-content"
 import WorkshopSearch from "./_components/workshop-search"
 
@@ -46,6 +48,8 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
 
   const progress = await getWorkshopProgress(workshopId)
 
+  console.log(activeLesson);
+
 
   return (
     <div className="container mx-auto py-6">
@@ -66,56 +70,70 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
         <div className="lg:col-span-2 space-y-6">
           <Card className="overflow-hidden">
             <div className="aspect-video bg-muted flex items-center justify-center relative">
-              {enrollment.workshop.type === "ONLINE" && activeLesson.liveLink ? (
-                <div className="text-center p-6">
-                  <p className="text-lg font-medium mb-4">Live Session</p>
-                  <Button asChild>
-                    <a href={activeLesson.liveLink} target="_blank" rel="noopener noreferrer">
+              {/* Check for Recorded Link First */}
+              {activeLesson.recordedLink ? (
+                <VideoPlayer videoUrl={activeLesson?.recordedLink} />
+              ) : enrollment.workshop.type === "ONLINE" && activeLesson.liveLink ? (
+                // Live Session for Online Workshop
+                <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-lg">
+                  <p className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Live Session</p>
+                  <Button asChild className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
+                  >
+                    <a
+                      href={activeLesson.liveLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       Join Live Session
                     </a>
                   </Button>
                 </div>
-              ) : enrollment.workshop.type === "ONLINE" && activeLesson.recordedLink ? (
-                <div className="text-center p-6">
-                  <p className="text-lg font-medium mb-4">Recorded Session</p>
-                  <Button asChild>
-                    <a href={activeLesson.recordedLink} target="_blank" rel="noopener noreferrer">
-                      <Play className="h-4 w-4 mr-2" />
-                      Watch Recording
-                    </a>
-                  </Button>
+              ) : enrollment.workshop.type === "OFFLINE" ? (
+                // Offline Session with Recorded Link Priority
+                <div>
+                  {activeLesson.recordedLink && (
+                    <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-lg mb-4">
+                      <p className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Recorded Session</p>
+                      <Button asChild>
+                        <a
+                          href={activeLesson.recordedLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
+                        >
+                          <Play className="h-5 w-5 mr-2" />
+                          Watch Recording
+                        </a>
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* If no Recorded Link, show Location */}
+                  {activeLesson.location && !activeLesson.recordedLink && (
+                    <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-lg">
+                      <p className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Offline Session</p>
+                      <div className="flex justify-center">
+                        <Button variant="outline" className="inline-flex items-center px-6 py-3 border-2 border-gray-600 text-gray-800 dark:text-white rounded-lg hover:border-gray-800 dark:hover:border-gray-400 transition duration-200">
+                          <Map className="h-5 w-5 mr-2" />
+                          {activeLesson.location || "Location details will be provided before the session"}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
-                <div className="text-center p-6">
-                  <p className="text-lg font-medium mb-2">Offline Session</p>
-                  <p className="text-muted-foreground mb-4">
-                    {activeLesson.location || "Location details will be provided before the session"}
-                  </p>
-                  <div className="flex justify-center">
-                    <Button variant="outline">
-                      <Clock className="h-4 w-4 mr-2" />
-                      Add to Calendar
-                    </Button>
-                  </div>
-                </div>
+                <p className="text-center text-gray-600 dark:text-gray-300">
+                  Link details will be provided before the session
+                </p>
               )}
-
-              {/* Quiz Button */}
-              {/* <Button
-                variant="secondary"
-                size="sm"
-                className="absolute top-4 right-4"
-                onClick={() => alert("Quiz feature will be implemented soon!")}
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Take Quiz
-              </Button> */}
             </div>
 
             <div className="p-6">
               <h2 className="text-xl font-bold">{activeLesson.name}</h2>
             </div>
           </Card>
+
+
 
           {/* Description and Assignment Tabs */}
           <Tabs defaultValue="description" className="w-full">

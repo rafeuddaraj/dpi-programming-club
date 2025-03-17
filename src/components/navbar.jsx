@@ -40,7 +40,7 @@ export function Navbar() {
           </div>
 
           {/* Navigation items centered */}
-          <div className="hidden md:flex space-x-6 items-center justify-center flex-grow">
+          <div className="hidden md:flex space-x-6 items-center justify-center flex-grow overflow-x-auto">
             {navItems.map((item) => (
               <Link
                 key={item.name}
@@ -81,7 +81,7 @@ export function Navbar() {
       </div>
 
       {isOpen && (
-        <div className="md:hidden">
+        <div className="md:hidden overflow-hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navItems.map((item) => (
               <Link
