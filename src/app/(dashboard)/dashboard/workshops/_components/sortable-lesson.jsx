@@ -62,6 +62,9 @@ const SortableLesson = ({
                 </div>
             </div>
             <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" className="w-full">
+                    <Link href={`/dashboard/workshops/${lesson?.id}/assignment`}>Assignment</Link>
+                </Button>
                 <Badge variant={lesson.isActive ? "outline" : "destructive"} className="text-xs">
                     {lesson.isActive ? "Active" : "Inactive"}
                 </Badge>

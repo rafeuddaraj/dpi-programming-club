@@ -2,8 +2,10 @@ import { ArrowLeft, Play } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
+import { getAssignmentSubmissionByUserIdAndAssignmentId } from "@/app/actions/assignments"
 import { getActiveLessonAndModule, getWorkshopParticipant, getWorkshopProgress } from "@/app/actions/workshops"
 import { auth } from "@/app/auth"
+import SubmitAssignmentModal from "@/components/assignments/submission-modal"
 import FeedbackPreview from "@/components/common/feedback-preview"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -48,8 +50,19 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
   }
 
   const progress = await getWorkshopProgress(workshopId)
-  console.log(getStatus(activeLesson?.startingDate, activeLesson?.endingDate));
 
+
+  const assignment = activeLesson?.assignment || null
+
+  const assignmentSubResp = await getAssignmentSubmissionByUserIdAndAssignmentId(session?.user?.id, assignment?.id)
+
+  if (assignmentSubResp?.error) {
+    throw Error()
+  }
+
+  const assignmentSubmission = assignmentSubResp?.data || null
+
+  console.log(assignmentSubmission);
 
   return (
     <div className="container mx-auto py-6">
@@ -143,9 +156,9 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
 
           {/* Description and Assignment Tabs */}
           <Tabs defaultValue="description" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="description">Description</TabsTrigger>
-              <TabsTrigger value="assignment">Assignment</TabsTrigger>
+            <TabsList className={`w-full ${assignment && "grid-cols-2 grid"}`}>
+              <TabsTrigger className="w-full" value="description">Description</TabsTrigger>
+              {assignment && <TabsTrigger value="assignment">Assignment</TabsTrigger>}
             </TabsList>
             <TabsContent value="description" className="mt-4">
               <Card>
@@ -158,48 +171,21 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
                 </CardContent>
               </Card>
             </TabsContent>
-            <TabsContent value="assignment" className="mt-4">
+            {assignment && <TabsContent value="assignment" className="mt-4">
               <Card>
                 <CardHeader>
                   <CardTitle>Assignment</CardTitle>
                   <CardDescription>Complete this assignment to test your understanding</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <h3 className="font-medium">Assignment Instructions:</h3>
-                    <p>Based on what you've learned in this lesson, complete the following tasks:</p>
-                    <ol className="list-decimal pl-5 space-y-2">
-                      <li>
-                        <p className="font-medium">Task 1:</p>
-                        <p>Create a simple project that demonstrates your understanding of {activeLesson.name}.</p>
-                      </li>
-                      <li>
-                        <p className="font-medium">Task 2:</p>
-                        <p>
-                          Write a brief explanation (300-500 words) of how you would apply these concepts in a
-                          real-world scenario.
-                        </p>
-                      </li>
-                      <li>
-                        <p className="font-medium">Task 3:</p>
-                        <p>Share your work with peers and provide feedback on at least two other submissions.</p>
-                      </li>
-                    </ol>
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="font-medium">Submission Guidelines:</h3>
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>Submit your assignment through the platform by uploading your files</li>
-                      <li>Deadline: 7 days after completing this lesson</li>
-                      <li>Format: PDF, ZIP, or GitHub repository link</li>
-                    </ul>
-                  </div>
+                  {assignment && <FeedbackPreview markdownText={assignment?.description} />}
+
                   <div className="pt-4">
-                    <Button>Submit Assignment</Button>
+                    <SubmitAssignmentModal isAlreadySubmitted={assignmentSubmission} assignment={assignment} userId={session?.user?.id} />
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
+            </TabsContent>}
           </Tabs>
 
           <Card>

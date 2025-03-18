@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 import {
   Award,
   Bell,
-  BookOpen,
   Briefcase,
   Calendar,
   CreditCard,
   DollarSign,
+  FileText,
   LayoutDashboard,
   LogOut,
   PieChart,
@@ -32,6 +32,7 @@ export default function Sidebar() {
     { name: "Events", href: "/dashboard/events", icon: Calendar },
     { name: "Projects", href: "/dashboard/projects", icon: Briefcase },
     { name: "Workshops", href: "/dashboard/workshops", icon: Wrench },
+    { name: "Assignments", href: "/dashboard/assignments", icon: FileText },
     {
       name: "Finance",
       icon: DollarSign,

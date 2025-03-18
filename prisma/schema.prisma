@@ -168,6 +168,7 @@ model WorkshopLesson {
   endingDate       DateTime
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt()
+  assignment       Assignments?
 }
 
 model WorkshopParticipant {
@@ -221,25 +222,28 @@ model Gallery {
 // Assignments 
 
 enum ASSIGNABLE_TYPES {
-  Workshop
+  WORKSHOP
 }
 
 model Assignments {
   id             String                 @id @default(auto()) @map("_id") @db.ObjectId
   name           String
   description    String
-  assignableType ASSIGNABLE_TYPES
+  assignableType ASSIGNABLE_TYPES       @default(WORKSHOP)
   totalMarks     Int                    @default(100)
   submissions    AssignmentSubmission[]
   deuDate        DateTime
   createdAt      DateTime               @default(now())
   updatedAt      DateTime               @updatedAt()
-  relatedId      String                 @db.ObjectId // ID of the related entity (e.g., Workshop ID or Course ID)
+  lessonId       String                 @unique @db.ObjectId // Lesson Id
+  lessons        WorkshopLesson         @relation(fields: [lessonId], references: [id])
 }
 
 model AssignmentSubmission {
   id             String      @id @default(auto()) @map("_id") @db.ObjectId
   userId         String      @db.ObjectId
+  liveLink       String      @unique
+  documentLink   String      @unique
   submissionDate DateTime    @default(now())
   marks          Int? // Null if not marked yet
   feedback       String? // Feedback from the Admin/Moderator
@@ -249,6 +253,8 @@ model AssignmentSubmission {
   examiner       User        @relation("Examiner", fields: [id], references: [id]) // reviews
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt()
+
+  @@unique([assignmentId, userId, documentLink, liveLink])
 }
 
 // Quizzes

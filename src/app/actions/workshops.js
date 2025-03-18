@@ -215,7 +215,7 @@ export const getWorkshopLessonById = async (workshopLessonId) => {
   try {
     const lesson = await prisma.workshopLesson.findUnique({
       where: { id: workshopLessonId },
-      include: { module: true },
+      include: { module: true, assignment: true },
     });
     if (!lesson) return errorResponse("Workshop lesson not found", 404);
     return successResponse(
@@ -378,6 +378,7 @@ export const getActiveLessonAndModule = async (workshopId) => {
       const lesson = await prisma.workshopLesson.findFirst({
         where: { id: active?.lastLessonId },
         orderBy: { position: "asc" },
+        include: { assignment: true },
       });
       const workshopModule = await prisma.workshopModule.findFirst({
         where: { id: active.lastModuleId },
@@ -388,7 +389,12 @@ export const getActiveLessonAndModule = async (workshopId) => {
     } else {
       const workshopModule = await prisma.workshopModule.findFirst({
         where: { workshopId },
-        include: { lessons: { orderBy: { position: "asc" } } },
+        include: {
+          lessons: {
+            orderBy: { position: "asc" },
+            include: { assignment: true },
+          },
+        },
       });
       const { lessons, ...module } = workshopModule;
       const lesson = lessons[0];
