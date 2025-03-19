@@ -142,7 +142,7 @@ function ProfileDropdown({ user }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className={"rounded-full border border-green-400"}>
+        <Button variant="outline" size="icon" className={"rounded-full border-2 border-green-400"}>
           <Avatar className="w-full h-full">
             <AvatarImage src={user?.avatar || "/avatar.svg"} alt={user?.name} />
             <AvatarFallback>
@@ -156,13 +156,10 @@ function ProfileDropdown({ user }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
-          <Link href="/dashboard">Dashboard</Link>
+          <Link href="/profile/dashboard">Dashboard</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/profile">Profile</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/settings">Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={async () => {

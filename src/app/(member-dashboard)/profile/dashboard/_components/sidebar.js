@@ -4,7 +4,6 @@ import { Button } from "@/components/button";
 import { cn } from "@/lib/utils";
 import {
   Award,
-  BookOpen,
   Briefcase,
   Calendar,
   CreditCard,
@@ -21,7 +20,6 @@ export default function Sidebar() {
 
   const routes = [
     { name: "Dashboard", href: "/profile/dashboard", icon: LayoutDashboard },
-    { name: "Courses", href: "/profile/dashboard/courses", icon: BookOpen },
     { name: "Events", href: "/profile/dashboard/events", icon: Calendar },
     { name: "Projects", href: "/profile/dashboard/projects", icon: Briefcase },
     { name: "Workshops", href: "/profile/dashboard/workshops", icon: Wrench },

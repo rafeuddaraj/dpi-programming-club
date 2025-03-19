@@ -30,6 +30,9 @@ export default function GalleryPage() {
     setSelectedImage(newIndex);
   };
 
+
+
+
   return (
     <div className="container mx-auto py-8">
       <motion.div

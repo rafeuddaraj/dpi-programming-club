@@ -48,6 +48,15 @@ export default function NoticeTable({ notices, pagination }) {
         }
     }
 
+    if (notices.length === 0) {
+        return (
+            <div className="text-center py-12 border rounded-lg bg-muted/50">
+                <h3 className="text-xl font-medium mb-2">No notices available</h3>
+                {isDashboard && <p className="text-muted-foreground">Create a new notice to get started.</p>}
+            </div>
+        )
+    }
+
     return (
         <>
             <div className="border rounded-lg overflow-hidden">
@@ -57,8 +66,8 @@ export default function NoticeTable({ notices, pagination }) {
                             <TableRow>
                                 {!isDashboard && <TableHead>Index</TableHead>}
                                 <TableHead>Title</TableHead>
-                                <TableHead>Published Date</TableHead>
-                                {isDashboard ? <TableHead>Actions</TableHead> : <TableHead>Download</TableHead>}
+                                <TableHead className="hidden md:table-cell">Published</TableHead>
+                                {isDashboard ? <TableHead className="text-right">Actions</TableHead> : <TableHead>Download</TableHead>}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -68,18 +77,18 @@ export default function NoticeTable({ notices, pagination }) {
                                     <TableCell className="font-medium">
                                         <div className="flex flex-col">
                                             <span>{notice.name}</span>
-                                            <span className="text-xs text-muted-foreground md:hidden">{formatDate(notice.createdAt)}</span>
+                                            <span className="text-xs text-muted-foreground md:hidden">{formatDate(notice.createdAt, { time: true })}</span>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{formatDate(notice.createdAt)}</TableCell>
-                                    <TableCell>
-                                        {isDashboard && <div className="flex justify-end gap-2">
-                                            {isDashboard && <Link href={`/dashboard/notice/${notice.id}`}>
+                                    <TableCell className="hidden md:table-cell">{formatDate(notice.createdAt, { time: true })}</TableCell>
+                                    {isDashboard ? (<TableCell className="text-right">
+                                        <div className="flex justify-end gap-2">
+                                            <Link href={`/dashboard/notice/${notice.id}`}>
                                                 <Button variant="outline" size="icon" className="h-8 w-8">
                                                     <Pencil className="h-4 w-4" />
                                                     <span className="sr-only">Edit</span>
                                                 </Button>
-                                            </Link>}
+                                            </Link>
 
                                             {notice.document && (
                                                 <a href={notice.document} target="_blank" rel="noopener noreferrer">
@@ -90,7 +99,7 @@ export default function NoticeTable({ notices, pagination }) {
                                                 </a>
                                             )}
 
-                                            {isDashboard && <AlertDialog>
+                                            <AlertDialog>
                                                 <AlertDialogTrigger asChild>
                                                     <Button
                                                         variant="destructive"
@@ -114,8 +123,9 @@ export default function NoticeTable({ notices, pagination }) {
                                                         <AlertDialogAction onClick={() => handleDelete(notice.id)}>Delete</AlertDialogAction>
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>
-                                            </AlertDialog>}
-                                        </div>}
+                                            </AlertDialog>
+                                        </div>
+                                    </TableCell>) : (<TableCell>
                                         {notice.document && (
                                             <a href={notice.document} target="_blank" rel="noopener noreferrer">
                                                 <Button variant="outline" size="icon" className="h-8 w-8">
@@ -124,7 +134,7 @@ export default function NoticeTable({ notices, pagination }) {
                                                 </Button>
                                             </a>
                                         )}
-                                    </TableCell>
+                                    </TableCell>)}
                                 </TableRow>
                             ))}
                         </TableBody>

@@ -7,14 +7,10 @@ import {
   Briefcase,
   Calendar,
   CreditCard,
-  DollarSign,
   FileText,
   LayoutDashboard,
   LogOut,
-  PieChart,
   Settings,
-  TrendingDown,
-  TrendingUp,
   Users,
   Wrench,
 } from "lucide-react";
@@ -29,37 +25,23 @@ export default function Sidebar() {
   const routes = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Users", href: "/dashboard/users", icon: Users },
+    { name: "Notice", href: "/dashboard/notice", icon: Bell },
     { name: "Events", href: "/dashboard/events", icon: Calendar },
     { name: "Projects", href: "/dashboard/projects", icon: Briefcase },
     { name: "Workshops", href: "/dashboard/workshops", icon: Wrench },
     { name: "Assignments", href: "/dashboard/assignments", icon: FileText },
-    {
-      name: "Finance",
-      icon: DollarSign,
-      href: "/dashboard/finance",
-      subItems: [
-        {
-          label: "Overview",
-          icon: PieChart,
-          href: "/dashboard/finance",
-        },
-        {
-          label: "Income",
-          icon: TrendingUp,
-          href: "/dashboard/finance/income",
-        },
-        {
-          label: "Expenses",
-          icon: TrendingDown,
-          href: "/dashboard/finance/expenses",
-        },
-      ],
-    },
+
     { name: "Payments", href: "/dashboard/payments", icon: CreditCard },
     { name: "Skills", href: "/dashboard/skills", icon: Award },
-    { name: "Subscriptions", href: "/dashboard/subscriptions", icon: Bell },
     { name: "Settings", href: "/dashboard/settings", icon: Settings },
   ];
+
+  const isActive = (href) => {
+    if (href === "/dashboard") {
+      return pathname === "/dashboard";
+    }
+    return pathname.startsWith(href) && pathname !== "/dashboard";
+  };
 
   return (
     <div className="hidden md:flex flex-col w-64 bg-card border-r overflow-y-auto">
@@ -78,9 +60,7 @@ export default function Sidebar() {
             <Link
               key={route.href}
               href={route.href}
-              className={`sidebar-item ${
-                pathname === route.href ? "active" : ""
-              }`}
+              className={`sidebar-item ${isActive(route.href) ? "active" : ""}`}
             >
               <route.icon className="sidebar-item-icon" />
               <span>{route.name}</span>
