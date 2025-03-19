@@ -1,34 +1,32 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import Link from "next/link";
-import { useTheme } from "next-themes";
-import { Moon, Sun } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { signOut } from "next-auth/react";
+} from "@/components/ui/dropdown-menu"
+import { Moon, Sun } from "lucide-react"
+import { signOut } from "next-auth/react"
+import { useTheme } from "next-themes"
+import Link from "next/link"
+import { redirect } from "next/navigation"
+import { useState } from "react"
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 
 const navItems = [
   { name: "Home", href: "/" },
   { name: "Events", href: "/events" },
   { name: "Members", href: "/members" },
-  { name: "Membership", href: "/membership" },
-  { name: "About", href: "/about" },
   { name: "Workshops", href: "/workshops" },
   { name: "Gallery", href: "/gallery" },
-  { name: "Contact", href: "/contact" },
-  { name: "Profile", href: "/profile" },
-  { name: "Discord", href: "/discord" },
-];
+]
 
-export function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const { setTheme } = useTheme();
+export function Navbar({ user }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const { setTheme } = useTheme()
 
   return (
     <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b border-border/40">
@@ -53,8 +51,9 @@ export function Navbar() {
             </div>
           </div>
           <div className="hidden md:block">
-            <div className="ml-4 flex items-center md:ml-6">
+            <div className="ml-4 flex items-center md:ml-6 space-x-2">
               <ThemeToggle />
+              {user ? <ProfileDropdown user={user} /> : <Link href="/auth/login"><Button>Login</Button></Link>}
             </div>
           </div>
           <div className="-mr-2 flex md:hidden">
@@ -73,12 +72,7 @@ export function Navbar() {
                   stroke="currentColor"
                   aria-hidden="true"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               ) : (
                 <svg
@@ -89,23 +83,13 @@ export function Navbar() {
                   stroke="currentColor"
                   aria-hidden="true"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
             </Button>
           </div>
         </div>
       </div>
-
-      <Button onClick={() => signOut({ redirectTo: "/auth/register" })}>
-        SignOut
-      </Button>
-
       {isOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
@@ -121,18 +105,19 @@ export function Navbar() {
             ))}
           </div>
           <div className="pt-4 pb-3 border-t border-border/40">
-            <div className="flex items-center px-5">
+            <div className="flex items-center px-5 space-x-2">
               <ThemeToggle />
+              <ProfileDropdown />
             </div>
           </div>
         </div>
       )}
     </nav>
-  );
+  )
 }
 
 function ThemeToggle() {
-  const { setTheme } = useTheme();
+  const { setTheme } = useTheme()
 
   return (
     <DropdownMenu>
@@ -144,16 +129,48 @@ function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("light")}>Light</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("dark")}>Dark</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("system")}>System</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }
+
+function ProfileDropdown({ user }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon" className={"rounded-full border border-green-400"}>
+          <Avatar className="w-full h-full">
+            <AvatarImage src={user?.avatar || "/avatar.svg"} alt={user?.name} />
+            <AvatarFallback>
+              {user?.name
+                ?.split(" ")
+                ?.map((n) => n[0])
+                ?.join("")}
+            </AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard">Dashboard</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/profile">Profile</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/settings">Settings</Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={async () => {
+          await signOut({ redirect: false })
+          redirect("/auth/login")
+
+        }}>Logout</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+

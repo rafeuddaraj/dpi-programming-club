@@ -1,5 +1,6 @@
 "use client";
 
+import { deleteFile, uploadFile } from "@/app/actions/uploads";
 import { updateUserById } from "@/app/actions/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ import { Textarea } from "@/components/ui/textarea";
 import DepartmentList from "@/utils/DepartmentList";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -54,11 +56,23 @@ const profileSchema = z.object({
   skills: z.array(z.string()).min(1, "At least one skill is required"),
 });
 
+const upload = async (avatar, values, authUser, updateSession) => {
+  const formData = new FormData();
+  formData.append("file", avatar);
+  const avatarResp = await uploadFile(formData)
+  if (avatarResp.error) {
+    throw new Error("Something went wrong")
+  }
+  values.avatar = avatarResp.url
+
+  updateSession({ ...authUser, avatar: values.avatar })
+}
+
 export function ProfileEditForm({ user }) {
-  const [avatarSrc, setAvatarSrc] = useState(
-    "/placeholder.svg?height=128&width=128"
-  );
+  const [avatar, setAvatar] = useState(user.avatar || "/avatar.svg");
   user.department = DepartmentList(user.department);
+  const { update: updateSession, data } = useSession() || {}
+  const authUser = data?.user || null
   for (let key in user) {
     user[key] = user[key] || "";
   }
@@ -71,12 +85,26 @@ export function ProfileEditForm({ user }) {
 
   async function onSubmit(values) {
     try {
+
+
+      if (typeof avatar !== "string") {
+        if (user?.avatar) {
+          const resp = await deleteFile(user.avatar);
+          if (resp.error) {
+            throw new Error("Something went wrong")
+          }
+          await upload(avatar, values, authUser, updateSession)
+        } else {
+          await upload(avatar, values, authUser, updateSession)
+        }
+      }
+
       const res = await updateUserById(values);
       if (res.error) {
         throw new Error("Something went Wrong");
       }
       toast.success("Profile Update Success")
-      return router.push("/profile")
+      // return router.push("/profile")
     } catch (err) {
       toast.error(err.message);
     }
@@ -99,7 +127,7 @@ export function ProfileEditForm({ user }) {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="flex flex-col items-center gap-4">
                 <Avatar className="w-32 h-32">
-                  <AvatarImage src={avatarSrc} alt="Profile picture" />
+                  <AvatarImage src={typeof avatar === "string" ? avatar : URL.createObjectURL(avatar)} alt="Profile picture" />
                   <AvatarFallback>
                     {form
                       .watch("name")
@@ -124,10 +152,13 @@ export function ProfileEditForm({ user }) {
                   accept="image/*"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
+                    if (file && file.size > 1048576) {
+                      alert("File size must be less than 1MB");
+                      return;
+                    }
+
                     if (file) {
-                      const reader = new FileReader();
-                      reader.onload = (e) => setAvatarSrc(e.target?.result);
-                      reader.readAsDataURL(file);
+                      setAvatar(file);
                     }
                   }}
                 />

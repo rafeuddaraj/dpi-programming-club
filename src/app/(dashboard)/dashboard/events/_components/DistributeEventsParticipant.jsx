@@ -6,11 +6,9 @@ import { toast } from "sonner";
 
 
 export default function DistributeEventsParticipant({ eventId }) {
-    console.log(eventId);
 
     const handleDistribute = async () => {
         try {
-            console.log(eventId);
 
             const resp = await distributeAllEventsByModerator(eventId)
             if (resp?.error)

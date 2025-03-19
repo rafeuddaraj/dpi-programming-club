@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Plus, X } from "lucide-react";
+import Link from "next/link";
 
 export default function EditProjectPage({ params }) {
   // In a real app, you would fetch project data based on params.id
@@ -19,7 +19,7 @@ export default function EditProjectPage({ params }) {
     id: params.id,
     title: "Club Website Redesign",
     description:
-      "Redesign the computer club website to improve user experience, add new features, and make it mobile-friendly.",
+      "Redesign the CST Club website to improve user experience, add new features, and make it mobile-friendly.",
     startDate: "2023-03-15",
     endDate: "2023-06-30",
     lead: "john-doe",

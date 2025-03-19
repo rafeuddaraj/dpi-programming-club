@@ -47,7 +47,6 @@ export const {
           }
         }
       }
-
       return { ...user, ...token, ...session };
     },
     session({ token, newSession, user }) {

@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function DiscordPage() {
   return (
@@ -7,7 +7,7 @@ export default function DiscordPage() {
       <h1 className="text-3xl font-bold mb-8">Join Our Discord Community</h1>
       <Card className="max-w-md mx-auto">
         <CardHeader>
-          <CardTitle>Polytechnic Computer Club Discord</CardTitle>
+          <CardTitle>Polytechnic CST Club Discord</CardTitle>
           <CardDescription>Connect with fellow students and mentors</CardDescription>
         </CardHeader>
         <CardContent>

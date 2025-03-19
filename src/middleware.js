@@ -34,8 +34,6 @@ export default auth((request) => {
       )
     );
   } else if (!auth && isMemberRoute) {
-    console.log("I am Matched");
-
     return Response.redirect(new URL("/auth/login", nextUrl));
   } else if (!["admin", "moderate"].includes(auth?.role) && isAdminRoute) {
     return Response.redirect(new URL("/profile", nextUrl));

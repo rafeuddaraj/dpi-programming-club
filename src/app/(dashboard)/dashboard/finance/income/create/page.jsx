@@ -1,14 +1,14 @@
 "use client"
 
-import Link from "next/link"
-import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft } from "lucide-react"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import Link from "next/link"
+import { useForm } from "react-hook-form"
 
 export default function CreateIncomePage() {
   const form = useForm({
@@ -25,7 +25,6 @@ export default function CreateIncomePage() {
 
   async function onSubmit(data) {
     try {
-      console.log("Form submitted:", data)
       // Add your API call here
     } catch (error) {
       console.error("Error creating income record:", error)

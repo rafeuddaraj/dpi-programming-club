@@ -1,6 +1,7 @@
 "use client";
 
 import { registerAndPaymentAction } from "@/app/actions/auth";
+import CommonAlert from "@/components/common/alert";
 import { PasswordStrengthMeter } from "@/components/password-strength-meter";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,10 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { COMING_SOON } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -352,9 +355,16 @@ export default function RegisterPage() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
+            <Link
+              href="/auth/login"
+              className="text-sm text-primary hover:underline mt-5"
+            >
+              Already have an account? Log in
+            </Link>
+            <Button disabled={COMING_SOON} type="submit" className="w-full">
               Register
             </Button>
+            {COMING_SOON && <CommonAlert title={"System Under Development"} description={"We are actively working on our system and will be launching our services very soon. Stay tuned for updates!"} />}
           </form>
         </Form>
       </motion.div>

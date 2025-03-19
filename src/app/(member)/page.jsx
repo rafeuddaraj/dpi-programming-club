@@ -1,4 +1,6 @@
-import Link from "next/link";
+import { MotionDiv, MotionH1, MotionP } from "@/components/common/motion";
+import { Icons } from "@/components/icons";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,9 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Icons } from "@/components/icons";
-import { MotionDiv, MotionH1, MotionP } from "@/components/common/motion";
+import Link from "next/link";
 
 export default async function Home() {
   return (
@@ -28,7 +28,7 @@ export default async function Home() {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              Computer Club
+              CST Club
             </MotionH1>
             <MotionP
               className="text-xl sm:text-2xl md:text-3xl mb-8"

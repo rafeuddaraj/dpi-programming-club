@@ -37,7 +37,7 @@ export default function Sidebar() {
           <span className="bg-primary text-primary-foreground p-1 rounded">
             DPI
           </span>
-          <span>Computer Club</span>
+          <span>CST Club</span>
         </Link>
       </div>
       <div className="flex-1 px-3 py-2 space-y-1">

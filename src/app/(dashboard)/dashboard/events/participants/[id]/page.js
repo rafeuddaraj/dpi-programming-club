@@ -45,8 +45,6 @@ export default async function EventParticipantsPage({ params, searchParams }) {
 
   const event = participants[0]?.event;
 
-  console.log(event);
-
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">

@@ -11,7 +11,7 @@ const Info = dynamic(() => import("./info"));
 export default function ProfileActivities({ user, activities }) {
   const [activeTab, setActiveTab] = useState("info");
 
-  const { event, course, workshop } = activities || {}
+  const { event, workshop } = activities || {}
 
   return (
     <>
@@ -22,7 +22,7 @@ export default function ProfileActivities({ user, activities }) {
           <TabsTrigger value="education">Education</TabsTrigger>
         </TabsList>
         <Info user={user} />
-        <Achievements event={event} workshop={workshop} course={course} />
+        <Achievements event={event} workshop={workshop} />
         <Education />
       </Tabs >
     </>

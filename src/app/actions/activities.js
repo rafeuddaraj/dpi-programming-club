@@ -13,15 +13,11 @@ export const getAllActivitiesByUserId = async (
       include: { event: true, participant: true },
     });
 
-    const course = await prisma.courseEnrollment.findMany({
-      where: { participantId: id, complete: true },
-      include: { course: true, participant: true },
-    });
     const workshop = await prisma.workshopParticipant.findMany({
       where: { participantId: id, complete: true },
       include: { workshop: true, participant: true },
     });
-    return successResponse("Success fetched", 200, { workshop, course, event });
+    return successResponse("Success fetched", 200, { workshop, event });
   } catch (err) {
     console.log(err);
 

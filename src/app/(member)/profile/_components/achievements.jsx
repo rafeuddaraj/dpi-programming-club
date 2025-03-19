@@ -37,7 +37,7 @@ const userProfile = {
         { semester: "4th", gpa: 3.9 },
     ],
 };
-export default function Achievements({ event, workshop, course }) {
+export default function Achievements({ event, workshop }) {
     return (
         <>
             <TabsContent value="achievements" className="space-y-5">

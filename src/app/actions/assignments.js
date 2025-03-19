@@ -1,8 +1,10 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { commonGet } from "@/lib/utils";
 import { errorResponse, successResponse } from "@/utils/req-res";
 import { revalidatePath } from "next/cache";
+import { auth } from "../auth";
 
 // Create Assignment
 export const createAssignment = async (data) => {
@@ -134,22 +136,42 @@ export const gradeSubmission = async (
   }
 };
 
-export const getAssignmentSubmissionUnMarking = async () => {
-  try {
-    const unmarkedSubmissions = await prisma.assignmentSubmission.findMany({
-      where: {
-        marks: null, // Unmarked submissions
-      },
+export const getAssignmentSubmissionUnMarking = async (
+  query,
+  status,
+  page,
+  limit
+) => {
+  const where = query
+    ? {
+        assignment: { name: { contains: query, mode: "insensitive" } },
+        status: status?.toUpperCase(),
+      }
+    : { status: status?.toUpperCase() };
+  if (status === "all") delete where.status;
+  const include = {
+    assignment: {
       include: {
-        assignment: true, // Include assignment details
-        user: true, // Include user details
+        lessons: { include: { module: { include: { workshop: true } } } },
       },
-    });
+    }, // Include assignment details
+    user: true, // Include user details
+    examiner: true,
+  };
 
+  try {
+    const resp = await commonGet(
+      "assignmentSubmission",
+      where,
+      include,
+      page,
+      undefined,
+      { createdAt: "desc" }
+    );
     return successResponse(
       "Unmarked Submissions Retrieved Successfully",
       200,
-      unmarkedSubmissions
+      resp?.data
     );
   } catch (error) {
     return errorResponse(error.message);
@@ -183,5 +205,172 @@ export const getAssignmentSubmissionByUserIdAndAssignmentId = async (
     );
   } catch (error) {
     return errorResponse(error.message);
+  }
+};
+export const getAssignmentSubmissionById = async (id) => {
+  try {
+    const submission = await prisma.assignmentSubmission.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        assignment: true,
+        user: true,
+        examiner: true,
+      },
+    });
+
+    if (!submission) {
+      return successResponse("No submission found", 404, null);
+    }
+
+    return successResponse(
+      "Submission retrieved successfully",
+      200,
+      submission
+    );
+  } catch (error) {
+    return errorResponse(error.message);
+  }
+};
+
+// Admin Assignment Marking
+
+export const adminAssignmentMarkSubmission = async (submissionId, data) => {
+  try {
+    const session = await auth();
+    const user = session?.user || {};
+
+    if (!user || user.role !== "admin") {
+      return errorResponse("Unauthorized access", 403);
+    }
+
+    // Extract data from request
+    const { marks, status, feedback } = data;
+
+    // Find the existing submission
+    const existingSubmission = await prisma.assignmentSubmission.findUnique({
+      where: { id: submissionId },
+    });
+
+    if (!existingSubmission) {
+      return errorResponse("Submission not found", 404);
+    }
+
+    // Update the submission with new values
+    const updatedSubmission = await prisma.assignmentSubmission.update({
+      where: { id: submissionId },
+      data: {
+        marks,
+        status,
+        feedback,
+        examinerId: user.id, // Assigning examiner as current user
+        updatedAt: new Date(),
+      },
+    });
+
+    return successResponse(
+      "Submission updated successfully",
+      updatedSubmission
+    );
+  } catch (error) {
+    console.error("Error updating submission:", error);
+    return errorResponse("Internal Server Error", 500);
+  }
+};
+
+export const publishedAllMarkedAssignments = async () => {
+  try {
+    const session = await auth();
+    const user = session?.user || {};
+
+    if (!user || user.role !== "admin") {
+      return errorResponse("Unauthorized access", 403);
+    }
+
+    const currentDate = new Date();
+    const assignments = await prisma.assignmentSubmission.updateMany({
+      where: { status: "MARKED" },
+      data: { status: "PUBLISHED" },
+    });
+    revalidatePath("/dashboard/assignments/submissions");
+    return successResponse("Mark Published Successfully", 200, assignments);
+  } catch (error) {
+    return errorResponse(error.message);
+  }
+};
+
+export const distributeAllAssignments = async () => {
+  try {
+    const examiners = await prisma.user.findMany({
+      where: { examiner: true },
+      select: { id: true },
+    });
+
+    if (examiners.length === 0) {
+      throw new Error("No examiners found!");
+    }
+
+    const submissions = await prisma.assignmentSubmission.findMany({
+      where: { examinerId: null },
+      select: { id: true },
+    });
+
+    if (submissions.length === 0) {
+      throw new Error("No submissions found without examiner!");
+    }
+
+    const shuffledExaminers = [...examiners].sort(() => Math.random() - 0.5);
+    let examinerIndex = 0;
+
+    for (const submission of submissions) {
+      const assignedExaminer = shuffledExaminers[examinerIndex];
+
+      await prisma.assignmentSubmission.update({
+        where: { id: submission.id },
+        data: { examinerId: assignedExaminer.id },
+      });
+
+      examinerIndex = (examinerIndex + 1) % shuffledExaminers.length;
+    }
+
+    revalidatePath("/dashboard/assignments/submissions");
+    return successResponse("Assignments distributed successfully", 200);
+  } catch (error) {
+    return errorResponse(error.message);
+  }
+};
+
+export const removeDistributedAssignments = async () => {
+  try {
+    const updatedSubmissions = await prisma.assignmentSubmission.updateMany({
+      where: { status: "PENDING" },
+      data: { examinerId: null },
+    });
+
+    if (updatedSubmissions.count === 0) {
+      throw new Error("No pending submissions found!");
+    }
+    revalidatePath("/dashboard/assignments/submissions");
+    return successResponse("All pending assignments are reset", 200);
+  } catch (error) {
+    return errorResponse(error.message);
+  }
+};
+
+export const getAllMarksCount = async () => {
+  try {
+    const markedCount = await await prisma.assignmentSubmission.findMany({
+      where: { status: "MARKED" },
+    });
+    const unDistributedCount = await prisma.assignmentSubmission.findMany({
+      where: { examinerId: null },
+    });
+    return successResponse("Marks Count Retrieved Successfully", 200, {
+      markedCount: markedCount.length,
+      unDistributedCount: unDistributedCount.length,
+    });
+  } catch {
+    return errorResponse();
   }
 };

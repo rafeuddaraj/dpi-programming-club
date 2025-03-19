@@ -4,8 +4,8 @@ import "../../../admin-globals.css";
 import Sidebar from "./_components/sidebar";
 
 export const metadata = {
-  title: "Computer Club - DPI",
-  description: "Digital Programming Institute Computer Club",
+  title: "CST Club - DPI",
+  description: "Digital Programming Institute CST Club",
 };
 
 export default function RootLayout({ children }) {

@@ -102,7 +102,7 @@ export default function LoginPage() {
                 Forgot password?
               </Link>
               <Link
-                href="/register"
+                href="/auth/register"
                 className="text-sm text-primary hover:underline"
               >
                 Don't have an account? Register

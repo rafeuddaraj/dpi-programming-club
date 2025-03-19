@@ -4,8 +4,8 @@ import { SessionProvider } from "next-auth/react";
 import "../../../app/admin-globals.css";
 
 export const metadata = {
-  title: "Computer Club - DPI",
-  description: "Digital Programming Institute Computer Club Management System",
+  title: "CST Club - DPI",
+  description: "Digital Programming Institute CST Club Management System",
 };
 
 export default function RootLayout({ children }) {

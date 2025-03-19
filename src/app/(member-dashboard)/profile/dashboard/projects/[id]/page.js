@@ -20,7 +20,7 @@ export default function ProjectDetailsPage({ params }) {
     id: params.id,
     title: "Club Website Redesign",
     description:
-      "Redesign the computer club website to improve user experience, add new features, and make it mobile-friendly.",
+      "Redesign the CST Club website to improve user experience, add new features, and make it mobile-friendly.",
     startDate: "2023-03-15",
     endDate: "2023-06-30",
     lead: "John Doe",

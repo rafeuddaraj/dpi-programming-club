@@ -60,7 +60,6 @@ export default function EventForm({ isEdit = false, id }) {
       defaultValue["endTime"] = formatDateToLocalDatetime(defaultValue["endTime"])
       defaultValue["registrationDeadline"] = formatDateToLocalDatetime(defaultValue["registrationDeadline"])
 
-      console.log(defaultValue);
 
 
       return defaultValue;

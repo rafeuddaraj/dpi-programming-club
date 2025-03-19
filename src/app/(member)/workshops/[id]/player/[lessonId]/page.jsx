@@ -7,6 +7,7 @@ import { getActiveLessonAndModule, getWorkshopParticipant, getWorkshopProgress }
 import { auth } from "@/app/auth"
 import SubmitAssignmentModal from "@/components/assignments/submission-modal"
 import FeedbackPreview from "@/components/common/feedback-preview"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -178,7 +179,24 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
                   <CardDescription>Complete this assignment to test your understanding</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {assignment && <FeedbackPreview markdownText={assignment?.description} />}
+                  {assignmentSubmission?.status === "PUBLISHED" ? (
+                    <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                      <span>You scored</span>
+                      <Badge className="bg-white text-blue-600 font-bold px-3 py-1 rounded-md">
+                        {assignmentSubmission?.marks}/{assignment?.totalMarks}
+                      </Badge>
+                    </Button>
+                  ) : assignmentSubmission?.status === "PENDING" ? (
+                    <Button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg">
+                      Mark is pending
+                    </Button>
+                  ) : (
+                    <Button className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+                      Total marks: {assignment?.totalMarks}
+                    </Button>
+                  )}
+
+                  {assignmentSubmission && assignmentSubmission?.status === "PUBLISHED" ? <FeedbackPreview markdownText={assignmentSubmission?.feedback} /> : assignment && <FeedbackPreview markdownText={assignment?.description || "No description available for this assignment."} />}
 
                   <div className="pt-4">
                     <SubmitAssignmentModal isAlreadySubmitted={assignmentSubmission} assignment={assignment} userId={session?.user?.id} />

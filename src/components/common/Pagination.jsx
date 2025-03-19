@@ -12,7 +12,7 @@ export default function Pagination({ pagination }) {
     return (
         <>
             <div className="data-table-pagination">
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-muted-foreground my-2">
                     Showing <strong>{pagination?.currentPage}</strong> to <strong>{pagination?.totalPages}</strong> of{" "}
                     <strong>{pagination?.totalCount}</strong> results
                 </div>

@@ -47,6 +47,7 @@ model User {
   address               String?
   status                UserStatus             @default(PROCESSING)
   renewalDate           DateTime
+  examiner              Boolean?               @default(false)
   renewalFee            Int                    @default(50)
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt()
@@ -59,6 +60,7 @@ model User {
   examiners             AssignmentSubmission[] @relation("Examiner")
   assignmentSubmissions AssignmentSubmission[]
   quizResults           QuizResults[]
+  Notice                Notice[]
 }
 
 model Session {
@@ -239,20 +241,30 @@ model Assignments {
   lessons        WorkshopLesson         @relation(fields: [lessonId], references: [id])
 }
 
+enum SubmissionStatus {
+  PUBLISHED
+  PENDING
+  RECHECK
+  MARKED
+}
+
 model AssignmentSubmission {
-  id             String      @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String      @db.ObjectId
-  liveLink       String      @unique
-  documentLink   String      @unique
-  submissionDate DateTime    @default(now())
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String           @db.ObjectId
+  liveLink       String           @unique
+  documentLink   String           @unique
+  submissionDate DateTime         @default(now())
   marks          Int? // Null if not marked yet
+  status         SubmissionStatus @default(PENDING)
   feedback       String? // Feedback from the Admin/Moderator
-  assignmentId   String      @db.ObjectId
-  assignment     Assignments @relation(fields: [assignmentId], references: [id])
-  user           User        @relation(fields: [userId], references: [id])
-  examiner       User        @relation("Examiner", fields: [id], references: [id]) // reviews
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt()
+  assignmentId   String           @db.ObjectId
+  assignment     Assignments      @relation(fields: [assignmentId], references: [id])
+  user           User             @relation(fields: [userId], references: [id])
+  examinerId     String?          @db.ObjectId
+  requirements   String[]         @default([])
+  examiner       User?            @relation("Examiner", fields: [examinerId], references: [id]) // reviews
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt()
 
   @@unique([assignmentId, userId, documentLink, liveLink])
 }
@@ -305,4 +317,17 @@ model QuizLinks {
   type      ActivityType // "Workshop", "Course", etc.
   relatedId String       @db.ObjectId // ID of the related entity (e.g., Workshop ID or Course ID)
   quiz      Quizzes      @relation(fields: [quizId], references: [id])
+}
+
+// Notice Board
+
+model Notice {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  document  String?
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  status    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }

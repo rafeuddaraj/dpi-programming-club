@@ -1,8 +1,8 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { motion } from "framer-motion"
 
 const teamMembers = [
   {
@@ -36,7 +36,7 @@ export default function AboutPage() {
           </CardHeader>
           <CardContent>
             <p>
-              The Polytechnic Computer Club is dedicated to fostering a community of tech enthusiasts, providing
+              The Polytechnic CST Club is dedicated to fostering a community of tech enthusiasts, providing
               opportunities for learning, collaboration, and professional growth in the field of computer science and
               technology.
             </p>
