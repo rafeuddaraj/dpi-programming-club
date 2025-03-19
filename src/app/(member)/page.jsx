@@ -1,3 +1,4 @@
+import ComingSoon from "@/components/common/coming-soon";
 import { MotionDiv, MotionH1, MotionP } from "@/components/common/motion";
 import { Icons } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
@@ -180,10 +181,7 @@ export default async function Home() {
               Our Partners
             </h2>
             <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
-              <PartnerLogo name="TechCorp" />
-              <PartnerLogo name="InnovateX" />
-              <PartnerLogo name="FutureLab" />
-              <PartnerLogo name="CodeMasters" />
+              <ComingSoon title="Partner" />
             </div>
           </section>
 
@@ -194,14 +192,10 @@ export default async function Home() {
             <div className="flex justify-center space-x-4 sm:space-x-6">
               <SocialIcon
                 icon={<Icons.facebook className="w-5 h-5 sm:w-6 sm:h-6" />}
-                href="#"
+                href="https://www.facebook.com/cst.club.dpi"
               />
               <SocialIcon
                 icon={<Icons.twitter className="w-5 h-5 sm:w-6 sm:h-6" />}
-                href="#"
-              />
-              <SocialIcon
-                icon={<Icons.instagram className="w-5 h-5 sm:w-6 sm:h-6" />}
                 href="#"
               />
               <SocialIcon

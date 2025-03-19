@@ -35,7 +35,7 @@ export function Navbar({ user }) {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0">
-              <span className="text-2xl font-bold text-primary">CCDPI</span>
+              <span className="text-2xl font-bold text-primary">CSCDPI</span>
             </Link>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4 flex-wrap">

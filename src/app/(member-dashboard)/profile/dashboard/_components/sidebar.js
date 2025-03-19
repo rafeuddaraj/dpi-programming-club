@@ -9,7 +9,6 @@ import {
   CreditCard,
   LayoutDashboard,
   LogOut,
-  Settings,
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
@@ -25,7 +24,6 @@ export default function Sidebar() {
     { name: "Workshops", href: "/profile/dashboard/workshops", icon: Wrench },
     { name: "Payments", href: "/profile/dashboard/payments", icon: CreditCard },
     { name: "Skills", href: "/profile/dashboard/skills", icon: Award },
-    { name: "Settings", href: "/profile/dashboard/settings", icon: Settings },
   ];
 
   return (

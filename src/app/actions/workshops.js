@@ -495,3 +495,28 @@ export const getWorkshopProgress = async (workshopId) => {
     return 0;
   }
 };
+
+// Get All Participants of a Workshop
+
+export const getWorkshopParticipants = async () => {
+  try {
+    const session = await auth();
+    const participants = await prisma.workshopParticipant.findMany({
+      where: { participantId: session?.user?.id },
+      include: {
+        workshop: { include: { modules: { include: { lessons: true } } } },
+        payment: true,
+        participant: true,
+      },
+    });
+    return successResponse(
+      "Workshop participants retrieved successfully",
+      200,
+      participants
+    );
+  } catch (error) {
+    return errorResponse(
+      error.message || "Failed to fetch workshop participants"
+    );
+  }
+};
