@@ -13,7 +13,9 @@ export async function fetchNotices(query, page) {
       "notice",
       { status: true, name: { contains: query, mode: "insensitive" } },
       { user: true },
-      page
+      page,
+      10,
+      { createdAt: "desc" }
     );
     return successResponse("Notices fetched successfully", 200, resp);
   } catch {
