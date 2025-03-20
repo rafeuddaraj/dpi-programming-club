@@ -156,16 +156,14 @@ function ProfileDropdown({ user }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
-          <Link href="/profile/dashboard">Dashboard</Link>
+          <Link href="/profile">Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/profile">Profile</Link>
+          <Link href="/profile/dashboard">Dashboard</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={async () => {
-          await signOut({ redirect: false })
-          redirect("/auth/login")
-
+          await signOut()
         }}>Logout</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

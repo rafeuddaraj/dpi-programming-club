@@ -71,7 +71,7 @@ export default function RegistrationClosed({ settings }) {
                         <div className="bg-muted p-4 rounded-lg">
                             <div className="flex items-center gap-2 mb-3 text-primary">
                                 <Calendar className="h-5 w-5" />
-                                <span className="font-medium">Registration Opens On</span>
+                                <span className="font-medium">Maybe Registration Opens On</span>
                             </div>
                             <p className="font-bold text-lg">{formatDate(settings?.nextRegistrationDeadline)}</p>
                         </div>
