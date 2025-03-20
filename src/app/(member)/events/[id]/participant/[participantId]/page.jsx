@@ -1,4 +1,5 @@
 import { getEventParticipantResult } from "@/app/actions/events"
+import BackButtonWithoutText from "@/components/common/back-button-without-text"
 import ErrorPage from "@/components/common/error"
 import FeedbackPreview from "@/components/common/feedback-preview"
 import { MotionDiv } from "@/components/common/motion"
@@ -10,8 +11,7 @@ import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { formatDate } from "@/lib/utils"
 import GetDepartmentList from "@/utils/DepartmentList"
-import { ArrowLeft, Calendar, CheckCircle, Clock, Download, MapPin, XCircle } from "lucide-react"
-import Link from "next/link"
+import { Calendar, CheckCircle, Clock, Download, MapPin, XCircle } from "lucide-react"
 
 export default async function ParticipantResultPage({ params }) {
     const param = await params
@@ -40,11 +40,7 @@ export default async function ParticipantResultPage({ params }) {
             >
                 {/* Back button and title */}
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="icon" asChild>
-                        <Link href={`/events/${event.id}`}>
-                            <ArrowLeft className="h-4 w-4" />
-                        </Link>
-                    </Button>
+                    <BackButtonWithoutText />
                     <h1 className="text-2xl sm:text-3xl font-bold">Participant Result</h1>
                 </div>
 

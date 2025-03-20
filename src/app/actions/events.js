@@ -170,6 +170,8 @@ export const getSingleParticipantById = async (userId, eventId) => {
 };
 
 export const updateEventFeedBack = async (eventId, data, revalidatePathSrc) => {
+  data.score = parseInt(data.score);
+
   try {
     const resp = await prisma.eventParticipant.update({
       where: { id: eventId },

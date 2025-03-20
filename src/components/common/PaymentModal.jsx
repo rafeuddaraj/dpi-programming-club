@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertCircle, X } from "lucide-react";
+import { AlertCircle, Loader2, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -20,7 +20,7 @@ import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 
 
-export default function PaymentModal({ isOpen, onClose, onSubmit, data, title }) {
+export default function PaymentModal({ isOpen, onClose, onSubmit, data, title, buttonLabel }) {
   const formSchema = z.object({
     bkashNumber: z
       .string()
@@ -152,7 +152,7 @@ export default function PaymentModal({ isOpen, onClose, onSubmit, data, title })
                   className="w-full"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? `Submitting...` : "Join Our Club"}
+                  {isSubmitting ? <><Loader2 className="animate-spin" /> Submitting...</> : buttonLabel || "Submit"}
                 </Button>
               </form>
             </Form>

@@ -2,6 +2,7 @@ import { getAllActivitiesByUserId } from "@/app/actions/activities";
 import { getUserById } from "@/app/actions/users";
 import { auth } from "@/app/auth";
 import { MotionDiv } from "@/components/common/motion";
+import { ShareModal } from "@/components/common/share-modal";
 import { Icons } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { hasPermission, MEMBER } from "@/lib/permissions";
 import { isMembershipExpired } from "@/lib/utils";
+import GetDepartmentList from "@/utils/DepartmentList";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 const ProfileActivities = dynamic(() =>
@@ -26,7 +28,6 @@ export default async function ProfilePage({ searchParams }) {
   const session = await auth();
   const userData = await getUserById(userId || session?.user?.id);
   const activities = await getAllActivitiesByUserId(userId || session?.user?.id);
-  console.log({ userData, activities });
 
   if (userData?.error || activities?.error) {
     throw Error("User not found");
@@ -58,23 +59,28 @@ export default async function ProfilePage({ searchParams }) {
                 {userData?.name} {isMembershipExpired(userData?.renewalDate) ? "❌" : "✅"}
               </CardTitle>
               <CardDescription className="text-lg mt-2">
-                {userData?.bio || "No bio available"}
+                {userData?.bio}
               </CardDescription>
               <p>{userData?.address}</p>
               <p className="text-sm text-muted-foreground mt-1">
-                {userData?.department} | {userData?.semester} Semester
+                {GetDepartmentList(userData?.department)} | {userData?.semester} Semester
               </p>
             </div>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-4 justify-center sm:justify-start mt-4">
               <Button variant="outline" size="sm">
-                <Icons.mail className="mr-2 h-4 w-4" />
-                {userData?.email}
+                <Link className="flex gap-1" href={`mailto:${userData?.email}`}>
+                  <Icons.mail className="mr-2 h-4 w-4" />
+                  {userData?.email}
+                </Link>
               </Button>
               <Button variant="outline" size="sm">
-                <Icons.phone className="mr-2 h-4 w-4" />
-                {userData?.phoneNumber}
+                <Link className="flex gap-1" href={`tel:${userData?.phone || ""
+                  }`}>
+                  <Icons.phone className="mr-2 h-4 w-4" />
+                  {userData?.phoneNumber}
+                </Link>
               </Button>
               <Button variant="outline" size="sm" asChild>
                 <a
@@ -100,7 +106,7 @@ export default async function ProfilePage({ searchParams }) {
           </CardContent>
         </Card>
 
-        <ProfileActivities user={userData} activities={activities?.data} />
+        <ProfileActivities user={userData} activities={activities?.data} session={session} />
         <div className="flex justify-center gap-4">
           {hasPermission(session?.user?.role, MEMBER["update:own_user"]) &&
             userData?.id === session.user?.id && (
@@ -108,7 +114,7 @@ export default async function ProfilePage({ searchParams }) {
                 <Link href="/profile/edit">Edit Profile</Link>
               </Button>
             )}
-          <Button variant="outline">Share Profile</Button>
+          <ShareModal url={`${process?.env?.SITE_URL}/profile?id=${userData?.id}`}><Button variant="outline">Share Profile</Button></ShareModal>
         </div>
       </MotionDiv>
     </div>

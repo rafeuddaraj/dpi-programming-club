@@ -508,6 +508,7 @@ export const getWorkshopParticipants = async () => {
         payment: true,
         participant: true,
       },
+      orderBy: { joining: "asc" },
     });
     return successResponse(
       "Workshop participants retrieved successfully",

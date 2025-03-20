@@ -17,6 +17,9 @@ export const getAllActivitiesByUserId = async (
       where: { participantId: id, complete: true },
       include: { workshop: true, participant: true },
     });
+
+    console.log("Workshop=", workshop);
+
     return successResponse("Success fetched", 200, { workshop, event });
   } catch (err) {
     console.log(err);

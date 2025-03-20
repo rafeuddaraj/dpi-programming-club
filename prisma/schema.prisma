@@ -184,7 +184,7 @@ model WorkshopParticipant {
   complete      Boolean  @default(false) // - update
   certificate   String? // - update
   feedback      String? // - update
-  paymentId     String   @db.ObjectId
+  paymentId     String?  @db.ObjectId
   lastModuleId  String?  @db.ObjectId
   lastLessonId  String?  @db.ObjectId
   payment       Payment? @relation(fields: [paymentId], references: [id])

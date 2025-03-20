@@ -373,6 +373,7 @@ export default function RegisterPage() {
           isOpen={paymentModalOpen}
           onClose={() => setPaymentModal(false)}
           data={values}
+          buttonLabel={"Join Our Club"}
           onSubmit={loginProcess}
         />
       )}

@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
+import FeedbackPreview from "@/components/common/feedback-preview";
 import { Badge } from "@/components/ui/badge";
 import { TabsContent } from "@/components/ui/tabs";
 
@@ -11,7 +12,7 @@ export default function Info({ user }) {
                         <CardTitle>About Me</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p>{user?.about}</p>
+                        <FeedbackPreview markdownText={user?.about} />
                         <CardHeader className="m-0 pl-0">
                             <CardTitle>Skills</CardTitle>
                         </CardHeader>

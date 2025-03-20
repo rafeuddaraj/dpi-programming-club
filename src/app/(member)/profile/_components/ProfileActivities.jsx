@@ -8,10 +8,13 @@ const Education = dynamic(() => import("./education"));
 const Info = dynamic(() => import("./info"));
 
 
-export default function ProfileActivities({ user, activities }) {
+export default function ProfileActivities({ user, activities, session }) {
   const [activeTab, setActiveTab] = useState("info");
 
   const { event, workshop } = activities || {}
+
+  console.log("Workshop=", workshop);
+
 
   return (
     <>
@@ -22,7 +25,7 @@ export default function ProfileActivities({ user, activities }) {
           <TabsTrigger value="education">Education</TabsTrigger>
         </TabsList>
         <Info user={user} />
-        <Achievements event={event} workshop={workshop} />
+        <Achievements event={event} workshop={workshop} user={user} session={session} />
         <Education />
       </Tabs >
     </>

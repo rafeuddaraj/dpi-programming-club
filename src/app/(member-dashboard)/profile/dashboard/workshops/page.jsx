@@ -1,9 +1,11 @@
-import { getWorkshopParticipants } from "@/app/actions/workshops"
+import { getWorkshopParticipants, getWorkshopProgress } from "@/app/actions/workshops"
 import Pagination from "@/components/common/Pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { formatDate, getStatus } from "@/lib/utils"
 import { BookOpen, Calendar, Clock } from "lucide-react"
 import Link from "next/link"
 
@@ -14,12 +16,9 @@ export default async function DashboardPage() {
         throw Error()
     }
     const userWorkshops = resp.data
+
     // const { userWorkshops, getWorkshopProgress, getParticipantByWorkshopId, getTotalModulesCount } = useWorkshop()
 
-    const formatDate = (dateString) => {
-        const options = { year: "numeric", month: "short", day: "numeric" }
-        return new Date(dateString).toLocaleDateString("en-US", options)
-    }
 
     // const inProgressWorkshops = userWorkshops.filter((workshop) => {
     //     const participant = getParticipantByWorkshopId(workshop.id)
@@ -35,7 +34,7 @@ export default async function DashboardPage() {
         <div className="container mx-auto px-4 py-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold">My Dashboard</h1>
+                    <h1 className="text-3xl font-bold">My Workshops</h1>
                     <p className="text-muted-foreground">Track your progress and manage your workshops</p>
                 </div>
                 <Button asChild>
@@ -62,10 +61,10 @@ export default async function DashboardPage() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {userWorkshops.map(({ workshop, ...participantData }) => {
+                            {userWorkshops.map(async ({ workshop, ...participantData }) => {
                                 // const progress = getWorkshopProgress(workshop.id)
                                 // const totalModules = getTotalModulesCount(workshop)
-                                // const completedModules = progress.completedModules.length
+                                const completedModules = workshop?.modules?.filter(module => getStatus(module?.startingDate, module?.endingDate) === "Completed").length
 
                                 return (
                                     <Card key={workshop.id} className="flex flex-col">
@@ -75,18 +74,18 @@ export default async function DashboardPage() {
                                                 <Badge variant={workshop.type === "ONLINE" ? "default" : "secondary"}>{workshop.type}</Badge>
                                             </div>
                                             <CardDescription>
-                                                Started on {formatDate(participantData?.joining)}
+                                                <p>Joining on {formatDate(participantData?.joining, { time: true })}</p>
                                             </CardDescription>
                                         </CardHeader>
                                         <CardContent className="flex-grow">
                                             <div className="space-y-2">
                                                 <div className="flex justify-between text-sm">
                                                     <span>Progress</span>
-                                                    {/* <span>{progress.overallProgress}%</span> */}
+                                                    <span>{await getWorkshopProgress(workshop?.id)}%</span>
                                                 </div>
-                                                {/* <Progress value={progress.overallProgress} className="h-2" /> */}
+                                                <Progress value={await getWorkshopProgress(workshop?.id)} className="h-2" />
                                                 <p className="text-sm text-muted-foreground">
-                                                    {/* {completedModules} of {totalModules} modules completed */}
+                                                    {completedModules} {" "} of  {" "}{workshop?.modules?.length} {" "}
                                                     Complete Module
                                                 </p>
                                             </div>
@@ -99,8 +98,18 @@ export default async function DashboardPage() {
                                                 <div className="flex items-center gap-2">
                                                     <BookOpen className="h-4 w-4 text-muted-foreground" />
                                                     <span>
-                                                        {workshop?.modules?.lessons?.length} lessons • total Modules modules
+                                                        {workshop?.modules?.reduce((count, module) => count + (module.lessons?.length || 0), 0)} lessons • total {workshop?.modules?.length} modules
                                                     </span>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <Badge
+                                                        className={`${participantData?.complete
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : 'bg-red-100 text-red-800'
+                                                            } py-1 px-4 rounded-full text-md font-medium transition-all duration-300 ease-in-out`}
+                                                    >
+                                                        {participantData?.complete ? 'Completed' : 'Not Completed'}
+                                                    </Badge>
                                                 </div>
                                             </div>
                                         </CardContent>
