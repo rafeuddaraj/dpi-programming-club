@@ -331,3 +331,13 @@ model Notice {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }
+
+// Globals Settings for ADMIN
+model Settings {
+  id                       String    @id @default(auto()) @map("_id") @db.ObjectId
+  registrationDeadline     DateTime?
+  nextRegistrationDeadline DateTime?
+  feedbackStatus           Boolean   @default(false)
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt()
+}
