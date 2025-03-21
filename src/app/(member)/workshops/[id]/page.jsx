@@ -10,6 +10,35 @@ import { Calendar, CheckCircle, Clock, ExternalLink, Users } from "lucide-react"
 import Link from "next/link"
 import EnrollWorkshop from "../_components/enroll-workshop"
 
+
+export async function generateMetadata({ params: param }) {
+  // Fetch data dynamically based on params (e.g., a blog workshop or product ID)
+  const params = await param;
+  const { id } = params
+  const resp = await getWorkshopById(id)
+  if (resp?.error) {
+    throw Error()
+  }
+  const workshop = resp?.data
+  return {
+    title: workshop.name,  // Dynamic title for the page
+    description: workshop.description,  // Dynamic description
+    openGraph: {
+      title: workshop.name,  // OG Title (same as regular title)
+      description: workshop.description,  // OG Description
+      image: workshop.imageUrl,
+      url: `${process?.env?.SITE_URL}/workshops/${id}`,
+      siteName: 'CST Club - DPI',  // Website name
+    },
+    twitter: {
+      card: 'summary_large_image',  // Twitter card type (can be 'summary', 'summary_large_image', etc.)
+      title: workshop.name,  // Twitter Title
+      description: workshop.description,  // Twitter Description
+      image: workshop.imageUrl,  // Twitter Image URL
+    },
+  };
+}
+
 export default async function WorkshopDetailPage({ params: param }) {
   const params = await param
   const session = await auth()
