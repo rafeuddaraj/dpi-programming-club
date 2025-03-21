@@ -1,6 +1,6 @@
 "use client";
 
-import { registerAndPaymentAction } from "@/app/actions/auth";
+import { registerAction } from "@/app/actions/auth";
 import CommonAlert from "@/components/common/alert";
 import { PasswordStrengthMeter } from "@/components/password-strength-meter";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import {
 import { COMING_SOON } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -83,36 +84,49 @@ export default function RegisterForm() {
         },
     });
 
-    const [paymentModalOpen, setPaymentModal] = useState(false);
+    // const [paymentModalOpen, setPaymentModal] = useState(false);
 
     const [values, setValues] = useState(null);
     const router = useRouter()
 
     async function onSubmit(values) {
-        setValues(values);
-        setPaymentModal(true);
-    }
-    const loginProcess = async (values, paymentData) => {
         try {
-            delete values.confirmPassword;
-
-            const res = await registerAndPaymentAction(values, paymentData);
-
-            if (!res?.error) {
-                await signIn("credentials", {
-                    email: values.email,
-                    password: values.password,
-                    redirect: false
-                });
-                router.push("/profile")
+            const resp = await registerAction(values)
+            if (resp?.error) {
+                throw new Error(resp.message);
             }
-            throw res;
-        } catch (err) {
-            // console.log(err);
-
+            await signIn("credentials", {
+                email: values.email,
+                password: values.password,
+                redirect: false
+            });
+            router.push("/profile")
+        } catch {
             toast.error("Failed to register user");
         }
-    };
+
+    }
+    // const loginProcess = async (values, paymentData) => {
+    //     try {
+    //         delete values.confirmPassword;
+
+    //         const res = await registerAndPaymentAction(values, paymentData);
+
+    //         if (!res?.error) {
+    //             await signIn("credentials", {
+    //                 email: values.email,
+    //                 password: values.password,
+    //                 redirect: false
+    //             });
+    //             router.push("/profile")
+    //         }
+    //         throw res;
+    //     } catch (err) {
+    //         // console.log(err);
+
+    //         toast.error("Failed to register user");
+    //     }
+    // };
     return (
         <div className="container mx-auto py-8">
             <motion.div
@@ -361,14 +375,14 @@ export default function RegisterForm() {
                         >
                             Already have an account? Log in
                         </Link>
-                        <Button disabled={COMING_SOON} type="submit" className="w-full">
-                            Register
+                        <Button disabled={form?.formState?.isSubmitting || form.formState?.isSubmitted} type="submit" className="w-full">
+                            {form?.formState?.isSubmitting && <Loader2 className="animate-spin" />}Register
                         </Button>
                         {COMING_SOON && <CommonAlert title={"System Under Development"} description={"We are actively working on our system and will be launching our services very soon. Stay tuned for updates!"} />}
                     </form>
                 </Form>
             </motion.div>
-            {paymentModalOpen && (
+            {/* {paymentModalOpen && (
                 <PaymentModal
                     isOpen={paymentModalOpen}
                     onClose={() => setPaymentModal(false)}
@@ -376,7 +390,7 @@ export default function RegisterForm() {
                     buttonLabel={"Join Our Club"}
                     onSubmit={loginProcess}
                 />
-            )}
+            )} */}
         </div>
     );
 }

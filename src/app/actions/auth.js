@@ -9,6 +9,16 @@ export const registerAction = async (data) => {
     const hashedPassword = await bcrypt.hash(data.password, 10);
     data.password = hashedPassword;
 
+    data.status = "PROCESSING";
+    const today = new Date();
+    const renewalDate = new Date();
+
+    // 6 Month Subscriptions
+    renewalDate.setMonth(today.getMonth() + 6);
+
+    data.renewalDate = renewalDate.toISOString();
+    delete data?.confirmPassword;
+
     const res = await prisma.user.create({ data });
     return successResponse("User registered successfully.", 200, res);
   } catch (err) {
