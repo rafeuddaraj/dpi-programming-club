@@ -375,7 +375,7 @@ export default function RegisterForm() {
                         >
                             Already have an account? Log in
                         </Link>
-                        <Button disabled={form?.formState?.isSubmitting || form.formState?.isSubmitted} type="submit" className="w-full">
+                        <Button disabled={form?.formState?.isSubmitting} type="submit" className="w-full">
                             {form?.formState?.isSubmitting && <Loader2 className="animate-spin" />}Register
                         </Button>
                         {COMING_SOON && <CommonAlert title={"System Under Development"} description={"We are actively working on our system and will be launching our services very soon. Stay tuned for updates!"} />}
