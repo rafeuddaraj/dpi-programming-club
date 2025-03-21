@@ -321,7 +321,10 @@ export const enrollWorkshop = async (
         throw new Error("No seat available");
       }
     } else {
-      if (currentWorkshop.totalSeats > bookedSeat?.length) {
+      if (
+        currentWorkshop.totalSeats > bookedSeat?.length ||
+        currentWorkshop.totalSeats === null
+      ) {
         res = await prisma.workshopParticipant.create({
           data: { participantId: user?.id, workshopId: data?.id },
         });

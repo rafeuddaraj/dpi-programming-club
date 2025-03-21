@@ -99,11 +99,11 @@ export default async function WorkshopDetailPage({ params: param }) {
                   <Clock className="h-5 w-5 text-primary" />
                   <div>
                     <p className="font-medium">Registration Deadline</p>
-                    <p className="text-sm text-muted-foreground">{formatDate(workshop.registrationDeadline)}</p>
+                    <p className="text-sm text-muted-foreground">{formatDate(workshop.registrationDeadline, { time: true })}</p>
                   </div>
                 </div>
 
-                {workshop.type === "OFFLINE" && workshop.totalSeats && (
+                {workshop.type === "OFFLINE" && workshop.totalSeats ? (
                   <div className="flex items-center gap-2">
                     <Users className="h-5 w-5 text-primary" />
                     <div>
@@ -111,8 +111,8 @@ export default async function WorkshopDetailPage({ params: param }) {
                       <p className="text-sm text-muted-foreground">{workshop.totalSeats} seats total</p>
                     </div>
                   </div>
-                )}
-                {workshop.price && (
+                ) : null}
+                {workshop.price ? (
                   <div className="flex items-center gap-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -127,7 +127,7 @@ export default async function WorkshopDetailPage({ params: param }) {
                       <p className="text-muted-foreground font-bold text-2xl">{workshop.price}</p>
                     </div>
                   </div>
-                )}
+                ) : null}
               </div>
             </TabsContent>
 
