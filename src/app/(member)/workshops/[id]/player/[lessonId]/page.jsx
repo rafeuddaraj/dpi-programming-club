@@ -98,13 +98,13 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
                   </Button>
                     : <Button asChild className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
                     >
-                      <a
+                      {getStatus(activeLesson?.startingDate, activeLesson?.endingDate) === "Upcoming" ? <>The link will be provided on time.</> : <a
                         href={activeLesson.liveLink}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         Join Live Session
-                      </a>
+                      </a>}
                     </Button>}
 
                 </div>
