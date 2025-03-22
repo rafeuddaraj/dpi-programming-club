@@ -1,45 +1,42 @@
-"use client"
+"use client";
 
 import { createContext, useContext, useState } from "react";
 
-
-const pageWrapperContext = createContext()
+const pageWrapperContext = createContext();
 
 export const useMemberCollectState = () => {
-    return useContext(pageWrapperContext)
-}
+  return useContext(pageWrapperContext);
+};
 
 export default function MemberCollectWrapperProvider({ children }) {
-    const [isFormOpen, setIsFormOpen] = useState(false)
-    const [currentStudent, setCurrentStudent] = useState(null)
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [currentStudent, setCurrentStudent] = useState(null);
 
-    const handleEditStudent = (student) => {
-        console.log(student);
+  const handleEditStudent = (student) => {
+    setCurrentStudent(student);
+    setIsFormOpen(true);
+  };
 
-        setCurrentStudent(student)
-        setIsFormOpen(true)
-    }
+  const handleCloseForm = () => {
+    setCurrentStudent(null);
+    setIsFormOpen(false);
+  };
 
-    const handleCloseForm = () => {
-        setIsFormOpen(false)
-        setCurrentStudent(null)
-    }
+  const handleOpenModal = () => {
+    setIsFormOpen(true);
+  };
 
-    const handleOpenModal = () => {
-        setIsFormOpen(true)
-    }
+  const state = {
+    isFormOpen,
+    currentStudent,
+    onEditStudent: handleEditStudent,
+    onCloseForm: handleCloseForm,
+    onOpenModal: handleOpenModal,
+  };
 
-    const state = {
-        isFormOpen,
-        currentStudent,
-        onEditStudent: handleEditStudent,
-        onCloseForm: handleCloseForm,
-        onOpenModal: handleOpenModal
-    }
-
-    return (
-        <pageWrapperContext.Provider value={state}>
-            {children}
-        </pageWrapperContext.Provider>
-    )
+  return (
+    <pageWrapperContext.Provider value={state}>
+      {children}
+    </pageWrapperContext.Provider>
+  );
 }

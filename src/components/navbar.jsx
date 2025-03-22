@@ -1,5 +1,6 @@
 "use client"
 
+import { sendEmail } from "@/app/actions/email-services"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -12,8 +13,9 @@ import { Moon, Sun } from "lucide-react"
 import { signOut } from "next-auth/react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
-import { redirect } from "next/navigation"
 import { useState } from "react"
+import ReactDOMServer from "react-dom/server"
+import MembershipConfirmationTemplate from "./email-templates/membership-confirmation"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 
 const navItems = [
@@ -160,6 +162,11 @@ function ProfileDropdown({ user }) {
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/profile/dashboard">Dashboard</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Button onClick={async () => {
+            await sendEmail({ email: "rafeuddaraj2@gmail.com", secretCode: "12345", userName: "rafeuddaraj" }, ReactDOMServer.renderToStaticMarkup(<MembershipConfirmationTemplate />))
+          }}>Mail Send</Button>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={async () => {

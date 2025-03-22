@@ -23,5 +23,8 @@
   "typescript.validate.enable": false,
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }

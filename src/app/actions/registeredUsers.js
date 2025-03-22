@@ -8,6 +8,26 @@ import { revalidatePath } from "next/cache";
 // Create a new registered user
 export const createRegisteredUser = async (data) => {
   try {
+    const generateSecretCode = Math.floor(100000 + Math.random() * 900000);
+    data.secretCode = generateSecretCode;
+    const foundedUser = await prisma.registeredUser.findFirst({
+      where: {
+        OR: [
+          { rollNo: { contains: data?.rollNo, mode: "insensitive" } },
+          { email: { contains: data?.email, mode: "insensitive" } },
+          { phoneNumber: { contains: data?.phoneNumber, mode: "insensitive" } },
+          {
+            registrationNo: {
+              contains: data?.registrationNo,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+    });
+    if (foundedUser) {
+      return errorResponse("User already exists", 409);
+    }
     const resp = await prisma.registeredUser.create({ data });
     revalidatePath("/dashboard/member-collect");
     return successResponse("User created successfully", 201, resp);
@@ -18,8 +38,6 @@ export const createRegisteredUser = async (data) => {
 
 // Get all registered users
 export const getAllRegisteredUsers = async (query, page, limit) => {
-  console.log(page);
-
   try {
     const now = new Date();
     const where = query
