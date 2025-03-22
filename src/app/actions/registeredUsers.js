@@ -10,28 +10,37 @@ export const createRegisteredUser = async (data) => {
   try {
     const generateSecretCode = Math.floor(100000 + Math.random() * 900000);
     data.secretCode = generateSecretCode;
-    const foundedUser = await prisma.registeredUser.findFirst({
-      where: {
-        OR: [
-          { rollNo: { contains: data?.rollNo, mode: "insensitive" } },
-          { email: { contains: data?.email, mode: "insensitive" } },
-          { phoneNumber: { contains: data?.phoneNumber, mode: "insensitive" } },
-          {
-            registrationNo: {
-              contains: data?.registrationNo,
-              mode: "insensitive",
+    try {
+      const foundedUser = await prisma.registeredUser.findUniqueOrThrow({
+        where: {
+          OR: [
+            { rollNo: { contains: data?.rollNo, mode: "insensitive" } },
+            { email: { contains: data?.email, mode: "insensitive" } },
+            {
+              phoneNumber: { contains: data?.phoneNumber, mode: "insensitive" },
             },
-          },
-        ],
-      },
-    });
-    if (foundedUser) {
-      return errorResponse("User already exists", 409);
+            {
+              registrationNo: {
+                contains: data?.registrationNo,
+                mode: "insensitive",
+              },
+            },
+          ],
+        },
+      });
+      console.log(foundedUser, data);
+
+      if (foundedUser) {
+        return errorResponse("User already exists", 409);
+      }
+    } catch {
+      const resp = await prisma.registeredUser.create({ data });
+      revalidatePath("/dashboard/member-collect");
+      return successResponse("User created successfully", 201, resp);
     }
-    const resp = await prisma.registeredUser.create({ data });
-    revalidatePath("/dashboard/member-collect");
-    return successResponse("User created successfully", 201, resp);
   } catch (error) {
+    console.log(error);
+
     return errorResponse("Something went wrong", 500, error.message);
   }
 };
@@ -50,8 +59,9 @@ export const getAllRegisteredUsers = async (query, page, limit) => {
             { phoneNumber: { contains: query, mode: "insensitive" } },
             { registrationNo: { contains: query, mode: "insensitive" } },
           ],
+          user: { role: "member" },
         }
-      : {};
+      : { user: { role: "member" } };
     return commonGet("registeredUser", where, { user: true }, page, limit, {
       createdAt: "desc",
     });

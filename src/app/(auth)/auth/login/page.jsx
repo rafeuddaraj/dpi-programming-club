@@ -42,12 +42,12 @@ export default function LoginPage() {
     try {
       let res = await signIn("credentials", {
         ...values,
-        redirect: false
+        redirect: false,
       });
       if (res?.error) {
         throw new Error(res?.error);
       }
-      return router.push("/profile")
+      return router.push("/profile");
     } catch {
       setError("There was an error while trying to login.");
     }
