@@ -1,25 +1,42 @@
-import { getWorkshopById } from "@/app/actions/workshops"
-import FeedbackPreview from "@/components/common/feedback-preview"
-import { ParticipantsList } from "@/components/participants/participants-list"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, CalendarIcon, Globe, MapPin, Pencil, Plus, Users } from "lucide-react"
-import Link from "next/link"
-import { Suspense } from "react"
-import { ModulesList } from "../_components/modules-list"
-import WorkshopTabs from "./_components/workshop-tabs"
+import { getWorkshopById } from "@/app/actions/workshops";
+import FeedbackPreview from "@/components/common/feedback-preview";
+import { ParticipantsList } from "@/components/participants/participants-list";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { formatDate } from "@/lib/utils";
+import {
+  ArrowLeft,
+  CalendarIcon,
+  Globe,
+  MapPin,
+  Pencil,
+  Plus,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
+import { Suspense } from "react";
+import { ModulesList } from "../_components/modules-list";
+import WorkshopTabs from "./_components/workshop-tabs";
 
-export default async function WorkshopDetailsPage({ params: param, searchParams: searchParam }) {
+export default async function WorkshopDetailsPage({
+  params: param,
+  searchParams: searchParam,
+}) {
+  const params = await param;
+  const searchParams = await searchParam;
 
-  const params = await param
-  const searchParams = await searchParam
+  const workshopId = params?.id;
 
-  const workshopId = params?.id
-
-  const resp = await getWorkshopById(workshopId)
+  const resp = await getWorkshopById(workshopId);
 
   if (resp?.error) {
     return (
@@ -28,12 +45,10 @@ export default async function WorkshopDetailsPage({ params: param, searchParams:
         <p className="mb-6">The workshop you are looking for does not exist.</p>
         <Link href={"/dashboard/workshops"}>Back to Workshops</Link>
       </div>
-    )
+    );
   }
 
-  const workshop = resp?.data
-
-
+  const workshop = resp?.data;
 
   return (
     <div className="container mx-auto py-6 space-y-6">
@@ -53,7 +68,9 @@ export default async function WorkshopDetailsPage({ params: param, searchParams:
               Edit Workshop
             </Button>
           </Link>
-          <Link href={`/dashboard/workshops/modules/create?workshopId=${workshop.id}`}>
+          <Link
+            href={`/dashboard/workshops/modules/create?workshopId=${workshop.id}`}
+          >
             <Button>
               <Plus className="mr-2 h-4 w-4" />
               Add Module
@@ -63,13 +80,16 @@ export default async function WorkshopDetailsPage({ params: param, searchParams:
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Badge variant={workshop.type === "ONLINE" ? "secondary" : "outline"}>{workshop.type}</Badge>
+        <Badge variant={workshop.type === "ONLINE" ? "secondary" : "outline"}>
+          {workshop.type}
+        </Badge>
         <Badge variant={workshop.isActive ? "default" : "destructive"}>
           {workshop.isActive ? "Active" : "Inactive"}
         </Badge>
         {workshop.registrationDeadline && (
           <Badge variant="outline">
-            Registration Deadline: {new Date(workshop.registrationDeadline).toLocaleDateString()}
+            Registration Deadline:{" "}
+            {formatDate(workshop.registrationDeadline, { time: true })}
           </Badge>
         )}
       </div>
@@ -87,14 +107,16 @@ export default async function WorkshopDetailsPage({ params: param, searchParams:
               <CardHeader>
                 <CardTitle>Workshop Details</CardTitle>
                 <CardDescription>
-                  {new Date(workshop.startingDate).toLocaleDateString()} -{" "}
-                  {new Date(workshop.endingDate).toLocaleDateString()}
+                  {formatDate(workshop.startingDate, { time: true })} -{" "}
+                  {formatDate(workshop.endingDate, { time: true })}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Description</h3>
-                  <p className="text-muted-foreground"><FeedbackPreview markdownText={workshop.description} /></p>
+                  <p className="text-muted-foreground">
+                    <FeedbackPreview markdownText={workshop.description} />
+                  </p>
                 </div>
 
                 {workshop?.outline?.length > 0 && (
@@ -112,12 +134,17 @@ export default async function WorkshopDetailsPage({ params: param, searchParams:
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="text-lg font-semibold mb-2">Workshop Details</h3>
+                    <h3 className="text-lg font-semibold mb-2">
+                      Workshop Details
+                    </h3>
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
                         <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                         <span>
-                          Registration Deadline: {new Date(workshop.registrationDeadline).toLocaleDateString()}
+                          Registration Deadline:{" "}
+                          {new Date(
+                            workshop.registrationDeadline
+                          ).toLocaleDateString()}
                         </span>
                       </div>
 
@@ -154,11 +181,20 @@ export default async function WorkshopDetailsPage({ params: param, searchParams:
               <CardContent>
                 <div className="flex flex-col items-center text-center">
                   <Avatar className="h-24 w-24 mb-4">
-                    <AvatarImage src="/placeholder.svg?height=96&width=96" alt={workshop.instructor} />
-                    <AvatarFallback>{workshop.instructor.substring(0, 2)}</AvatarFallback>
+                    <AvatarImage
+                      src="/placeholder.svg?height=96&width=96"
+                      alt={workshop.instructor}
+                    />
+                    <AvatarFallback>
+                      {workshop.instructor.substring(0, 2)}
+                    </AvatarFallback>
                   </Avatar>
-                  <h3 className="text-xl font-semibold">{workshop.instructor}</h3>
-                  <p className="text-muted-foreground mt-2">{workshop.instructorDetails}</p>
+                  <h3 className="text-xl font-semibold">
+                    {workshop.instructor}
+                  </h3>
+                  <p className="text-muted-foreground mt-2">
+                    {workshop.instructorDetails}
+                  </p>
                   {workshop.instructorUrl && (
                     <a
                       href={workshop.instructorUrl}
@@ -186,6 +222,5 @@ export default async function WorkshopDetailsPage({ params: param, searchParams:
         </TabsContent>
       </WorkshopTabs>
     </div>
-  )
+  );
 }
-

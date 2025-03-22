@@ -104,7 +104,7 @@ export const getAllUsers = async (query, page, limit) => {
     : {
         role: { not: "admin" },
       };
-  return commonGet("user", where, {}, page, limit, {
+  return commonGet("user", where, { user: true }, page, limit, {
     createdAt: "desc",
   });
 };

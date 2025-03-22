@@ -20,6 +20,7 @@ export default async function UserDetailsPage({ params }) {
   const resp = await getUserById(param?.id, null, {
     workshopParticipants: true,
     EventParticipant: true,
+    user: true,
   });
   if (resp?.error) {
     throw Error();
