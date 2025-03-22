@@ -23,20 +23,16 @@ export default function Signature() {
                       <td
                         style={{
                           verticalAlign: "top",
-                          paddingRight: "10px",
                         }}
                       >
                         {/* President signature placeholder */}
-                        <div
-                          style={{
-                            width: "120px",
-                            height: "50px",
-                            backgroundImage: `url("https://cst-club-dpi.vercel.app/rafe-uddaraj-signature.svg")`,
-                            backgroundRepeat: "no-repeat",
-                            backgroundPosition: "90%",
-                            backgroundSize: "contain",
-                          }}
-                        ></div>
+                        <img
+                          src="https://cst-club-dpi.vercel.app/rafe-uddaraj-signature.svg"
+                          alt="Rafe Uddaraj Signature"
+                          width="120"
+                          height="50"
+                          style={{ display: "block", margin: "auto" }}
+                        />
                       </td>
                     </tr>
                     <tr>
@@ -102,20 +98,16 @@ export default function Signature() {
                       <td
                         style={{
                           verticalAlign: "top",
-                          paddingRight: "10px",
                         }}
                       >
                         {/* Executive Administrator signature placeholder */}
-                        <div
-                          style={{
-                            width: "120px",
-                            height: "50px",
-                            backgroundImage: `url("https://cst-club-dpi.vercel.app/executive-administrator.svg")`,
-                            backgroundRepeat: "no-repeat",
-                            backgroundSize: "contain",
-                            backgroundPosition: "90%",
-                          }}
-                        ></div>
+                        <img
+                          src="https://cst-club-dpi.vercel.app/executive-administrator.svg"
+                          alt="Raisha Signature"
+                          width="120"
+                          height="50"
+                          style={{ display: "block", margin: "auto" }}
+                        />
                       </td>
                     </tr>
                     <tr>
