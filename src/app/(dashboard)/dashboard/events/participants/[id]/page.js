@@ -118,16 +118,16 @@ export default async function EventParticipantsPage({ params, searchParams }) {
                       }) => (
                         <TableRow key={participant.id}>
                           <TableCell className="font-medium">
-                            {participant.name}
+                            {participant?.user?.name}
                           </TableCell>
                           <TableCell className="hidden md:table-cell">
-                            {participant.email}
+                            {participant?.user?.email}
                           </TableCell>
                           <TableCell className="hidden md:table-cell">
                             {participant.session}
                           </TableCell>
                           <TableCell className="hidden md:table-cell">
-                            {participant.rollNo}
+                            {participant?.user?.rollNo}
                           </TableCell>
                           <TableCell className="hidden md:table-cell">
                             {score ? "✅" : score === 0 ? "❌" : "❓"}

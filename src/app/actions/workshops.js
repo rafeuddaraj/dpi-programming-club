@@ -21,7 +21,7 @@ export const getWorkshopById = async (workshopId) => {
       where: { id: workshopId },
       include: {
         modules: { include: { lessons: true } },
-        participants: { include: { participant: true } },
+        participants: { include: { participant: { include: { user: true } } } },
       },
     });
     if (!workshop) return errorResponse("Workshop not found", 404);
@@ -509,7 +509,7 @@ export const getWorkshopParticipants = async () => {
       include: {
         workshop: { include: { modules: { include: { lessons: true } } } },
         payment: true,
-        participant: true,
+        participant: { include: { user: true } },
       },
       orderBy: { joining: "asc" },
     });

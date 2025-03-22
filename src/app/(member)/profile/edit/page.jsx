@@ -4,7 +4,7 @@ import { ProfileEditForm } from "@/components/profile-edit-form";
 
 export default async function ProfileEditPage() {
   const session = await auth();
-  const user = await getUserById(session?.user?.id);
+  const user = await getUserById(session?.user?.id, {}, { user: true });
   if (user.error) {
     throw Error("Fetching error");
   }

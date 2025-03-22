@@ -77,17 +77,17 @@ export default async function ParticipantResultPage({ params }) {
                         <CardContent className="space-y-4">
                             <div className="flex flex-col items-center text-center">
                                 <Avatar className="h-24 w-24 mb-2">
-                                    <AvatarImage src={participant.Avatar} alt={participant.name} />
+                                    <AvatarImage src={participant?.user?.avatar} alt={participant?.user?.name} />
                                     <AvatarFallback className="text-xl">
-                                        {participant.name
+                                        {participant?.user?.name
                                             .split(" ")
                                             .map((n) => n[0])
                                             .join("")}
                                     </AvatarFallback>
                                 </Avatar>
-                                <h3 className="font-bold text-lg">{participant.name}</h3>
+                                <h3 className="font-bold text-lg">{participant?.user?.name}</h3>
                                 <p className="text-sm text-muted-foreground">
-                                    {GetDepartmentList(participant.department)}, {participant.semester} Semester
+                                    {GetDepartmentList(participant?.user?.department)}, {participant?.user?.semester} Semester
                                 </p>
 
                                 {data.complete ? (
@@ -104,15 +104,15 @@ export default async function ParticipantResultPage({ params }) {
                             <div className="space-y-2 text-sm">
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Roll Number:</span>
-                                    <span className="font-medium">{participant.rollNo}</span>
+                                    <span className="font-medium">{participant?.user?.rollNo}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Email:</span>
-                                    <span className="font-medium">{participant.email}</span>
+                                    <span className="font-medium">{participant?.user?.email}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Phone:</span>
-                                    <span className="font-medium">{participant.phoneNumber}</span>
+                                    <span className="font-medium">{participant?.user?.phoneNumber}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Attendance:</span>

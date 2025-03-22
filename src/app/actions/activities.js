@@ -10,12 +10,12 @@ export const getAllActivitiesByUserId = async (
   try {
     const event = await prisma.eventParticipant.findMany({
       where: { participantId: id, complete: true },
-      include: { event: true, participant: true },
+      include: { event: true, participant: { include: { user: true } } },
     });
 
     const workshop = await prisma.workshopParticipant.findMany({
       where: { participantId: id, complete: true },
-      include: { workshop: true, participant: true },
+      include: { workshop: true, participant: { include: { user: true } } },
     });
 
     console.log("Workshop=", workshop);

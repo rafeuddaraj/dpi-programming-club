@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   LogOut,
   Settings,
+  UserCog2Icon,
   Users,
   Wrench,
 } from "lucide-react";
@@ -25,6 +26,11 @@ export default function Sidebar() {
   const routes = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Users", href: "/dashboard/users", icon: Users },
+    {
+      name: "Members Collect",
+      href: "/dashboard/member-collect",
+      icon: UserCog2Icon,
+    },
     { name: "Notice", href: "/dashboard/notice", icon: Bell },
     { name: "Events", href: "/dashboard/events", icon: Calendar },
     { name: "Projects", href: "/dashboard/projects", icon: Briefcase },

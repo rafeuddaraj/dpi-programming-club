@@ -41,9 +41,15 @@ export default async function ParticipantPaymentPage({ params }) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <h3 className="font-semibold text-lg">{participant.name}</h3>
-              <p className="text-muted-foreground">{participant.email}</p>
-              <p className="text-muted-foreground">{participant.rollNo}</p>
+              <h3 className="font-semibold text-lg">
+                {participant?.user?.name}
+              </h3>
+              <p className="text-muted-foreground">
+                {participant?.user?.email}
+              </p>
+              <p className="text-muted-foreground">
+                {participant?.user?.rollNo}
+              </p>
             </div>
 
             <div>

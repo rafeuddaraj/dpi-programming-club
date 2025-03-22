@@ -117,12 +117,12 @@ export default async function UsersPage({ params, searchParams }) {
                   {users.map((user) => (
                     <tr key={user.id} className="data-table-row">
                       <td className="data-table-cell font-medium">
-                        {user.name}
+                        {user?.user?.name}
                       </td>
-                      <td className="data-table-cell">{user.email}</td>
-                      <td className="data-table-cell">{user.rollNo}</td>
+                      <td className="data-table-cell">{user?.user?.email}</td>
+                      <td className="data-table-cell">{user?.user?.rollNo}</td>
                       <td className="data-table-cell">
-                        {user.session} ({user?.semester})
+                        {user.session} ({user?.user?.semester})
                       </td>
                       <td className="data-table-cell">
                         {formatDate(user.renewalDate, { time: true })}

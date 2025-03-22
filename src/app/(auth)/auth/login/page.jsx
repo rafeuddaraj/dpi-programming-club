@@ -59,7 +59,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-md mx-auto"
+        className="max-w-md mx-auto shadow-md"
       >
         <h1 className="text-3xl font-bold mb-6">Login</h1>
         <Form {...form}>

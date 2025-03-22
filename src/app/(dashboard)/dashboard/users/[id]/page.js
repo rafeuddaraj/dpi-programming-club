@@ -76,7 +76,7 @@ export default async function UserDetailsPage({ params }) {
                   ?.join("")}
               </div>
               <div>
-                <h2 className="text-xl font-bold">{user.name}</h2>
+                <h2 className="text-xl font-bold">{user?.user?.name}</h2>
                 <p className="text-sm text-muted-foreground">{user.role}</p>
                 <span
                   className={`mt-1 inline-block px-2 py-1 rounded-full text-xs font-medium ${
@@ -91,25 +91,25 @@ export default async function UserDetailsPage({ params }) {
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span>{user.email}</span>
+                <span>{user?.user?.email}</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Phone className="h-4 w-4 text-muted-foreground" />
-                <span>{user.phoneNumber}</span>
+                <span>{user?.user?.phoneNumber}</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <PenSquare className="h-4 w-4 text-muted-foreground" />
-                <span>{user.rollNo}</span>
+                <span>{user?.user?.rollNo}</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Store className="h-4 w-4 text-muted-foreground" />
                 <span>
-                  {user?.session} ({user.semester})
+                  {user?.session} ({user?.user?.semester})
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span>{user.address}</span>
+                <span>{user?.user?.address}</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4 text-muted-foreground" />

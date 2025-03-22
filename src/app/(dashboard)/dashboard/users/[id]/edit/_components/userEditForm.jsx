@@ -107,25 +107,25 @@ export default function UserEditForm({ user }) {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Name</Label>
-                                <Input id="name" {...register("name")} defaultValue={user.name} readOnly />
+                                <Input id="name" {...register("name")} defaultValue={user?.user?.name} readOnly />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email</Label>
-                                <Input id="email" type="email" {...register("email")} defaultValue={user.email} readOnly />
+                                <Input id="email" type="email" {...register("email")} defaultValue={user?.user?.email} readOnly />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="rollNo">Roll Number</Label>
-                                <Input id="rollNo" {...register("rollNo")} defaultValue={user.rollNo} readOnly />
+                                <Input id="rollNo" {...register("rollNo")} defaultValue={user?.user?.rollNo} readOnly />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="registrationNo">Registration Number</Label>
                                 <Input
                                     id="registrationNo"
                                     {...register("registrationNo")}
-                                    defaultValue={user.registrationNo}
+                                    defaultValue={user?.user?.registrationNo}
                                     readOnly
                                 />
                             </div>
@@ -134,17 +134,17 @@ export default function UserEditForm({ user }) {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="session">Session</Label>
-                                <Input id="session" {...register("session")} defaultValue={user.session} readOnly />
+                                <Input id="session" {...register("session")} defaultValue={user?.user?.session} readOnly />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="shift">Shift</Label>
-                                <Input id="shift" {...register("shift")} defaultValue={user.shift} readOnly />
+                                <Input id="shift" {...register("shift")} defaultValue={user?.user?.shift} readOnly />
                             </div>
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="semester">Semester</Label>
-                            <Input id="semester" {...register("semester")} defaultValue={user.semester} readOnly />
+                            <Input id="semester" {...register("semester")} defaultValue={user?.user?.semester} readOnly />
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">

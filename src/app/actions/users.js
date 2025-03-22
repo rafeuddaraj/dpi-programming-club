@@ -9,7 +9,7 @@ import { auth } from "../auth";
 export const getUserById = async (id, select = {}, include = {}) => {
   try {
     const user = await prisma.user.findFirst({
-      where: { OR: [{ id }, { rollNo: id }] },
+      where: { OR: [{ id }, { user: { rollNo: id } }] },
       ...(include && { include }),
     });
 
@@ -56,10 +56,24 @@ export const updateUserById = async (data) => {
     }
     const id = session?.user?.id;
     delete data.password;
-    const updatedUser = await prisma.user.update({ data, where: { id } });
+    // Normal User Action Update Date
+    const { name, semester, email, phoneNumber, ...updatedUserData } =
+      data || {};
+    const updatedUser = await prisma.user.update({
+      data: updatedUserData,
+      where: { id },
+    });
+    if (semester) {
+      await prisma.registeredUser.update({
+        where: { id: updatedUser?.registeredUserId },
+        data: { semester },
+      });
+    }
     revalidatePath("/profile");
     return successResponse("User Update success", 200, updatedUser);
-  } catch {
+  } catch (err) {
+    console.log(err);
+
     return errorResponse();
   }
 };
@@ -81,9 +95,9 @@ export const getAllUsers = async (query, page, limit) => {
   const where = query
     ? {
         OR: [
-          { name: { contains: query, mode: "insensitive" } },
-          { email: { contains: query, mode: "insensitive" } },
-          { rollNo: { contains: query, mode: "insensitive" } },
+          { user: { name: { contains: query, mode: "insensitive" } } },
+          { user: { email: { contains: query, mode: "insensitive" } } },
+          { user: { rollNo: { contains: query, mode: "insensitive" } } },
         ],
         role: { not: "admin" },
       }

@@ -43,7 +43,6 @@ import Loader from "./common/loader";
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").readonly(),
   avatar: z.string().optional(),
-  coverImage: z.string().optional(),
   address: z.string().min(2, "Address Required."),
   semester: z.string().min(1, "Semester is required"),
   email: z.string().email("Invalid email address").readonly(),
@@ -70,7 +69,9 @@ const upload = async (avatar, values, authUser, updateSession) => {
 
 export function ProfileEditForm({ user }) {
   const [avatar, setAvatar] = useState(user.avatar || "/avatar.svg");
-  user.department = DepartmentList(user.department);
+
+  user = { ...user, ...user?.user }
+  user.department = DepartmentList(user?.department);
   const { update: updateSession, data } = useSession() || {}
   const authUser = data?.user || null
   for (let key in user) {
@@ -104,7 +105,7 @@ export function ProfileEditForm({ user }) {
         throw new Error("Something went Wrong");
       }
       toast.success("Profile Update Success")
-      // return router.push("/profile")
+      return router.push("/profile")
     } catch (err) {
       toast.error(err.message);
     }
@@ -388,8 +389,7 @@ export function ProfileEditForm({ user }) {
               <Button
                 type="submit"
                 disabled={
-                  form.formState.isSubmitting ||
-                  form.formState.isSubmitSuccessful
+                  form.formState.isSubmitting || form.formState.isSubmitSuccessful || !form.formState.isDirty
                 }
               >
                 {form.formState.isSubmitting && <Loader />} Save Changes

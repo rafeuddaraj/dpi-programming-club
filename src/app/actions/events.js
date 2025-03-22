@@ -110,19 +110,42 @@ export const getParticipantByEventId = async (query, id, page, limit) => {
     const where = query
       ? {
           OR: [
-            { participant: { name: { contains: query, mode: "insensitive" } } },
             {
-              participant: { rollNo: { contains: query, mode: "insensitive" } },
+              participant: {
+                user: { name: { contains: query, mode: "insensitive" } },
+              },
             },
             {
-              participant: { email: { contains: query, mode: "insensitive" } },
+              participant: {
+                user: { rollNo: { contains: query, mode: "insensitive" } },
+              },
             },
-            { payment: { transactionId: { contains: query } } },
+            {
+              participant: {
+                user: { email: { contains: query, mode: "insensitive" } },
+              },
+            },
+            {
+              participant: {
+                user: {
+                  registrationNo: { contains: query, mode: "insensitive" },
+                },
+              },
+            },
+            {
+              payment: {
+                transactionId: { contains: query, mode: "insensitive" },
+              },
+            },
           ],
-          eventId: id,
         }
       : { eventId: id };
-    const include = { participant: true, event: true, payment: true };
+
+    const include = {
+      participant: { include: { user: true } },
+      event: true,
+      payment: true,
+    };
 
     const orderBy = { payment: { paymentStatus: "asc" } };
     const participant = await commonGet(
@@ -143,7 +166,11 @@ export const getParticipantByEventId = async (query, id, page, limit) => {
 export const getParticipantByEventIdOne = async (id) => {
   try {
     const where = { eventId: id };
-    const include = { participant: true, event: true, payment: true };
+    const include = {
+      participant: { include: { user: true } },
+      event: true,
+      payment: true,
+    };
 
     const orderBy = { payment: { paymentStatus: "asc" } };
     const participant = await prisma.eventParticipant.findMany({
@@ -161,7 +188,11 @@ export const getSingleParticipantById = async (userId, eventId) => {
   try {
     const eventParticipant = await prisma.eventParticipant.findUnique({
       where: { id: eventId },
-      include: { participant: true, event: true, payment: true },
+      include: {
+        participant: { include: { user: true } },
+        event: true,
+        payment: true,
+      },
     });
     return successResponse("success", 200, eventParticipant);
   } catch (err) {
@@ -255,7 +286,11 @@ export const getEventParticipantResult = async (participantId, eventId) => {
   try {
     return await prisma.eventParticipant.findFirst({
       where: { eventId, participantId },
-      include: { event: true, participant: true, payment: true },
+      include: {
+        event: true,
+        participant: { include: { user: true } },
+        payment: true,
+      },
     });
   } catch {
     return errorResponse();
@@ -271,7 +306,7 @@ export const getOwnEvents = async (participantId, query, page, limit) => {
         participantId,
       }
     : { participantId };
-  const include = { event: true, participant: true };
+  const include = { event: true, participant: { include: { user: true } } };
   return commonGet("eventParticipant", where, include, page, limit);
 };
 

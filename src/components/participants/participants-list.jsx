@@ -93,12 +93,12 @@ export async function ParticipantsList({ workshopId }) {
                   <div className="col-span-4">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9">
-                        <AvatarImage src="/placeholder.svg?height=36&width=36" alt={participant.name} />
-                        <AvatarFallback>{participant.name.substring(0, 2)}</AvatarFallback>
+                        <AvatarImage src="/placeholder.svg?height=36&width=36" alt={participant?.user?.name} />
+                        <AvatarFallback>{participant?.user?.name.substring(0, 2)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-medium">{participant.name}</div>
-                        <div className="text-sm text-muted-foreground">{participant.email}</div>
+                        <div className="font-medium">{participant?.user?.name}</div>
+                        <div className="text-sm text-muted-foreground">{participant?.user?.email}</div>
                       </div>
                     </div>
                   </div>

@@ -48,7 +48,7 @@ export default async function SubmissionDetailsPage({
                                 <h3 className="font-medium">Submitted By</h3>
                                 <div className="flex items-center gap-2 text-muted-foreground mt-1">
                                     <User className="h-4 w-4" />
-                                    <span>{`${submission.user.name} - ${submission?.user?.email}` || "User " + submission.userId}</span>
+                                    <span>{`${submission.user?.user?.name} - ${submission?.user?.user?.email}` || "User " + submission.userId}</span>
                                 </div>
                             </div>
                             <div>

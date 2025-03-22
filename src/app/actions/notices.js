@@ -9,10 +9,13 @@ import { auth } from "../auth";
 // Server-side function to fetch notices
 export async function fetchNotices(query, page) {
   try {
+    await prisma.notice.findMany({
+      include: {},
+    });
     const resp = await commonGet(
       "notice",
       { status: true, name: { contains: query, mode: "insensitive" } },
-      { user: true },
+      { user: { include: { user: true } } },
       page,
       10,
       { createdAt: "desc" }

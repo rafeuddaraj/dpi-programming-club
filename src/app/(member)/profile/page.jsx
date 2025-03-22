@@ -26,7 +26,7 @@ export default async function ProfilePage({ searchParams }) {
   const userId = (await searchParams).id;
 
   const session = await auth();
-  const userData = await getUserById(userId || session?.user?.id);
+  const userData = await getUserById(userId || session?.user?.id, {}, { user: true });
   const activities = await getAllActivitiesByUserId(userId || session?.user?.id);
 
   if (userData?.error || activities?.error) {
@@ -48,38 +48,38 @@ export default async function ProfilePage({ searchParams }) {
                 alt={userData?.name}
               />
               <AvatarFallback>
-                {userData?.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {userData?.user?.name
+                  ?.split(" ")
+                  ?.map((n) => n[0])
+                  ?.join("")}
               </AvatarFallback>
             </Avatar>
             <div className="text-center sm:text-left">
               <CardTitle className="text-2xl sm:text-3xl">
-                {userData?.name} {isMembershipExpired(userData?.renewalDate) ? "❌" : "✅"}
+                {userData?.user?.name} {isMembershipExpired(userData?.renewalDate) ? "❌" : "✅"}
               </CardTitle>
               <CardDescription className="text-lg mt-2">
                 {userData?.bio}
               </CardDescription>
               <p>{userData?.address}</p>
               <p className="text-sm text-muted-foreground mt-1">
-                {GetDepartmentList(userData?.department)} | {userData?.semester} Semester
+                {GetDepartmentList(userData?.user?.department)} | {userData?.user?.semester} Semester
               </p>
             </div>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-4 justify-center sm:justify-start mt-4">
               <Button variant="outline" size="sm">
-                <Link className="flex gap-1" href={`mailto:${userData?.email}`}>
+                <Link className="flex gap-1" href={`mailto:${userData?.user?.email}`}>
                   <Icons.mail className="mr-2 h-4 w-4" />
-                  {userData?.email}
+                  {userData?.user?.email}
                 </Link>
               </Button>
               <Button variant="outline" size="sm">
-                <Link className="flex gap-1" href={`tel:${userData?.phone || ""
+                <Link className="flex gap-1" href={`tel:${userData?.user?.phoneNumber || ""
                   }`}>
                   <Icons.phone className="mr-2 h-4 w-4" />
-                  {userData?.phoneNumber}
+                  {userData?.user?.phoneNumber}
                 </Link>
               </Button>
               <Button variant="outline" size="sm" asChild>

@@ -24,31 +24,21 @@ enum UserStatus {
 
 model User {
   id                    String                 @id @default(auto()) @map("_id") @db.ObjectId
-  name                  String
-  email                 String                 @unique
   password              String
-  phoneNumber           String                 @unique
-  gender                String
+  registeredUserId      String                 @unique @db.ObjectId
+  user                  RegisteredUser         @relation(fields: [registeredUserId], references: [id])
   avatar                String?
-  semester              String
-  coverImage            String?
-  session               String
-  department            String
-  rollNo                String
   skills                String[]               @default([])
-  registrationNo        String
   discord               String?
   bio                   String?
   about                 String?
   linkedin              String?
   github                String?
-  shift                 String
   role                  String                 @default("member") // member, moderator, admin
   address               String?
   status                UserStatus             @default(PROCESSING)
   renewalDate           DateTime
   examiner              Boolean?               @default(false)
-  renewalFee            Int                    @default(50)
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt()
   token                 Session[]
@@ -344,15 +334,25 @@ model Settings {
 
 // Entry members 
 
+enum Gender {
+  male
+  female
+}
+
 model RegisteredUser {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   name           String
-  email          String
-  rollNo         String
-  registrationNo String
+  email          String   @unique
+  rollNo         String   @unique
+  registrationNo String   @unique
+  phoneNumber    String   @unique
   session        String
+  gender         Gender
   shift          String
+  semester       String
   department     String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt()
+  user           User?
+  secretCode     Int?
 }

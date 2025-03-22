@@ -11,8 +11,8 @@ export default async function NoticeList({ page, query }) {
 
     const data = resp.data?.data
 
-    const pagination = data.pagination
-    const notices = data.data
+    const pagination = data?.pagination
+    const notices = data?.data
 
     return (
         <div className="space-y-6">

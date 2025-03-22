@@ -64,18 +64,15 @@ export const registerAndPaymentAction = async (data, paymentData) => {
 
 export const loginAction = async (data) => {
   try {
-    const res = await prisma.user.findFirst({ where: { email: data?.email } });
+    const res = await prisma.user.findFirst({
+      where: { user: { email: data?.email } },
+      include: { user: true },
+    });
     if (res) {
       const matched = await bcrypt?.compare(data?.password, res?.password);
       if (matched) {
-        const {
-          password,
-          department,
-          session,
-          semester,
-          registrationNo,
-          ...payload
-        } = res;
+        const { password, user, ...rest } = res;
+        const payload = { ...user, ...rest };
         const accessToken = await jwt.sign(payload, process.env.JWT_SECRET, {
           expiresIn: process.env.JWT_TOKEN_EXPIRED,
         });
@@ -90,7 +87,7 @@ export const loginAction = async (data) => {
         });
         delete res.password;
         return successResponse("Login successful.", 200, {
-          ...res,
+          ...payload,
           token: {
             accessToken,
             refreshToken,
@@ -101,6 +98,8 @@ export const loginAction = async (data) => {
     }
     throw new Error("Invalid credentials!");
   } catch (err) {
+    console.log(err.meta);
+
     return errorResponse(err.message, 500);
   }
 };

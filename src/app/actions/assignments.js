@@ -102,7 +102,7 @@ export const getSubmissionsByAssignment = async (assignmentId) => {
   try {
     const submissions = await prisma.assignmentSubmission.findMany({
       where: { assignmentId },
-      include: { user: true, examiner: true },
+      include: { user: { include: { user: true } }, examiner: true },
     });
     return successResponse(
       "Submissions Retrieved Successfully",
@@ -190,7 +190,7 @@ export const getAssignmentSubmissionByUserIdAndAssignmentId = async (
       },
       include: {
         assignment: true,
-        user: true,
+        user: { include: { user: true } },
       },
     });
 
@@ -215,7 +215,7 @@ export const getAssignmentSubmissionById = async (id) => {
       },
       include: {
         assignment: true,
-        user: true,
+        user: { include: { user: true } },
         examiner: true,
       },
     });

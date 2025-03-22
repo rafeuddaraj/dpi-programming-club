@@ -187,14 +187,14 @@ export default async function EventDetailsPage({ params }) {
                   >
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                        {participant.name
+                        {participant?.user?.name
                           ?.split(" ")
                           .map((n) => n[0])
                           .join("")}
                       </div>
                       <div>
                         <p className="text-sm font-medium">
-                          {participant.name}
+                          {participant?.user?.name}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {participant.role}
