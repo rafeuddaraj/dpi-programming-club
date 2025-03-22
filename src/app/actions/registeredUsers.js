@@ -52,7 +52,7 @@ export const getAllRegisteredUsers = async (query, page, limit) => {
           ],
         }
       : {};
-    return commonGet("registeredUser", where, {}, page, limit, {
+    return commonGet("registeredUser", where, { user: true }, page, limit, {
       createdAt: "desc",
     });
   } catch (error) {

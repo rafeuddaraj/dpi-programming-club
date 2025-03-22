@@ -6,6 +6,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import GetDepartmentList from "@/utils/DepartmentList";
+import { Check, X } from "lucide-react";
 import ActionButton from "./actionButton";
 import FilterAction from "./filterAction";
 
@@ -32,6 +34,9 @@ export function StudentTable({ students, onEdit, onDelete }) {
                 <TableHead className="hidden lg:table-cell">Email</TableHead>
                 <TableHead className="cursor-pointer hidden sm:table-cell">
                   Department
+                </TableHead>
+                <TableHead className="cursor-pointer hidden sm:table-cell">
+                  Status
                 </TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -66,7 +71,14 @@ export function StudentTable({ students, onEdit, onDelete }) {
                       {student.email}
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">
-                      {student.department}
+                      {GetDepartmentList(student.department)}
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      {student?.user ? (
+                        <Check className="text-green-400" />
+                      ) : (
+                        <X className="text-red-500" />
+                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       <ActionButton student={student} />
