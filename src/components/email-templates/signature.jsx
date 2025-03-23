@@ -27,7 +27,7 @@ export default function Signature() {
                       >
                         {/* President signature placeholder */}
                         <img
-                          src="https://cst-club-dpi.vercel.app/rafe-uddaraj-signature.svg"
+                          src="https://cst-club-dpi.vercel.app/rafe-uddaraj-signature.png"
                           alt="Rafe Uddaraj Signature"
                           width="120"
                           height="50"
@@ -102,7 +102,7 @@ export default function Signature() {
                       >
                         {/* Executive Administrator signature placeholder */}
                         <img
-                          src="https://cst-club-dpi.vercel.app/executive-administrator.svg"
+                          src="https://cst-club-dpi.vercel.app/executive-administrator.png"
                           alt="Raisha Signature"
                           width="120"
                           height="50"

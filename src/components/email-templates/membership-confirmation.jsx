@@ -468,50 +468,6 @@ export default function MembershipConfirmationTemplate({
                       width="100%"
                     >
                       <tbody>
-                        {/* Social links */}
-                        <tr>
-                          <td style={{ paddingBottom: "12px" }}>
-                            <table
-                              cellPadding="0"
-                              cellSpacing="0"
-                              border="0"
-                              width="100%"
-                            >
-                              <tbody>
-                                <tr>
-                                  {[
-                                    "Facebook",
-                                    "Twitter",
-                                    "Instagram",
-                                    "LinkedIn",
-                                  ].map((social, index) => (
-                                    <td
-                                      key={index}
-                                      style={{
-                                        padding: "0 3px",
-                                        width: "25%",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      <a
-                                        href="#"
-                                        style={{
-                                          color: "#64748b",
-                                          textDecoration: "none",
-                                          fontWeight: "500",
-                                          fontSize: "11px",
-                                        }}
-                                      >
-                                        {social}
-                                      </a>
-                                    </td>
-                                  ))}
-                                </tr>
-                              </tbody>
-                            </table>
-                          </td>
-                        </tr>
-
                         {/* Copyright */}
                         <tr>
                           <td style={{ paddingBottom: "5px" }}>
