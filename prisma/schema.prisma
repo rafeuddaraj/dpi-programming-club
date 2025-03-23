@@ -353,6 +353,7 @@ model RegisteredUser {
   department     String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt()
+  isManagement   Boolean? @default(false)
   user           User?
   secretCode     Int?
 }

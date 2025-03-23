@@ -48,14 +48,6 @@ export const createRegisteredUser = async (data) => {
 // Get all registered users
 export const getAllRegisteredUsers = async (query, page, limit) => {
   try {
-    console.log(
-      await prisma.registeredUser.findMany({
-        where: {
-          OR: [],
-        },
-      })
-    );
-
     const now = new Date();
     const where = query
       ? {
@@ -67,18 +59,10 @@ export const getAllRegisteredUsers = async (query, page, limit) => {
             { phoneNumber: { contains: query, mode: "insensitive" } },
             { registrationNo: { contains: query, mode: "insensitive" } },
           ],
+          isManagement: false,
         }
       : {
-          OR: [
-            {
-              user: {
-                role: "member",
-              },
-            },
-            {
-              user: null,
-            },
-          ],
+          isManagement: false,
         };
     return commonGet("registeredUser", where, { user: true }, page, limit, {
       createdAt: "desc",
