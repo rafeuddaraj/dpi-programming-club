@@ -33,8 +33,6 @@ export async function ParticipantsList({ workshopId }) {
   }
   const participants = resp?.data?.participants;
 
-  console.log(participants);
-
   if (participants.length === 0) {
     return (
       <Card>

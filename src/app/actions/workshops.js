@@ -136,12 +136,15 @@ export const getWorkshopModuleById = async (workshopModuleId) => {
   }
 };
 
-export const getModuleByWorkshopId = async (workshopId) => {
+export const getModuleByWorkshopId = async (workshopId, isAdmin = false) => {
   try {
+    const where = isAdmin ? {} : { isActive: true };
+    console.log(where);
+
     const resp = await prisma.workshopModule.findMany({
       where: { workshopId },
       include: {
-        lessons: { orderBy: { position: "asc" }, where: { isActive: true } },
+        lessons: { orderBy: { position: "asc" }, where: { ...where } },
         workshop: true,
       },
     });
@@ -152,9 +155,9 @@ export const getModuleByWorkshopId = async (workshopId) => {
   }
 };
 
-export const updateWorkshopModule = async (modules) => {
+export const updateWorkshopModulePosition = async (modules) => {
   try {
-    const updatePromises = modules.map((module) =>
+    const updatePromises = modules?.map((module) =>
       prisma.workshopModule.update({
         where: { id: module.id },
         data: { position: module.position },
@@ -169,6 +172,25 @@ export const updateWorkshopModule = async (modules) => {
       updatedModules
     );
   } catch (error) {
+    console.log(error);
+
+    return errorResponse(error.message || "Failed to update workshop modules");
+  }
+};
+export const updateWorkshopModule = async ({ workshopModuleId, data }) => {
+  try {
+    const updatedModule = await prisma.workshopModule.update({
+      where: { id: workshopModuleId },
+      data,
+    });
+    return successResponse(
+      "Workshop modules updated successfully",
+      200,
+      updatedModule
+    );
+  } catch (error) {
+    console.log(error);
+
     return errorResponse(error.message || "Failed to update workshop modules");
   }
 };
