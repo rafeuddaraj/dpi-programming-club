@@ -282,6 +282,12 @@ export const enrollWorkshop = async (
   try {
     const session = await auth();
     const user = session?.user;
+    const userResp = await prisma?.user?.findUnique({
+      where: { id: user?.id },
+    });
+    if (!userResp) {
+      throw new Error("User not found");
+    }
     let res = null;
     const bookedSeat =
       (await prisma.workshopParticipant.findMany({
@@ -337,9 +343,7 @@ export const enrollWorkshop = async (
     revalidatePath(revalidatePathSrc);
     return successResponse("", 201, res);
   } catch (err) {
-    console.log(err);
-
-    return errorResponse();
+    return errorResponse(err?.message);
   }
 };
 
