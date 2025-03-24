@@ -103,7 +103,7 @@ model EventParticipant {
   examinerId    String?  @db.ObjectId
   examiner      User?    @relation("Examiner", fields: [examinerId], references: [id])
 
-  // @@unique([eventId, participantId])
+  @@unique([eventId, participantId])
 }
 
 enum ActivityType {
@@ -181,6 +181,8 @@ model WorkshopParticipant {
   lastLessonId  String?  @db.ObjectId
   payment       Payment? @relation(fields: [paymentId], references: [id])
   joining       DateTime @default(now())
+
+  @@unique([workshopId, participantId])
 }
 
 // Payments
