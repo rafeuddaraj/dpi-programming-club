@@ -18,8 +18,6 @@ export const getAllActivitiesByUserId = async (
       include: { workshop: true, participant: { include: { user: true } } },
     });
 
-    console.log("Workshop=", workshop);
-
     return successResponse("Success fetched", 200, { workshop, event });
   } catch (err) {
     console.log(err);
