@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useState } from "react";
 
 const images = [
   { src: "/placeholder.svg?height=300&width=400", alt: "Event 1" },
@@ -29,9 +29,6 @@ export default function GalleryPage() {
         : (selectedImage + 1) % images.length;
     setSelectedImage(newIndex);
   };
-
-
-
 
   return (
     <div className="container mx-auto py-8">

@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "../auth";
 
 // Server-side function to fetch notices
-export async function fetchNotices(query, page) {
+export async function fetchNotices(query, page, limit) {
   try {
     await prisma.notice.findMany({
       include: {},
@@ -17,7 +17,7 @@ export async function fetchNotices(query, page) {
       { status: true, name: { contains: query, mode: "insensitive" } },
       { user: { include: { user: true } } },
       page,
-      10,
+      limit,
       { createdAt: "desc" }
     );
     return successResponse("Notices fetched successfully", 200, resp);

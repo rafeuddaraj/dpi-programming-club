@@ -53,7 +53,6 @@ export const getAllRegisteredUsers = async (query, page, limit) => {
       ? {
           OR: [
             { name: { contains: query, mode: "insensitive" } },
-            { email: { contains: query, mode: "insensitive" } },
             { rollNo: { contains: query, mode: "insensitive" } },
             { email: { contains: query, mode: "insensitive" } },
             { phoneNumber: { contains: query, mode: "insensitive" } },
@@ -64,6 +63,7 @@ export const getAllRegisteredUsers = async (query, page, limit) => {
       : {
           isManagement: false,
         };
+
     return commonGet("registeredUser", where, { user: true }, page, limit, {
       createdAt: "desc",
     });
