@@ -27,6 +27,8 @@ export const getWorkshopById = async (workshopId) => {
     if (!workshop) return errorResponse("Workshop not found", 404);
     return successResponse("Workshop retrieved successfully", 200, workshop);
   } catch (error) {
+    console.log(error);
+
     return errorResponse(error.message || "Failed to fetch workshop");
   }
 };

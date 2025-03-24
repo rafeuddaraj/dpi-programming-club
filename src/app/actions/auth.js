@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { errorResponse, successResponse } from "@/utils/req-res";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { auth } from "../auth";
 export const registerAction = async (data) => {
   try {
     const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -133,5 +134,128 @@ export const refreshTokenAction = async (data) => {
     });
   } catch (err) {
     return null;
+  }
+};
+
+export const generateOTP = async (email, roll) => {
+  try {
+    const found = await prisma.registeredUser.findUnique({
+      where: { email, rollNo: roll },
+      include: { user: true },
+    });
+    if (!found?.user) {
+      throw new Error("There is no user registered");
+    }
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    const expiredMinute = parseInt(process.env.OTP_EXPIRED_MINUTE) || 5;
+    const expired = new Date(Date.now() + expiredMinute * 60 * 1000);
+
+    await prisma.user.update({
+      where: { registeredUserId: found?.id, user: { isManagement: false } },
+      data: { otp, expiredOtp: expired },
+    });
+    return successResponse("OTP sent successfully.", 200, {
+      otp,
+      expiredMinute,
+      found,
+    });
+  } catch (error) {
+    console.log(error);
+
+    return errorResponse(error.message);
+  }
+};
+export const verifyOtp = async function verifyOtp(otp) {
+  try {
+    otp = parseInt(otp);
+
+    let found =
+      (
+        await prisma.user.findMany({
+          where: { otp },
+        })
+      )[0] || null;
+
+    if (!found) {
+      throw new Error("Invalid OTP");
+    }
+    console.log({ found });
+
+    if (found?.expiredOtp && found?.expiredOtp < new Date()) {
+      throw new Error("OTP Expired");
+    }
+
+    await prisma.user.update({
+      where: { id: found?.id },
+      data: { otp: null, expiredOtp: null },
+    });
+
+    return successResponse("OTP verified successfully.", 200, found);
+  } catch (error) {
+    console.log(error);
+
+    return errorResponse(error.message);
+  }
+};
+
+export const changePassword = async (userId, newPassword) => {
+  try {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    });
+    return successResponse("Password changed successfully.", 200);
+  } catch (error) {
+    return errorResponse(error.message);
+  }
+};
+
+export const generateOTPByCurrentUserPassword = async (password) => {
+  try {
+    const session = await auth();
+    const user = session?.user || {};
+    console.log(user);
+
+    const found = await prisma.user.findUnique({
+      where: { id: user?.id },
+      include: { user: true },
+    });
+    if (!found) {
+      throw new Error("There is no user registered");
+    }
+    const hashedPassword = await bcrypt.compare(password, found?.password);
+    if (!hashedPassword) {
+      throw new Error("Invalid password");
+    }
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    const expiredMinute = parseInt(process.env.OTP_EXPIRED_MINUTE) || 5;
+    const expired = new Date(Date.now() + expiredMinute * 60 * 1000);
+    await prisma.user.update({
+      where: { id: found?.id, user: { isManagement: false } },
+      data: { otp },
+    });
+    return successResponse("OTP sent successfully.", 200, {
+      otp,
+      expiredMinute: expired,
+      found,
+    });
+  } catch (error) {
+    console.log(error);
+    return errorResponse(error.message);
+  }
+};
+
+export const changePasswordByUser = async (password) => {
+  try {
+    const session = await auth();
+    const user = session?.user || {};
+    const resp = await prisma.user.update({
+      where: { id: user?.id },
+      data: { password: password },
+    });
+    return successResponse("Password changed successfully.", 200);
+  } catch (err) {
+    return errorResponse(err.message);
   }
 };

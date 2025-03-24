@@ -38,6 +38,8 @@ model User {
   address               String?
   status                UserStatus             @default(PROCESSING)
   renewalDate           DateTime
+  otp                   Int?
+  expiredOtp            DateTime?
   examiner              Boolean?               @default(false)
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt()

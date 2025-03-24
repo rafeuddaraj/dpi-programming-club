@@ -47,7 +47,7 @@ export default function LoginPage() {
       if (res?.error) {
         throw new Error(res?.error);
       }
-      return router.push("/profile");
+      window.location.replace("/profile");
     } catch {
       setError("There was an error while trying to login.");
     }
@@ -96,7 +96,7 @@ export default function LoginPage() {
             />
             <div className="flex justify-between items-center">
               <Link
-                href="/forgot-password"
+                href="/auth/forgot-password"
                 className="text-sm text-primary hover:underline"
               >
                 Forgot password?

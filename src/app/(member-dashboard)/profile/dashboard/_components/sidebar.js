@@ -7,6 +7,7 @@ import {
   Briefcase,
   Calendar,
   CreditCard,
+  KeyIcon,
   LayoutDashboard,
   LogOut,
   Wrench,
@@ -24,6 +25,7 @@ export default function Sidebar() {
     { name: "Workshops", href: "/profile/dashboard/workshops", icon: Wrench },
     { name: "Payments", href: "/profile/dashboard/payments", icon: CreditCard },
     { name: "Skills", href: "/profile/dashboard/skills", icon: Award },
+    { name: "Password", href: "/profile/dashboard/password", icon: KeyIcon },
   ];
 
   return (
