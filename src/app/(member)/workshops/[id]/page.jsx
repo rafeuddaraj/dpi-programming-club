@@ -1,81 +1,92 @@
-import { getWorkshopById, getWorkshopParticipant } from "@/app/actions/workshops"
-import { auth } from "@/app/auth"
-import FeedbackPreview from "@/components/common/feedback-preview"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { formatDate } from "@/lib/utils"
-import { Calendar, CheckCircle, Clock, ExternalLink, Users } from "lucide-react"
-import Link from "next/link"
-import EnrollWorkshop from "../_components/enroll-workshop"
-
+import {
+  getWorkshopById,
+  getWorkshopParticipant,
+} from "@/app/actions/workshops";
+import { auth } from "@/app/auth";
+import FeedbackPreview from "@/components/common/feedback-preview";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { formatDate } from "@/lib/utils";
+import {
+  Calendar,
+  CheckCircle,
+  Clock,
+  ExternalLink,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
+import EnrollWorkshop from "../_components/enroll-workshop";
 
 export async function generateMetadata({ params: param }) {
   // Fetch data dynamically based on params (e.g., a blog workshop or product ID)
   const params = await param;
-  const { id } = params
-  const resp = await getWorkshopById(id)
+  const { id } = params;
+  const resp = await getWorkshopById(id);
   if (resp?.error) {
-    throw Error()
+    throw Error();
   }
-  const workshop = resp?.data
+  const workshop = resp?.data;
   return {
-    title: workshop.name,  // Dynamic title for the page
-    description: workshop.description,  // Dynamic description
+    title: workshop.name, // Dynamic title for the page
+    description: workshop.description, // Dynamic description
     openGraph: {
-      title: workshop.name,  // OG Title (same as regular title)
-      description: workshop.description,  // OG Description
+      title: workshop.name, // OG Title (same as regular title)
+      description: workshop.description, // OG Description
       image: workshop.imageUrl,
       url: `${process?.env?.SITE_URL}/workshops/${id}`,
-      siteName: 'CST Club - DPI',  // Website name
+      siteName: "CST Club - DPI", // Website name
     },
     twitter: {
-      card: 'summary_large_image',  // Twitter card type (can be 'summary', 'summary_large_image', etc.)
-      title: workshop.name,  // Twitter Title
-      description: workshop.description,  // Twitter Description
-      image: workshop.imageUrl,  // Twitter Image URL
+      card: "summary_large_image", // Twitter card type (can be 'summary', 'summary_large_image', etc.)
+      title: workshop.name, // Twitter Title
+      description: workshop.description, // Twitter Description
+      image: workshop.imageUrl, // Twitter Image URL
     },
   };
 }
 
 export default async function WorkshopDetailPage({ params: param }) {
-  const params = await param
-  const session = await auth()
-  const { id } = params
+  const params = await param;
+  const session = await auth();
+  const { id } = params;
 
-  const resp = await getWorkshopById(id)
+  const resp = await getWorkshopById(id);
   if (resp?.error) {
-    throw Error()
+    throw Error();
   }
 
+  const workshop = resp?.data;
 
+  const participant = await getWorkshopParticipant(workshop?.id);
 
-  const workshop = resp?.data
-
-  const participant = await getWorkshopParticipant(workshop?.id)
-
-  const isEnrolled = !!participant
+  const isEnrolled = !!participant;
 
   if (!workshop) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-2xl font-bold mb-4">Workshop not found</h1>
-        <p className="mb-8">The workshop you're looking for doesn't exist or has been removed.</p>
+        <p className="mb-8">
+          The workshop you're looking for doesn't exist or has been removed.
+        </p>
         <Button asChild>
           <Link href="/">Back to Workshops</Link>
         </Button>
       </div>
-    )
+    );
   }
 
   // const outlineItems = workshop.outline.split("\n")
 
-  const module = workshop?.modules[0]
-  const lesson = module?.lessons[0]
-
-  console.log(participant);
-
+  const module = workshop?.modules[0];
+  const lesson = module?.lessons[0];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -85,21 +96,33 @@ export default async function WorkshopDetailPage({ params: param }) {
             <div>
               <h1 className="text-3xl font-bold">{workshop.name}</h1>
               <div className="flex items-center gap-2 mt-2">
-                <Badge variant={workshop.type === "ONLINE" ? "default" : "secondary"}>{workshop.type}</Badge>
-                {!workshop.isActive && <Badge variant="destructive">Inactive</Badge>}
+                <Badge
+                  variant={workshop.type === "ONLINE" ? "default" : "secondary"}
+                >
+                  {workshop.type}
+                </Badge>
+                {!workshop.isActive && (
+                  <Badge variant="destructive">Inactive</Badge>
+                )}
               </div>
             </div>
-            {session?.user ? isEnrolled ? (
-              <Link href={`/workshops/${id}/player/${participant?.lastLessonId || lesson?.id}`}>
-                <Button>Continue Learning</Button>
-              </Link>
+            {session?.user ? (
+              isEnrolled ? (
+                <Link
+                  href={`/workshops/${id}/player/${
+                    participant?.lastLessonId || lesson?.id
+                  }`}
+                >
+                  <Button>Continue Learning</Button>
+                </Link>
+              ) : (
+                <EnrollWorkshop workshop={workshop} />
+              )
             ) : (
-              <EnrollWorkshop workshop={workshop} />
-            ) : <Link href={`/auth/login`}>
-              <Button className="w-full">
-                Login
-              </Button>
-            </Link>}
+              <Link href={`/auth/login`}>
+                <Button className="w-full">Login</Button>
+              </Link>
+            )}
           </div>
 
           <Tabs defaultValue="overview">
@@ -108,8 +131,13 @@ export default async function WorkshopDetailPage({ params: param }) {
               <TabsTrigger value="outline">Outline</TabsTrigger>
               <TabsTrigger value="instructor">Instructor</TabsTrigger>
             </TabsList>
-            <TabsContent value="overview" className="p-4 border rounded-md mt-2">
-              <h2 className="text-xl font-semibold mb-4">About This Workshop</h2>
+            <TabsContent
+              value="overview"
+              className="p-4 border rounded-md mt-2"
+            >
+              <h2 className="text-xl font-semibold mb-4">
+                About This Workshop
+              </h2>
               <div className="p-4">
                 <FeedbackPreview markdownText={workshop.description} />
               </div>
@@ -119,7 +147,8 @@ export default async function WorkshopDetailPage({ params: param }) {
                   <div>
                     <p className="font-medium">Workshop Duration</p>
                     <p className="text-sm text-muted-foreground">
-                      {formatDate(workshop.startingDate)} - {formatDate(workshop.endingDate)}
+                      {formatDate(workshop.startingDate)} -{" "}
+                      {formatDate(workshop.endingDate)}
                     </p>
                   </div>
                 </div>
@@ -128,7 +157,11 @@ export default async function WorkshopDetailPage({ params: param }) {
                   <Clock className="h-5 w-5 text-primary" />
                   <div>
                     <p className="font-medium">Registration Deadline</p>
-                    <p className="text-sm text-muted-foreground">{formatDate(workshop.registrationDeadline, { time: true })}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatDate(workshop.registrationDeadline, {
+                        time: true,
+                      })}
+                    </p>
                   </div>
                 </div>
 
@@ -137,7 +170,9 @@ export default async function WorkshopDetailPage({ params: param }) {
                     <Users className="h-5 w-5 text-primary" />
                     <div>
                       <p className="font-medium">Available Seats</p>
-                      <p className="text-sm text-muted-foreground">{workshop.totalSeats} seats total</p>
+                      <p className="text-sm text-muted-foreground">
+                        {workshop.totalSeats} seats total
+                      </p>
                     </div>
                   </div>
                 ) : null}
@@ -149,11 +184,15 @@ export default async function WorkshopDetailPage({ params: param }) {
                       fill="currentColor"
                       className="w-6 h-6 text-primary"
                     >
-                      <text x="2" y="17" fontSize="16" fontWeight="bold">৳</text>
+                      <text x="2" y="17" fontSize="16" fontWeight="bold">
+                        ৳
+                      </text>
                     </svg>
                     <div>
                       <p className="font-medium">Workshop Price</p>
-                      <p className="text-muted-foreground font-bold text-2xl">{workshop.price}</p>
+                      <p className="text-muted-foreground font-bold text-2xl">
+                        {workshop.price}
+                      </p>
                     </div>
                   </div>
                 ) : null}
@@ -170,18 +209,24 @@ export default async function WorkshopDetailPage({ params: param }) {
                   </li>
                 ))}
               </ul>
-
             </TabsContent>
 
-            <TabsContent value="instructor" className="p-4 border rounded-md mt-2">
-              <h2 className="text-xl font-semibold mb-4">About the Instructor</h2>
+            <TabsContent
+              value="instructor"
+              className="p-4 border rounded-md mt-2"
+            >
+              <h2 className="text-xl font-semibold mb-4">
+                About the Instructor
+              </h2>
               <div className="flex flex-col md:flex-row gap-4 items-start">
                 <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center">
                   <Users className="h-12 w-12 text-muted-foreground" />
                 </div>
                 <div>
                   <h3 className="text-lg font-medium">{workshop.instructor}</h3>
-                  <p className="mt-2 text-muted-foreground">{workshop.instructorDetails}</p>
+                  <p className="mt-2 text-muted-foreground">
+                    {workshop.instructorDetails}
+                  </p>
                   <Button variant="link" className="p-0 h-auto mt-2" asChild>
                     <a
                       href={workshop.instructorUrl}
@@ -203,7 +248,9 @@ export default async function WorkshopDetailPage({ params: param }) {
           <Card>
             <CardHeader>
               <CardTitle>Workshop Details</CardTitle>
-              <CardDescription>Key information about this workshop</CardDescription>
+              <CardDescription>
+                Key information about this workshop
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -225,39 +272,44 @@ export default async function WorkshopDetailPage({ params: param }) {
               <div>
                 <h3 className="font-medium">Duration</h3>
                 <p className="text-sm text-muted-foreground">
-                  {formatDate(workshop?.startingDate)} - {formatDate(workshop?.endingDate
-                  )}
+                  {formatDate(workshop?.startingDate)} -{" "}
+                  {formatDate(workshop?.endingDate)}
                 </p>
               </div>
               <div>
                 <h3 className="font-medium">Instructor</h3>
-                <p className="text-sm text-muted-foreground">{workshop.instructor}</p>
+                <p className="text-sm text-muted-foreground">
+                  {workshop.instructor}
+                </p>
               </div>
 
-              {session?.user ? isEnrolled ? (
-                <div className="pt-4 border-t">
-                  <h3 className="font-medium mb-2">You're enrolled!</h3>
-                  <Link href={`/workshops/${id}/player/${participant?.lastLessonId || lesson?.id}`}>
-                    <Button className="w-full">
-                      Continue Learning
-                    </Button>
-                  </Link>
-                </div>
+              {session?.user ? (
+                isEnrolled ? (
+                  <div className="pt-4 border-t">
+                    <h3 className="font-medium mb-2">You're enrolled!</h3>
+                    <Link
+                      href={`/workshops/${id}/player/${
+                        participant?.lastLessonId || lesson?.id
+                      }`}
+                    >
+                      <Button className="w-full">Continue Learning</Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="pt-4 border-t">
+                    <h3 className="font-medium mb-2">Ready to join?</h3>
+                    <EnrollWorkshop workshop={workshop} />
+                  </div>
+                )
               ) : (
-                <div className="pt-4 border-t">
-                  <h3 className="font-medium mb-2">Ready to join?</h3>
-                  <EnrollWorkshop workshop={workshop} />
-                </div>
-              ) : <Link href={`/auth/login`}>
-                <Button className="w-full">
-                  Login
-                </Button>
-              </Link>}
+                <Link href={`/auth/login`}>
+                  <Button className="w-full">Login</Button>
+                </Link>
+              )}
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }
-
