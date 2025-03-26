@@ -404,22 +404,21 @@ export const getActiveLessonAndModule = async (workshopId) => {
     const active = await prisma.workshopParticipant.findFirst({
       where: { workshopId, participantId: session?.user?.id },
     });
-
     if (active?.lastLessonId && active?.lastLessonId) {
       const lesson = await prisma.workshopLesson.findFirst({
-        where: { id: active?.lastLessonId },
+        where: { id: active?.lastLessonId, isActive: true },
         orderBy: { position: "asc" },
         include: { assignment: true },
       });
       const workshopModule = await prisma.workshopModule.findFirst({
-        where: { id: active.lastModuleId },
+        where: { id: active.lastModuleId, isActive: true },
         orderBy: { position: "asc" },
       });
       const data = { lesson, module: workshopModule };
       return successResponse("success", 200, data);
     } else {
       const workshopModule = await prisma.workshopModule.findFirst({
-        where: { workshopId },
+        where: { workshopId, isActive: true },
         include: {
           lessons: {
             orderBy: { position: "asc" },
@@ -431,6 +430,27 @@ export const getActiveLessonAndModule = async (workshopId) => {
       const lesson = lessons[0];
       return successResponse("success", 200, { lesson, module });
     }
+  } catch (err) {
+    return errorResponse();
+  }
+};
+
+export const getModuleAndLesson = async (workshopId, lessonId) => {
+  try {
+    const session = await auth();
+    const user = session?.user;
+    if (!user) throw new Error("User not found");
+    const resp = await prisma.workshopParticipant.findFirstOrThrow({
+      where: { workshopId: workshopId, participantId: user?.id },
+    });
+    if (!resp) {
+      throw new Error("User not found");
+    }
+    const lesson = await prisma.workshopLesson.findFirst({
+      where: { id: lessonId, isActive: true },
+      include: { assignment: true, module: true },
+    });
+    return successResponse("success", 200, lesson);
   } catch (err) {
     console.log(err);
 

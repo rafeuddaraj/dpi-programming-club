@@ -1,69 +1,80 @@
-import { ArrowLeft, Play } from "lucide-react"
-import Link from "next/link"
-import { notFound } from "next/navigation"
+import { ArrowLeft, Play } from "lucide-react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
-import { getAssignmentSubmissionByUserIdAndAssignmentId } from "@/app/actions/assignments"
-import { getActiveLessonAndModule, getWorkshopParticipant, getWorkshopProgress } from "@/app/actions/workshops"
-import { auth } from "@/app/auth"
-import SubmitAssignmentModal from "@/components/assignments/submission-modal"
-import FeedbackPreview from "@/components/common/feedback-preview"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getStatus } from "@/lib/utils"
-import { Map } from "lucide-react"
-import VideoPlayer from "./_components/videoPlayer"
-import WorkshopContent from "./_components/workshop-content"
-import WorkshopSearch from "./_components/workshop-search"
+import { getAssignmentSubmissionByUserIdAndAssignmentId } from "@/app/actions/assignments";
+import {
+  getModuleAndLesson,
+  getWorkshopParticipant,
+  getWorkshopProgress,
+} from "@/app/actions/workshops";
+import { auth } from "@/app/auth";
+import SubmitAssignmentModal from "@/components/assignments/submission-modal";
+import FeedbackPreview from "@/components/common/feedback-preview";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getStatus } from "@/lib/utils";
+import { Map } from "lucide-react";
+import VideoPlayer from "./_components/videoPlayer";
+import WorkshopContent from "./_components/workshop-content";
+import WorkshopSearch from "./_components/workshop-search";
 
-export default async function WorkshopPlayerPage({ params: param, searchParams: searchParam }) {
+export default async function WorkshopPlayerPage({
+  params: param,
+  searchParams: searchParam,
+}) {
+  const session = await auth();
+  const params = await param;
+  const searchParams = await searchParam;
+  const workshopId = await params?.id;
+  const lessonId = await params?.lessonId;
+  const userId = session?.user?.id;
 
-  const session = await auth()
-  const params = await param
-  const searchParams = await searchParam
-  const workshopId = await params?.id
-  const lessonId = await params?.lessonId
-  const userId = session?.user?.id
-
-  const enrollment = await getWorkshopParticipant(workshopId)
+  const enrollment = await getWorkshopParticipant(workshopId);
 
   if (!enrollment) {
-    notFound()
+    notFound();
   }
 
+  const lessonAndModuleResp = await getModuleAndLesson(workshopId, lessonId);
 
-
-  const activeResp = await getActiveLessonAndModule(workshopId)
-
-  if (activeResp?.error) {
-    throw Error()
+  if (lessonAndModuleResp?.error) {
+    throw Error();
   }
 
-  const activeData = activeResp?.data
+  const { module, ...lesson } = lessonAndModuleResp?.data;
 
-  const activeModule = activeData?.module
-  const activeLesson = activeData?.lesson
+  const activeModule = module;
+  const activeLesson = lesson;
   const expandedModules = {
     [activeModule.id]: true,
-  }
+  };
 
-  const progress = await getWorkshopProgress(workshopId)
+  const progress = await getWorkshopProgress(workshopId);
 
+  const assignment = activeLesson?.assignment || null;
 
-  const assignment = activeLesson?.assignment || null
-
-  const assignmentSubResp = await getAssignmentSubmissionByUserIdAndAssignmentId(session?.user?.id, assignment?.id)
+  const assignmentSubResp =
+    await getAssignmentSubmissionByUserIdAndAssignmentId(
+      session?.user?.id,
+      assignment?.id
+    );
 
   if (assignmentSubResp?.error) {
-    throw Error()
+    throw Error();
   }
 
-  const assignmentSubmission = assignmentSubResp?.data || null
-
-  console.log(assignmentSubmission);
+  const assignmentSubmission = assignmentSubResp?.data || null;
 
   return (
     <div className="container mx-auto py-6">
@@ -75,8 +86,12 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{enrollment.workshop.name}</h1>
-          <p className="text-muted-foreground">Continue your learning journey</p>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {enrollment.workshop.name}
+          </h1>
+          <p className="text-muted-foreground">
+            Continue your learning journey
+          </p>
         </div>
       </div>
 
@@ -87,33 +102,50 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
               {/* Check for Recorded Link First */}
               {activeLesson.recordedLink ? (
                 <VideoPlayer videoUrl={activeLesson?.recordedLink} />
-              ) : enrollment.workshop.type === "ONLINE" && activeLesson.liveLink ? (
+              ) : enrollment.workshop.type === "ONLINE" &&
+                activeLesson.liveLink ? (
                 // Live Session for Online Workshop
                 <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-lg">
-                  <p className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Live Session</p>
-                  {getStatus(activeLesson?.startingDate, activeLesson?.endingDate) === "Completed" ? <Button
-                    className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200 dark:bg-red-500 dark:hover:bg-red-600"
-                  >
-                    End Session
-                  </Button>
-                    : <Button asChild className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
+                  <p className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                    Live Session
+                  </p>
+                  {getStatus(
+                    activeLesson?.startingDate,
+                    activeLesson?.endingDate
+                  ) === "Completed" ? (
+                    <Button className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200 dark:bg-red-500 dark:hover:bg-red-600">
+                      End Session
+                    </Button>
+                  ) : (
+                    <Button
+                      asChild
+                      className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
                     >
-                      {getStatus(activeLesson?.startingDate, activeLesson?.endingDate) === "Upcoming" ? <>The link will be provided on time.</> : <a
-                        href={activeLesson.liveLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Join Live Session
-                      </a>}
-                    </Button>}
-
+                      {getStatus(
+                        activeLesson?.startingDate,
+                        activeLesson?.endingDate
+                      ) === "Upcoming" ? (
+                        <>The link will be provided on time.</>
+                      ) : (
+                        <a
+                          href={activeLesson.liveLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Join Live Session
+                        </a>
+                      )}
+                    </Button>
+                  )}
                 </div>
               ) : enrollment.workshop.type === "OFFLINE" ? (
                 // Offline Session with Recorded Link Priority
                 <div>
                   {activeLesson.recordedLink && (
                     <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-lg mb-4">
-                      <p className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Recorded Session</p>
+                      <p className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                        Recorded Session
+                      </p>
                       <Button asChild>
                         <a
                           href={activeLesson.recordedLink}
@@ -131,11 +163,17 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
                   {/* If no Recorded Link, show Location */}
                   {activeLesson.location && !activeLesson.recordedLink && (
                     <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-lg">
-                      <p className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Offline Session</p>
+                      <p className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                        Offline Session
+                      </p>
                       <div className="flex justify-center">
-                        <Button variant="outline" className="inline-flex items-center px-6 py-3 border-2 border-gray-600 text-gray-800 dark:text-white rounded-lg hover:border-gray-800 dark:hover:border-gray-400 transition duration-200">
+                        <Button
+                          variant="outline"
+                          className="inline-flex items-center px-6 py-3 border-2 border-gray-600 text-gray-800 dark:text-white rounded-lg hover:border-gray-800 dark:hover:border-gray-400 transition duration-200"
+                        >
                           <Map className="h-5 w-5 mr-2" />
-                          {activeLesson.location || "Location details will be provided before the session"}
+                          {activeLesson.location ||
+                            "Location details will be provided before the session"}
                         </Button>
                       </div>
                     </div>
@@ -153,57 +191,88 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
             </div>
           </Card>
 
-
-
           {/* Description and Assignment Tabs */}
           <Tabs defaultValue="description" className="w-full">
             <TabsList className={`w-full ${assignment && "grid-cols-2 grid"}`}>
-              <TabsTrigger className="w-full" value="description">Description</TabsTrigger>
-              {assignment && <TabsTrigger value="assignment">Assignment</TabsTrigger>}
+              <TabsTrigger className="w-full" value="description">
+                Description
+              </TabsTrigger>
+              {assignment && (
+                <TabsTrigger value="assignment">Assignment</TabsTrigger>
+              )}
             </TabsList>
             <TabsContent value="description" className="mt-4">
               <Card>
                 <CardHeader>
                   <CardTitle>Lesson Description</CardTitle>
-                  <CardDescription>Detailed information about this lesson</CardDescription>
+                  <CardDescription>
+                    Detailed information about this lesson
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <FeedbackPreview markdownText={activeLesson.description || "No description available for this lesson."} />
+                  <FeedbackPreview
+                    markdownText={
+                      activeLesson.description ||
+                      "No description available for this lesson."
+                    }
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
-            {assignment && <TabsContent value="assignment" className="mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Assignment</CardTitle>
-                  <CardDescription>Complete this assignment to test your understanding</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {assignmentSubmission?.status === "PUBLISHED" ? (
-                    <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
-                      <span>You scored</span>
-                      <Badge className="bg-white text-blue-600 font-bold px-3 py-1 rounded-md">
-                        {assignmentSubmission?.marks}/{assignment?.totalMarks}
-                      </Badge>
-                    </Button>
-                  ) : assignmentSubmission?.status === "PENDING" ? (
-                    <Button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg">
-                      Mark is pending
-                    </Button>
-                  ) : (
-                    <Button className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
-                      Total marks: {assignment?.totalMarks}
-                    </Button>
-                  )}
+            {assignment && (
+              <TabsContent value="assignment" className="mt-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Assignment</CardTitle>
+                    <CardDescription>
+                      Complete this assignment to test your understanding
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {assignmentSubmission?.status === "PUBLISHED" ? (
+                      <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                        <span>You scored</span>
+                        <Badge className="bg-white text-blue-600 font-bold px-3 py-1 rounded-md">
+                          {assignmentSubmission?.marks}/{assignment?.totalMarks}
+                        </Badge>
+                      </Button>
+                    ) : assignmentSubmission?.status === "PENDING" ? (
+                      <Button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg">
+                        Mark is pending
+                      </Button>
+                    ) : (
+                      <Button className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+                        Total marks: {assignment?.totalMarks}
+                      </Button>
+                    )}
 
-                  {assignmentSubmission && assignmentSubmission?.status === "PUBLISHED" ? <FeedbackPreview markdownText={assignmentSubmission?.feedback} /> : assignment && <FeedbackPreview markdownText={assignment?.description || "No description available for this assignment."} />}
+                    {assignmentSubmission &&
+                    assignmentSubmission?.status === "PUBLISHED" ? (
+                      <FeedbackPreview
+                        markdownText={assignmentSubmission?.feedback}
+                      />
+                    ) : (
+                      assignment && (
+                        <FeedbackPreview
+                          markdownText={
+                            assignment?.description ||
+                            "No description available for this assignment."
+                          }
+                        />
+                      )
+                    )}
 
-                  <div className="pt-4">
-                    <SubmitAssignmentModal isAlreadySubmitted={assignmentSubmission} assignment={assignment} userId={session?.user?.id} />
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>}
+                    <div className="pt-4">
+                      <SubmitAssignmentModal
+                        isAlreadySubmitted={assignmentSubmission}
+                        assignment={assignment}
+                        userId={session?.user?.id}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            )}
           </Tabs>
 
           <Card>
@@ -214,7 +283,12 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
               <div>
                 <h3 className="font-medium">Description</h3>
                 <p className="text-muted-foreground mt-1">
-                  <FeedbackPreview markdownText={activeModule?.description || "This lesson is part of the module: " + activeModule.name} />
+                  <FeedbackPreview
+                    markdownText={
+                      activeModule?.description ||
+                      "This lesson is part of the module: " + activeModule.name
+                    }
+                  />
                 </p>
               </div>
 
@@ -284,7 +358,13 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
                   <WorkshopSearch />
                 </div>
                 {/* <Suspense fallback={<>Loading....</>}> */}
-                <WorkshopContent params={params} searchParams={searchParams} activeLesson={activeLesson} activeModule={activeModule} enrollment={enrollment} />
+                <WorkshopContent
+                  params={params}
+                  searchParams={searchParams}
+                  activeLesson={activeLesson}
+                  activeModule={activeModule}
+                  enrollment={enrollment}
+                />
                 {/* </Suspense> */}
               </div>
             </CardContent>
@@ -307,7 +387,9 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
 
               <div>
                 <h3 className="text-sm font-medium">Workshop Type</h3>
-                <p className="text-muted-foreground mt-1">{enrollment.workshop.type}</p>
+                <p className="text-muted-foreground mt-1">
+                  {enrollment.workshop.type}
+                </p>
               </div>
 
               <Separator />
@@ -315,19 +397,25 @@ export default async function WorkshopPlayerPage({ params: param, searchParams: 
               <div>
                 <h3 className="text-sm font-medium">Duration</h3>
                 <p className="text-muted-foreground mt-1">
-                  {new Date(enrollment.workshop.startingDate).toLocaleDateString()} -{" "}
-                  {new Date(enrollment.workshop.endingDate).toLocaleDateString()}
+                  {new Date(
+                    enrollment.workshop.startingDate
+                  ).toLocaleDateString()}{" "}
+                  -{" "}
+                  {new Date(
+                    enrollment.workshop.endingDate
+                  ).toLocaleDateString()}
                 </p>
               </div>
 
               <Button variant="outline" className="w-full" asChild>
-                <Link href={`/workshops/${enrollment.workshop.id}`}>View Workshop Details</Link>
+                <Link href={`/workshops/${enrollment.workshop.id}`}>
+                  View Workshop Details
+                </Link>
               </Button>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

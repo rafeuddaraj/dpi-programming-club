@@ -35,8 +35,6 @@ export default async function DashboardPage() {
       }))
     );
 
-    console.log(userWorkshops);
-
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -161,7 +159,10 @@ export default async function DashboardPage() {
                       <CardFooter className="pt-4 border-t">
                         <Button asChild className="w-full">
                           <Link
-                            href={`/workshops/${workshop?.id}/player/67dd69a563c0b5613990c13f`}
+                            href={`/workshops/${workshop?.id}/player/${
+                              participantData?.lastLessonId ||
+                              workshop?.modules[0]?.lessons[0]?.id
+                            }`}
                           >
                             Continue Learning
                           </Link>
