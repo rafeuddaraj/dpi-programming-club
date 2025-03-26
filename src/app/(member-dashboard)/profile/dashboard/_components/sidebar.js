@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function Sidebar() {
+export default function Sidebar({ isMobile = false }) {
   const pathname = usePathname();
 
   const routes = [
@@ -29,7 +29,11 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="hidden md:flex flex-col w-64 bg-card border-r h-screen">
+    <div
+      className={`${
+        isMobile ? "" : "hidden"
+      } md:flex flex-col w-64 bg-card border-r h-screen`}
+    >
       <div className="p-6">
         <Link href="/" className="flex items-center gap-2 font-bold text-2xl">
           <span className="bg-primary text-primary-foreground p-1 rounded">

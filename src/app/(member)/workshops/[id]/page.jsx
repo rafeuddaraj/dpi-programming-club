@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatDate } from "@/lib/utils";
+import { formatDate, isExpiredDate } from "@/lib/utils";
 import {
   Calendar,
   CheckCircle,
@@ -115,13 +115,17 @@ export default async function WorkshopDetailPage({ params: param }) {
                 >
                   <Button>Continue Learning</Button>
                 </Link>
-              ) : (
+              ) : !isExpiredDate(workshop?.registrationDeadline) ? (
                 <EnrollWorkshop workshop={workshop} />
+              ) : (
+                <Button className="w-full">Enrollment Closed</Button>
               )
-            ) : (
+            ) : !isExpiredDate(workshop?.registrationDeadline) ? (
               <Link href={`/auth/login`}>
                 <Button className="w-full">Login</Button>
               </Link>
+            ) : (
+              <Button className="w-full">Enrollment Closed</Button>
             )}
           </div>
 
@@ -298,13 +302,19 @@ export default async function WorkshopDetailPage({ params: param }) {
                 ) : (
                   <div className="pt-4 border-t">
                     <h3 className="font-medium mb-2">Ready to join?</h3>
-                    <EnrollWorkshop workshop={workshop} />
+                    {!isExpiredDate(workshop?.registrationDeadline) ? (
+                      <EnrollWorkshop workshop={workshop} />
+                    ) : (
+                      <Button className="w-full">Enrollment Closed</Button>
+                    )}
                   </div>
                 )
-              ) : (
+              ) : !isExpiredDate(workshop?.registrationDeadline) ? (
                 <Link href={`/auth/login`}>
                   <Button className="w-full">Login</Button>
                 </Link>
+              ) : (
+                <Button className="w-full">Enrollment Closed</Button>
               )}
             </CardContent>
           </Card>

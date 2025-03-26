@@ -1,7 +1,7 @@
-import Header from "@/components/header";
 import { SessionProvider } from "next-auth/react";
 import "../../../admin-globals.css";
 import Sidebar from "./_components/sidebar";
+import Header from "./_components/header";
 
 export const metadata = {
   title: "CST Club - DPI",

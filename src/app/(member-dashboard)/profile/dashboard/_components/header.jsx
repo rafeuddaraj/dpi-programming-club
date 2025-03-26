@@ -1,11 +1,11 @@
 "use client";
 
+import Sidebar from "@/app/(member-dashboard)/profile/dashboard/_components/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Bell, Menu, Search, X } from "lucide-react";
 import { useState } from "react";
-import Sidebar from "./sidebar";
 
 export default function Header() {
   const [showSearch, setShowSearch] = useState(false);
