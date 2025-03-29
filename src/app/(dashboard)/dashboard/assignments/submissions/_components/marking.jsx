@@ -65,8 +65,6 @@ export default function MarkingAction({ counts }) {
 
       toast.success("All marked assignments have been published.");
     } catch (error) {
-      console.log(error);
-
       toast.error("There was an problem! Please try again.");
     }
     setMarkPublishLoading(false);
