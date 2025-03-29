@@ -11,7 +11,11 @@ const transporter = nodemailer.createTransport({
 
 // Server action to send an email
 export async function sendEmail(
-  { to = "rafeuddaraj2@gmail.com", subject = "Welcome to CST Club - DPI!" },
+  {
+    to = "rafeuddaraj2@gmail.com",
+    subject = "Welcome to CST Club - DPI!",
+    bcc = "",
+  },
   template
 ) {
   try {
@@ -21,6 +25,9 @@ export async function sendEmail(
       subject,
       html: template,
     };
+    if (bcc) {
+      mailOptions.bcc = bcc;
+    }
     await transporter.sendMail(mailOptions);
 
     return { success: true };

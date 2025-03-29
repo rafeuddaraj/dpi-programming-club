@@ -362,6 +362,14 @@ export const getAllMarksCount = async () => {
   try {
     const markedCount = await await prisma.assignmentSubmission.findMany({
       where: { status: "MARKED" },
+      include: {
+        assignment: {
+          include: {
+            lessons: { include: { module: { include: true } } },
+          },
+        },
+        user: { include: { user: true } },
+      },
     });
     const unDistributedCount = await prisma.assignmentSubmission.findMany({
       where: { examinerId: null },
@@ -369,6 +377,7 @@ export const getAllMarksCount = async () => {
     return successResponse("Marks Count Retrieved Successfully", 200, {
       markedCount: markedCount.length,
       unDistributedCount: unDistributedCount.length,
+      markData: markedCount,
     });
   } catch {
     return errorResponse();

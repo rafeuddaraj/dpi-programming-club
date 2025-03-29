@@ -23,7 +23,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getStatus } from "@/lib/utils";
+import { getStatus, isExpiredDate } from "@/lib/utils";
 import { Map } from "lucide-react";
 import VideoPlayer from "./_components/videoPlayer";
 import WorkshopContent from "./_components/workshop-content";
@@ -262,13 +262,15 @@ export default async function WorkshopPlayerPage({
                       )
                     )}
 
-                    <div className="pt-4">
-                      <SubmitAssignmentModal
-                        isAlreadySubmitted={assignmentSubmission}
-                        assignment={assignment}
-                        userId={session?.user?.id}
-                      />
-                    </div>
+                    {isExpiredDate(assignment?.dueDate) && (
+                      <div className="pt-4">
+                        <SubmitAssignmentModal
+                          isAlreadySubmitted={assignmentSubmission}
+                          assignment={assignment}
+                          userId={session?.user?.id}
+                        />
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
