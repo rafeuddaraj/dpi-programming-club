@@ -226,98 +226,77 @@ export async function Leaderboard({ data }) {
         <CardContent>
           <div className="flex justify-center items-end gap-4 py-2">
             {/* 2nd Place */}
-            {data.leaderboard.find((entry) => entry.rank === 2) && (
-              <div className="flex flex-col items-center">
-                <Avatar className="h-14 w-14 border-2 border-gray-400">
-                  <AvatarImage
-                    src={
-                      data.leaderboard.find((entry) => entry.rank === 2)
-                        ?.avatar || undefined
-                    }
-                    alt="Second Place"
-                  />
-                  <AvatarFallback>
-                    {getInitials(
-                      data.leaderboard.find((entry) => entry.rank === 2)?.user
-                        .name || ""
-                    )}
-                  </AvatarFallback>
-                </Avatar>
-                <Medal className="text-gray-400 h-5 w-5 -mt-2" />
-                <span className="text-xs font-medium mt-1 text-center max-w-20 truncate">
-                  {
-                    data.leaderboard.find((entry) => entry.rank === 2)?.user
-                      .name
-                  }
-                </span>
-                <Badge variant="outline" className="mt-1 text-xs">
-                  {data.leaderboard.find((entry) => entry.rank === 2)?.marks}{" "}
-                  marks
-                </Badge>
-              </div>
-            )}
+            {data.leaderboard
+              .filter((entry) => entry.rank === 2)
+              .map((entry) => (
+                <div className="flex flex-col items-center" key={entry?.userId}>
+                  <Avatar className="h-14 w-14 border-2 border-gray-400">
+                    <AvatarImage
+                      src={entry?.avatar || undefined}
+                      alt="Second Place"
+                    />
+                    <AvatarFallback>
+                      {getInitials(entry?.user?.name || "")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <Medal className="text-gray-400 h-5 w-5 -mt-2" />
+                  <span className="text-xs font-medium mt-1 text-center max-w-20 truncate">
+                    {entry?.user?.name || ""}
+                  </span>
+                  <Badge variant="outline" className="mt-1 text-xs">
+                    {entry?.marks} marks
+                  </Badge>
+                </div>
+              ))}
             {/* 1st Place */}
-            {data.leaderboard.find((entry) => entry.rank === 1) && (
-              <div className="flex flex-col items-center -mt-4">
-                <Avatar className="h-16 w-16 border-2 border-yellow-500">
-                  <AvatarImage
-                    src={
-                      data.leaderboard.find((entry) => entry.rank === 1)
-                        ?.avatar || undefined
-                    }
-                    alt="First Place"
-                  />
-                  <AvatarFallback className="text-lg">
-                    {getInitials(
-                      data.leaderboard.find((entry) => entry.rank === 1)?.user
-                        .name || ""
-                    )}
-                  </AvatarFallback>
-                </Avatar>
-                <Crown className="text-yellow-500 h-6 w-6 mt-2" />
-                <span className="text-xs font-bold mt-1 text-center max-w-20 truncate">
-                  {
-                    data.leaderboard.find((entry) => entry.rank === 1)?.user
-                      .name
-                  }
-                </span>
-                <Badge className="mt-1 bg-yellow-500/20 text-yellow-700 border-yellow-500 text-xs">
-                  {data.leaderboard.find((entry) => entry.rank === 1)?.marks}{" "}
-                  marks
-                </Badge>
-              </div>
-            )}
+            {data.leaderboard
+              .filter((entry) => entry.rank === 1)
+              .map((entry) => (
+                <div
+                  className="flex flex-col items-center -mt-4"
+                  key={entry?.userId}
+                >
+                  <Avatar className="h-16 w-16 border-2 border-yellow-500">
+                    <AvatarImage
+                      src={entry?.avatar || undefined}
+                      alt="First Place"
+                    />
+                    <AvatarFallback className="text-lg">
+                      {getInitials(entry?.user.name || "")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <Crown className="text-yellow-500 h-6 w-6 mt-2" />
+                  <span className="text-xs font-bold mt-1 text-center max-w-20 truncate">
+                    {entry?.user?.name}
+                  </span>
+                  <Badge className="mt-1 bg-yellow-500/20 text-yellow-700 border-yellow-500 text-xs">
+                    {entry?.marks} marks
+                  </Badge>
+                </div>
+              ))}
             {/* 3rd Place */}
-            {data.leaderboard.find((entry) => entry.rank === 3) && (
-              <div className="flex flex-col items-center">
-                <Avatar className="h-14 w-14 border-2 border-amber-700">
-                  <AvatarImage
-                    src={
-                      data.leaderboard.find((entry) => entry.rank === 3)
-                        ?.avatar || undefined
-                    }
-                    alt="Third Place"
-                  />
-                  <AvatarFallback>
-                    {getInitials(
-                      data.leaderboard.find((entry) => entry.rank === 3)?.user
-                        .name || ""
-                    )}
-                  </AvatarFallback>
-                </Avatar>
-                <Trophy className="text-amber-700 h-5 w-5 -mt-2" />
-                <span className="text-xs font-medium mt-1 text-center max-w-20 truncate">
-                  {
-                    data.leaderboard.find((entry) => entry.rank === 3)?.user
-                      .name
-                  }
-                </span>
-                <Badge variant="outline" className="mt-1 text-xs">
-                  {data.leaderboard.find((entry) => entry.rank === 3)?.marks}{" "}
-                  marks
-                </Badge>
-              </div>
-            )}
+            {data.leaderboard
+              .filter((entry) => entry.rank === 3)
+              .map((entry) => (
+                <div key={entry?.userId} className="flex flex-col items-center">
+                  <Avatar className="h-14 w-14 border-2 border-amber-700">
+                    <AvatarImage
+                      src={entry?.avatar || undefined}
+                      alt="Third Place"
+                    />
+                    <AvatarFallback>
+                      {getInitials(entry?.user?.name || "")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <Trophy className="text-amber-700 h-5 w-5 -mt-2" />
+                  <span className="text-xs font-medium mt-1 text-center max-w-20 truncate">
+                    {entry?.user?.name}
+                  </span>
+                  <Badge variant="outline" className="mt-1 text-xs">
+                    {entry?.marks} marks
+                  </Badge>
+                </div>
+              ))}
           </div>
         </CardContent>
       </Card>
