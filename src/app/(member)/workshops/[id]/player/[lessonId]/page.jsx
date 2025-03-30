@@ -261,8 +261,7 @@ export default async function WorkshopPlayerPage({
                         />
                       )
                     )}
-
-                    {isExpiredDate(assignment?.dueDate) && (
+                    {!isExpiredDate(assignment?.deuDate) && (
                       <div className="pt-4">
                         <SubmitAssignmentModal
                           isAlreadySubmitted={assignmentSubmission}

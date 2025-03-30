@@ -304,7 +304,7 @@ export const distributeAllAssignments = async () => {
   try {
     const examiners = await prisma.user.findMany({
       where: { examiner: true },
-      select: { id: true },
+      select: { id: true, user: true },
     });
 
     if (examiners.length === 0) {
@@ -313,7 +313,7 @@ export const distributeAllAssignments = async () => {
 
     const submissions = await prisma.assignmentSubmission.findMany({
       where: { examinerId: null },
-      select: { id: true },
+      select: { id: true, user: true },
     });
 
     if (submissions.length === 0) {
