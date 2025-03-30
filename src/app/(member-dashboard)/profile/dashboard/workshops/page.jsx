@@ -156,17 +156,32 @@ export default async function DashboardPage() {
                           </div>
                         </div>
                       </CardContent>
-                      <CardFooter className="pt-4 border-t">
-                        <Button asChild className="w-full">
-                          <Link
-                            href={`/workshops/${workshop?.id}/player/${
-                              participantData?.lastLessonId ||
-                              workshop?.modules[0]?.lessons[0]?.id
-                            }`}
+                      <CardFooter className="pt-4 border-t block space-y-3">
+                        <div>
+                          <Button asChild className="w-full">
+                            <Link
+                              href={`/workshops/${workshop?.id}/player/${
+                                participantData?.lastLessonId ||
+                                workshop?.modules[0]?.lessons[0]?.id
+                              }`}
+                            >
+                              Continue Learning
+                            </Link>
+                          </Button>
+                        </div>
+                        <div>
+                          <Button
+                            asChild
+                            className="w-full"
+                            variant={"outline"}
                           >
-                            Continue Learning
-                          </Link>
-                        </Button>
+                            <Link
+                              href={`/workshops/${workshop?.id}/leaderboard`}
+                            >
+                              Leaderboard
+                            </Link>
+                          </Button>
+                        </div>
                       </CardFooter>
                     </Card>
                   );
@@ -186,7 +201,7 @@ export default async function DashboardPage() {
       </div>
     );
   } catch (err) {
-    console.log(err);
+    // console.log(err);
 
     return (
       <div className="container mx-auto px-4 py-8">
