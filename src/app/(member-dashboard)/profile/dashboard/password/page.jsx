@@ -87,11 +87,11 @@ export default function ChangePassword() {
       setUserData(data);
       if (resp?.status === 200 && resp?.message === "OTP is already sent.") {
         setExpiredTime(new Date(data?.expiredOtp));
-        setPassword(values?.password);
+        setPassword(values?.newPassword);
         return;
       }
 
-      await sendEmail(
+      sendEmail(
         {
           to: data?.found?.user?.email,
           subject: "Password Change Confirmation OTP!",
@@ -101,10 +101,12 @@ export default function ChangePassword() {
           data?.otp,
           data?.expiredMinute
         )
-      );
+      )
+        .then(() => {})
+        .catch(() => {});
 
       setExpiredTime(new Date(data?.expired));
-      setPassword(values?.password);
+      setPassword(values?.newPassword);
       return;
     } catch (err) {
       setError(err.message || "Failed to verify password. Please try again");
@@ -131,6 +133,7 @@ export default function ChangePassword() {
       }
       if (resp?.status === 200) {
         const passwordResp = await changePasswordByUser(password);
+
         if (passwordResp?.error) {
           setError(passwordResp.message);
           setIsVerifying(false);

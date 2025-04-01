@@ -182,7 +182,6 @@ export const verifyOtp = async function verifyOtp(otp) {
     if (!found) {
       throw new Error("Invalid OTP");
     }
-    console.log({ found });
 
     if (found?.expiredOtp && found?.expiredOtp < new Date()) {
       throw new Error("OTP Expired");
@@ -230,7 +229,6 @@ export const generateOTPByCurrentUserPassword = async (password) => {
     if (!hashedPassword) {
       throw new Error("Invalid password");
     }
-    console.log(isExpiredDate(found?.expiredOtp));
 
     if (isExpiredDate(found?.expiredOtp)) {
       const otp = Math.floor(100000 + Math.random() * 900000);
@@ -249,6 +247,8 @@ export const generateOTPByCurrentUserPassword = async (password) => {
     }
     return successResponse("OTP is already sent.", 200, found);
   } catch (error) {
+    console.log(error.meta);
+
     return errorResponse(error.message);
   }
 };
@@ -257,12 +257,17 @@ export const changePasswordByUser = async (password) => {
   try {
     const session = await auth();
     const user = session?.user || {};
+
+    const hashedPassword = await bcrypt.hash(password, 10);
     const resp = await prisma.user.update({
       where: { id: user?.id },
-      data: { password: password },
+      data: { password: hashedPassword },
     });
+
     return successResponse("Password changed successfully.", 200);
   } catch (err) {
+    console.log(err);
+
     return errorResponse(err.message);
   }
 };

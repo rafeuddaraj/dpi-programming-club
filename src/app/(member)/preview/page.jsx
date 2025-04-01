@@ -1,9 +1,9 @@
-import AssignmentMarksEmailPreview from "@/components/email-templates/assignmnet-mark";
+import ResultInputForm from "@/components/common/result-input-form";
 
 export default function page() {
   return (
     <>
-      <AssignmentMarksEmailPreview />
+      <ResultInputForm />
     </>
   );
 }
