@@ -153,7 +153,7 @@ export const generateOTP = async (email, roll) => {
       const expired = new Date(Date.now() + expiredMinute * 60 * 1000);
 
       await prisma.user.update({
-        where: { registeredUserId: found?.id, user: { isManagement: false } },
+        where: { registeredUserId: found?.id },
         data: { otp, expiredOtp: expired },
       });
       return successResponse("OTP sent successfully.", 200, {
@@ -235,7 +235,7 @@ export const generateOTPByCurrentUserPassword = async (password) => {
       const expiredMinute = parseInt(process.env.OTP_EXPIRED_MINUTE) || 5;
       const expired = new Date(Date.now() + expiredMinute * 60 * 1000);
       await prisma.user.update({
-        where: { id: found?.id, user: { isManagement: false } },
+        where: { id: found?.id },
         data: { otp, expiredOtp: expired },
       });
       return successResponse("OTP sent successfully.", 200, {
