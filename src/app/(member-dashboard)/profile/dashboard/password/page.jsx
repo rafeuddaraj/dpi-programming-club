@@ -67,7 +67,9 @@ export default function ChangePassword() {
       confirmPassword: "",
     },
   });
-  const [expiredTime, setExpiredTime] = useState(5 * 60);
+  const [expiredTime, setExpiredTime] = useState(
+    new Date(Date.now() + 5 * 60 * 1000)
+  );
 
   const handleSubmit = async (values) => {
     setError(null);
@@ -82,8 +84,13 @@ export default function ChangePassword() {
       }
       setStep("otp");
       const data = resp?.data;
-
       setUserData(data);
+      if (resp?.status === 200 && resp?.message === "OTP is already sent.") {
+        setExpiredTime(new Date(data?.expiredOtp));
+        setPassword(values?.password);
+        return;
+      }
+
       await sendEmail(
         {
           to: data?.found?.user?.email,
@@ -95,8 +102,10 @@ export default function ChangePassword() {
           data?.expiredMinute
         )
       );
-      setExpiredTime(data?.expiredMinute * 60);
+
+      setExpiredTime(new Date(data?.expired));
       setPassword(values?.password);
+      return;
     } catch (err) {
       setError(err.message || "Failed to verify password. Please try again");
     }
@@ -249,8 +258,8 @@ export default function ChangePassword() {
                 <OtpInput
                   value={otp}
                   onChange={handleOtpChange}
-                  onExpire={handleOtpExpired}
                   expiryTime={expiredTime}
+                  onOtpExpired={handleOtpExpired}
                 />
               </div>
               <Button

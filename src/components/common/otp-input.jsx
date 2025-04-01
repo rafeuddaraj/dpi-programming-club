@@ -6,11 +6,12 @@ import { useEffect, useRef, useState } from "react";
 export default function OtpInput({
   value,
   onChange,
-  onExpire,
-  expiryTime = 60,
+  onOtpExpired,
+  expiryTime,
 }) {
   const [otp, setOtp] = useState(Array(6).fill(""));
-  const [timeLeft, setTimeLeft] = useState(expiryTime);
+  const targetTime = new Date(expiryTime).getTime();
+  const [timeLeft, setTimeLeft] = useState(targetTime - Date.now());
   const inputRefs = useRef([]);
 
   // Initialize refs array
@@ -20,18 +21,18 @@ export default function OtpInput({
 
   // Handle countdown timer
   useEffect(() => {
+    // If the target time has already passed, don't start the timer
     if (timeLeft <= 0) {
-      if (onExpire) {
-        onExpire();
-      }
+      onOtpExpired();
       return;
     }
 
-    const timer = setTimeout(() => {
-      setTimeLeft(timeLeft - 1);
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1000); // Decrease the time by 1 second every interval
     }, 1000);
 
-    return () => clearTimeout(timer);
+    // Clear the interval when time is up
+    return () => clearInterval(timer);
   }, [timeLeft]);
 
   // Update parent component when OTP changes
@@ -100,11 +101,10 @@ export default function OtpInput({
     }
   };
 
-  // Format time as MM:SS
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60000); // Get minutes
+    const seconds = Math.floor((time % 60000) / 1000); // Get remaining seconds
+    return `${minutes.toString().padStart(2, "0")}:${seconds
       .toString()
       .padStart(2, "0")}`;
   };
@@ -134,13 +134,13 @@ export default function OtpInput({
         <div className="text-center">
           <div className="flex items-center justify-center gap-2">
             <div
-              className={`inline-block px-3 py-2 rounded-md ${
+              className={`inline-block px-4 py-2 rounded-md ${
                 timeLeft <= 10
                   ? "bg-red-100 text-red-700"
                   : "bg-gray-100 text-gray-700"
               }`}
             >
-              <span className="font-mono font-bold text-lg">
+              <span className="font-mono font-bold text-2xl">
                 {formatTime(timeLeft)}
               </span>
             </div>

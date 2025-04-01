@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { isExpiredDate } from "@/lib/utils";
 import { errorResponse, successResponse } from "@/utils/req-res";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -146,22 +147,24 @@ export const generateOTP = async (email, roll) => {
     if (!found?.user) {
       throw new Error("There is no user registered");
     }
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    const expiredMinute = parseInt(process.env.OTP_EXPIRED_MINUTE) || 5;
-    const expired = new Date(Date.now() + expiredMinute * 60 * 1000);
+    if (isExpiredDate(found.user.expiredOtp)) {
+      const otp = Math.floor(100000 + Math.random() * 900000);
+      const expiredMinute = parseInt(process.env.OTP_EXPIRED_MINUTE) || 5;
+      const expired = new Date(Date.now() + expiredMinute * 60 * 1000);
 
-    await prisma.user.update({
-      where: { registeredUserId: found?.id, user: { isManagement: false } },
-      data: { otp, expiredOtp: expired },
-    });
-    return successResponse("OTP sent successfully.", 200, {
-      otp,
-      expiredMinute,
-      found,
-    });
+      await prisma.user.update({
+        where: { registeredUserId: found?.id, user: { isManagement: false } },
+        data: { otp, expiredOtp: expired },
+      });
+      return successResponse("OTP sent successfully.", 200, {
+        otp,
+        expiredMinute,
+        expired,
+        found,
+      });
+    }
+    return successResponse("OTP is already sent.", 200, found);
   } catch (error) {
-    console.log(error);
-
     return errorResponse(error.message);
   }
 };
@@ -215,7 +218,6 @@ export const generateOTPByCurrentUserPassword = async (password) => {
   try {
     const session = await auth();
     const user = session?.user || {};
-    console.log(user);
 
     const found = await prisma.user.findUnique({
       where: { id: user?.id },
@@ -228,20 +230,25 @@ export const generateOTPByCurrentUserPassword = async (password) => {
     if (!hashedPassword) {
       throw new Error("Invalid password");
     }
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    const expiredMinute = parseInt(process.env.OTP_EXPIRED_MINUTE) || 5;
-    const expired = new Date(Date.now() + expiredMinute * 60 * 1000);
-    await prisma.user.update({
-      where: { id: found?.id, user: { isManagement: false } },
-      data: { otp },
-    });
-    return successResponse("OTP sent successfully.", 200, {
-      otp,
-      expiredMinute: expired,
-      found,
-    });
+    console.log(isExpiredDate(found?.expiredOtp));
+
+    if (isExpiredDate(found?.expiredOtp)) {
+      const otp = Math.floor(100000 + Math.random() * 900000);
+      const expiredMinute = parseInt(process.env.OTP_EXPIRED_MINUTE) || 5;
+      const expired = new Date(Date.now() + expiredMinute * 60 * 1000);
+      await prisma.user.update({
+        where: { id: found?.id, user: { isManagement: false } },
+        data: { otp, expiredOtp: expired },
+      });
+      return successResponse("OTP sent successfully.", 200, {
+        otp,
+        expiredMinute: expired,
+        found,
+        expired,
+      });
+    }
+    return successResponse("OTP is already sent.", 200, found);
   } catch (error) {
-    console.log(error);
     return errorResponse(error.message);
   }
 };

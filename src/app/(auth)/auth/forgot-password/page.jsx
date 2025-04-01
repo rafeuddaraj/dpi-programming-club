@@ -61,7 +61,10 @@ export default function ForgotPassword() {
   const router = useRouter();
   const [step, setStep] = useState("initial");
   const [error, setError] = useState(null);
-  const [expiredTime, setExpiredTime] = useState(5 * 1000);
+  const [expiredTime, setExpiredTime] = useState(
+    new Date(Date.now() + 5 * 60 * 1000)
+  );
+
   const [otp, setOtp] = useState("");
   const [userData, setUserData] = useState(null);
   const [isOtpLoading, setIsOtpLoading] = useState(false);
@@ -96,6 +99,11 @@ export default function ForgotPassword() {
 
       const data = resp?.data;
 
+      if (resp?.status === 200 && resp?.message === "OTP is already sent.") {
+        setExpiredTime(new Date(data?.user?.expiredOtp));
+        setStep("otp");
+        return;
+      }
       sendEmail(
         {
           to: data?.found?.email,
@@ -106,7 +114,7 @@ export default function ForgotPassword() {
         .then(() => {})
         .catch((err) => {});
 
-      setExpiredTime(data?.expiredMinute * 60);
+      setExpiredTime(new Date(data?.expired));
       setStep("otp");
     } catch (err) {
       setError(err.message || "Failed to send OTP. Please try again");
@@ -249,7 +257,7 @@ export default function ForgotPassword() {
                 <OtpInput
                   value={otp}
                   onChange={handleOtpChange}
-                  onExpire={handleOtpExpired}
+                  onOtpExpired={handleOtpExpired}
                   expiryTime={expiredTime}
                 />
               </div>
