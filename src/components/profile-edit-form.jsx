@@ -38,6 +38,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import CommaInput from "./common/comma-input";
 import Loader from "./common/loader";
 
 const profileSchema = z.object({
@@ -46,7 +47,10 @@ const profileSchema = z.object({
   address: z.string().min(2, "Address Required."),
   semester: z.string().min(1, "Semester is required"),
   email: z.string().email("Invalid email address").readonly(),
-  phoneNumber: z.string().min(10, "Phone number must be at least 10 digits").readonly(),
+  phoneNumber: z
+    .string()
+    .min(10, "Phone number must be at least 10 digits")
+    .readonly(),
   linkedin: z.string().url("Invalid LinkedIn URL"),
   github: z.string().url("Invalid GitHub URL"),
   discord: z.string().optional(),
@@ -58,22 +62,22 @@ const profileSchema = z.object({
 const upload = async (avatar, values, authUser, updateSession) => {
   const formData = new FormData();
   formData.append("file", avatar);
-  const avatarResp = await uploadFile(formData)
+  const avatarResp = await uploadFile(formData);
   if (avatarResp.error) {
-    throw new Error("Something went wrong")
+    throw new Error("Something went wrong");
   }
-  values.avatar = avatarResp.url
+  values.avatar = avatarResp.url;
 
-  updateSession({ ...authUser, avatar: values.avatar })
-}
+  updateSession({ ...authUser, avatar: values.avatar });
+};
 
 export function ProfileEditForm({ user }) {
   const [avatar, setAvatar] = useState(user.avatar || "/avatar.svg");
 
-  user = { ...user, ...user?.user }
+  user = { ...user, ...user?.user };
   user.department = DepartmentList(user?.department);
-  const { update: updateSession, data } = useSession() || {}
-  const authUser = data?.user || null
+  const { update: updateSession, data } = useSession() || {};
+  const authUser = data?.user || null;
   for (let key in user) {
     user[key] = user[key] || "";
   }
@@ -82,21 +86,19 @@ export function ProfileEditForm({ user }) {
     defaultValues: user,
   });
 
-  const router = useRouter()
+  const router = useRouter();
 
   async function onSubmit(values) {
     try {
-
-
       if (typeof avatar !== "string") {
         if (user?.avatar) {
           const resp = await deleteFile(user.avatar);
           if (resp.error) {
-            throw new Error("Something went wrong")
+            throw new Error("Something went wrong");
           }
-          await upload(avatar, values, authUser, updateSession)
+          await upload(avatar, values, authUser, updateSession);
         } else {
-          await upload(avatar, values, authUser, updateSession)
+          await upload(avatar, values, authUser, updateSession);
         }
       }
 
@@ -104,8 +106,8 @@ export function ProfileEditForm({ user }) {
       if (res.error) {
         throw new Error("Something went Wrong");
       }
-      toast.success("Profile Update Success")
-      return router.push("/profile")
+      toast.success("Profile Update Success");
+      return router.push("/profile");
     } catch (err) {
       toast.error(err.message);
     }
@@ -128,7 +130,14 @@ export function ProfileEditForm({ user }) {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="flex flex-col items-center gap-4">
                 <Avatar className="w-32 h-32">
-                  <AvatarImage src={typeof avatar === "string" ? avatar : URL.createObjectURL(avatar)} alt="Profile picture" />
+                  <AvatarImage
+                    src={
+                      typeof avatar === "string"
+                        ? avatar
+                        : URL.createObjectURL(avatar)
+                    }
+                    alt="Profile picture"
+                  />
                   <AvatarFallback>
                     {form
                       .watch("name")
@@ -364,22 +373,14 @@ export function ProfileEditForm({ user }) {
                 name="skills"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Skills</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="React, Python, IoT (comma-separated)"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.value
-                              .split(",")
-                              .map((skill) => skill.trim())
-                          )
-                        }
-                      />
-                    </FormControl>
+                    <CommaInput
+                      name="skills"
+                      control={form.control}
+                      label="Skills"
+                      placeholder="Type skills separated by commas..."
+                    />
                     <FormDescription>
-                      Enter your skills separated by commas.
+                      Add up to 10 skills that best describe your expertise.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -389,7 +390,9 @@ export function ProfileEditForm({ user }) {
               <Button
                 type="submit"
                 disabled={
-                  form.formState.isSubmitting || form.formState.isSubmitSuccessful || !form.formState.isDirty
+                  form.formState.isSubmitting ||
+                  form.formState.isSubmitSuccessful ||
+                  !form.formState.isDirty
                 }
               >
                 {form.formState.isSubmitting && <Loader />} Save Changes
