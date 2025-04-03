@@ -32,16 +32,24 @@ export default function ResultComponent({ result, isHeader = false }) {
 
   const getGpaColor = (gpa) => {
     if (gpa === null) return "";
-    if (gpa >= 3.5) return "text-green-600 dark:text-green-400";
-    if (gpa >= 2.5) return "text-amber-600 dark:text-amber-400";
-    return "text-red-600 dark:text-red-400";
+    if (gpa === "ref") return "text-red-600 dark:text-red-400";
+    if (typeof gpa === "number") {
+      if (gpa >= 3.5) return "text-green-600 dark:text-green-400";
+      if (gpa >= 2.5) return "text-amber-600 dark:text-amber-400";
+      return "text-red-600 dark:text-red-400";
+    }
+    return "";
   };
 
   const getGpaBackgroundColor = (gpa) => {
     if (gpa === null) return "bg-slate-100 dark:bg-slate-800";
-    if (gpa >= 3.5) return "bg-green-50 dark:bg-green-950/30";
-    if (gpa >= 2.5) return "bg-amber-50 dark:bg-amber-950/30";
-    return "bg-red-50 dark:bg-red-950/30";
+    if (gpa === "ref") return "bg-red-50 dark:bg-red-950/30";
+    if (typeof gpa === "number") {
+      if (gpa >= 3.5) return "bg-green-50 dark:bg-green-950/30";
+      if (gpa >= 2.5) return "bg-amber-50 dark:bg-amber-950/30";
+      return "bg-red-50 dark:bg-red-950/30";
+    }
+    return "bg-slate-100 dark:bg-slate-800";
   };
 
   // Calculate average GPA
@@ -153,13 +161,23 @@ export default function ResultComponent({ result, isHeader = false }) {
                   GPA
                 </span>
                 <span className={`text-2xl font-bold ${getGpaColor(item.gpa)}`}>
-                  {item.gpa?.toFixed(2)}
+                  {typeof item.gpa === "number"
+                    ? item.gpa.toFixed(2)
+                    : item.gpa === "ref"
+                    ? "Referred"
+                    : item.gpa}
                 </span>
               </div>
-              {item.gpa !== null && item.gpa >= 3.5 && (
+              {typeof item.gpa === "number" && item.gpa >= 3.5 && (
                 <div className="mt-2 flex items-center text-green-600 dark:text-green-400 text-sm">
                   <CheckCircle className="h-4 w-4 mr-1" />
                   Excellent
+                </div>
+              )}
+              {item.gpa === "ref" && (
+                <div className="mt-2 flex items-center text-red-600 dark:text-red-400 text-sm">
+                  <AlertCircle className="h-4 w-4 mr-1" />
+                  Failed
                 </div>
               )}
             </CardContent>
