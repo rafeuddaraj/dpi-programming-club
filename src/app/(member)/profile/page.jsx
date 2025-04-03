@@ -1,4 +1,5 @@
 import { getAllActivitiesByUserId } from "@/app/actions/activities";
+import { getSingleResult } from "@/app/actions/bteb-result";
 import { getUserById } from "@/app/actions/users";
 import { auth } from "@/app/auth";
 import { MotionDiv } from "@/components/common/motion";
@@ -35,6 +36,16 @@ export default async function ProfilePage({ searchParams }) {
   const activities = await getAllActivitiesByUserId(
     userId || session?.user?.id
   );
+
+  let result = null;
+  try {
+    const resp = await getSingleResult({ roll: userData?.user?.rollNo });
+    if (!resp?.error) {
+      result = resp?.data;
+    }
+  } catch {
+    //
+  }
 
   if (userData?.error || activities?.error) {
     throw Error("User not found");
@@ -124,6 +135,7 @@ export default async function ProfilePage({ searchParams }) {
           user={userData}
           activities={activities?.data}
           session={session}
+          result={result}
         />
         <div className="flex justify-center gap-4">
           {hasPermission(session?.user?.role, MEMBER["update:own_user"]) &&

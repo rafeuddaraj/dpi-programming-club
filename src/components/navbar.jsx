@@ -18,9 +18,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 const navItems = [
   { name: "Home", href: "/" },
   { name: "Events", href: "/events" },
+  { name: "Workshops", href: "/workshops" },
+  { name: "Results", href: "/bteb-results" },
   { name: "Members", href: "/members" },
   { name: "Notice", href: "/notice" },
-  { name: "Workshops", href: "/workshops" },
   { name: "Gallery", href: "/gallery" },
 ];
 

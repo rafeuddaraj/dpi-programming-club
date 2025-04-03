@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 export const POST = async (request) => {
   try {
     const user = await request?.json();
-    console.log(user?.id, user?.token?.refreshToken);
 
     if (!user) return NextResponse.json(errorResponse("Invalid", 401));
     const dbSession = await prisma.session.findFirst({

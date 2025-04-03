@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+import BetbResultCheckerPage from "./bteb-results/page";
 
 export default async function Home() {
   return (
@@ -96,6 +97,9 @@ export default async function Home() {
               />
             </div>
           </section>
+
+          <BetbResultCheckerPage />
+          <div className="mb-16" />
 
           <section className="mb-16">
             <Card className="backdrop-blur-lg bg-background/30 border-none shadow-xl hover:shadow-2xl transition-shadow duration-300">
