@@ -25,6 +25,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getStatus, isExpiredDate } from "@/lib/utils";
 import { Map } from "lucide-react";
+import AssignmentCardHeader from "./_components/assignment-deadline-count-down";
 import VideoPlayer from "./_components/videoPlayer";
 import WorkshopContent from "./_components/workshop-content";
 import WorkshopSearch from "./_components/workshop-search";
@@ -222,12 +223,10 @@ export default async function WorkshopPlayerPage({
             {assignment && (
               <TabsContent value="assignment" className="mt-4">
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Assignment</CardTitle>
-                    <CardDescription>
-                      Complete this assignment to test your understanding
-                    </CardDescription>
-                  </CardHeader>
+                  <AssignmentCardHeader
+                    assignment={assignment}
+                    assignmentSubmission={assignmentSubmission}
+                  />
                   <CardContent className="space-y-4">
                     {assignmentSubmission?.status === "PUBLISHED" ? (
                       <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
