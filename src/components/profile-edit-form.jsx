@@ -39,7 +39,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import CommaInput from "./common/comma-input";
 import Loader from "./common/loader";
 
 const profileSchema = z.object({
@@ -57,7 +56,6 @@ const profileSchema = z.object({
   discord: z.string().optional(),
   bio: z.string().max(100, "Bio must be 100 characters or less"),
   about: z.string().max(500, "About must be 100 characters or less"),
-  skills: z.array(z.string()).min(1, "At least one skill is required"),
 });
 
 const upload = async (avatar, values, authUser, updateSession) => {
@@ -363,25 +361,6 @@ export function ProfileEditForm({ user }) {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="skills"
-                render={({ field }) => (
-                  <FormItem>
-                    <CommaInput
-                      name="skills"
-                      control={form.control}
-                      label="Skills"
-                      placeholder="Type skills separated by commas..."
-                    />
-                    <FormDescription>
-                      Add up to 10 skills that best describe your expertise.
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
