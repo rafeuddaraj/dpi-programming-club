@@ -64,7 +64,6 @@ export default function SettingsForm({ settingsData }) {
       delete settingsData?.createdAt;
       delete settingsData?.updatedAt;
       const resp = await createOrUpdateSettings({ ...settingsData, ...values });
-      console.log(resp);
 
       if (resp?.error) throw new Error(resp?.error);
       toast.success("Settings updated", {

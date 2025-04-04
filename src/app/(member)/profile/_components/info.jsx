@@ -1,39 +1,34 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/card";
 import FeedbackPreview from "@/components/common/feedback-preview";
-import { Badge } from "@/components/ui/badge";
 import { TabsContent } from "@/components/ui/tabs";
+import SkillsDisplay from "./skill-card";
 
-export default function Info({ user }) {
-    return (
-        <>
-            <TabsContent value="info">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>About Me</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <FeedbackPreview markdownText={user?.about} />
-                        <CardHeader className="m-0 pl-0">
-                            <CardTitle>Skills</CardTitle>
-                        </CardHeader>
-                        <CardContent className="m-0 pl-0">
-                            <div className="flex flex-wrap gap-2">
-                                {user?.skills?.map((skill) => (
-                                    <Badge
-                                        key={skill}
-                                        variant="secondary"
-                                        className="text-sm py-1 cursor-pointer"
-                                    >
-                                        {skill}
-                                    </Badge>
-                                ))}
-                            </div>
-
-                        </CardContent>
-                    </CardContent>
-
-                </Card>
-            </TabsContent>
-        </>
-    );
+export default function Info({ user, approvedSkills }) {
+  return (
+    <>
+      <TabsContent value="info">
+        <Card>
+          <CardHeader>
+            <CardTitle>About Me</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <FeedbackPreview markdownText={user?.about} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle>Approved Skills</CardTitle>
+            <CardDescription>Skills you have been approved for</CardDescription>
+          </CardHeader>
+          <SkillsDisplay skills={approvedSkills} />
+        </Card>
+      </TabsContent>
+    </>
+  );
 }

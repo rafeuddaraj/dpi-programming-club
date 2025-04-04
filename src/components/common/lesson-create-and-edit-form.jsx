@@ -56,7 +56,6 @@ export default function LessonCreateAndEditForm({ data, onSubmitHandler, module 
         await onSubmitHandler(data)
     }
 
-    console.log(form.formState.errors);
 
 
     return (

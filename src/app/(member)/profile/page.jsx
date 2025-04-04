@@ -1,5 +1,6 @@
 import { getAllActivitiesByUserId } from "@/app/actions/activities";
 import { getSingleResult } from "@/app/actions/bteb-result";
+import { getAllApprovedSkillsByUser } from "@/app/actions/skills";
 import { getUserById } from "@/app/actions/users";
 import { auth } from "@/app/auth";
 import { MotionDiv } from "@/components/common/motion";
@@ -50,6 +51,17 @@ export default async function ProfilePage({ searchParams }) {
   if (userData?.error || activities?.error) {
     throw Error("User not found");
   }
+
+  let approvedSkills = [];
+  try {
+    const resp = await getAllApprovedSkillsByUser();
+    if (!resp?.error) {
+      approvedSkills = resp?.data;
+    }
+  } catch {
+    //
+  }
+
   return (
     <div className="container mx-auto py-8">
       <MotionDiv
@@ -136,6 +148,7 @@ export default async function ProfilePage({ searchParams }) {
           activities={activities?.data}
           session={session}
           result={result}
+          approvedSkills={approvedSkills}
         />
         <div className="flex justify-center gap-4">
           {hasPermission(session?.user?.role, MEMBER["update:own_user"]) &&

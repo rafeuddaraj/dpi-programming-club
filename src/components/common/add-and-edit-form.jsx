@@ -93,7 +93,6 @@ export default function AddAndEditForm({ data, onSubmitHandler, typeOfUse }) {
     }
 
 
-    console.log(form.formState?.errors);
 
     // Handle adding a new outline item
     const handleAddOutlineItem = () => {

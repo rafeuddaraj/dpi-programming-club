@@ -28,7 +28,6 @@ model User {
   registeredUserId      String                 @unique @db.ObjectId
   user                  RegisteredUser         @relation(fields: [registeredUserId], references: [id])
   avatar                String?
-  skills                String[]               @default([])
   discord               String?
   bio                   String?
   about                 String?
@@ -53,6 +52,42 @@ model User {
   assignmentSubmissions AssignmentSubmission[]
   quizResults           QuizResults[]
   Notice                Notice[]
+  skills                UserSkills[]
+  skillsReviewer        UserSkills[]           @relation("Examiner")
+}
+
+model Skills {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String       @unique
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt()
+  users       UserSkills[]
+}
+
+enum SKILL_STATUS {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model UserSkills {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String       @db.ObjectId
+  user          User         @relation(fields: [userId], references: [id])
+  skillId       String       @db.ObjectId
+  skill         Skills       @relation(fields: [skillId], references: [id])
+  status        SKILL_STATUS @default(PENDING)
+  reason        String?
+  experience    String?
+  rejectionNote String?
+  feedback      String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt()
+  reviewerId    String?      @db.ObjectId
+  reviewer      User?        @relation("Examiner", fields: [reviewerId], references: [id])
+
+  @@unique([userId, skillId])
 }
 
 model Session {

@@ -1,38 +1,54 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, Code } from "lucide-react"
+import UserSkillSelector from "@/app/(dashboard)/dashboard/skills/_components/user-skill-selector";
+import UserSkillsOverview from "@/app/(dashboard)/dashboard/skills/_components/user-skills-overview";
+import {
+  getAllSkillRequestsByUserId,
+  getAllSkillWithoutPrevSkills,
+} from "@/app/actions/skills";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-export default function SkillsPage() {
+export default async function SkillManagementSystem() {
+  let availableSkills = [];
+  let userSkills = [];
+  try {
+    const resp = await getAllSkillWithoutPrevSkills();
+    if (!resp?.error) availableSkills = resp?.data;
+  } catch {
+    //
+  }
+  try {
+    const resp = await getAllSkillRequestsByUserId();
+    if (!resp?.error) userSkills = resp?.data;
+  } catch {
+    //
+  }
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Skills</h1>
-        <Link href="/dashboard/skills/create">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add New Skill
-          </Button>
-        </Link>
-      </div>
+    <div className="container mx-auto py-6 px-4 md:px-6">
+      <h1 className="text-3xl font-bold mb-6">Manage Your Skills</h1>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {/* Example skill card */}
-        <Link href="/dashboard/skills/1">
-          <Card className="hover:bg-muted/50 transition-colors">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Code className="h-5 w-5" />
-                React Development
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Modern web development using React and its ecosystem</p>
-            </CardContent>
-          </Card>
-        </Link>
+      <div>
+        <Card className="mb-10">
+          <CardHeader>
+            <CardTitle>Select Your Skills</CardTitle>
+            <CardDescription>
+              Choose skills from the list to add to your profile
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <UserSkillSelector availableSkills={availableSkills} />
+          </CardContent>
+        </Card>
+        <UserSkillsOverview
+          skillRequests={userSkills}
+          // onUpdateStatus={updateSkillRequestStatus}
+        />
       </div>
     </div>
-  )
+  );
 }
-

@@ -12,6 +12,7 @@ export default function ProfileActivities({
   activities,
   session,
   result,
+  approvedSkills,
 }) {
   const [activeTab, setActiveTab] = useState("info");
 
@@ -25,7 +26,7 @@ export default function ProfileActivities({
           <TabsTrigger value="achievements">Achievements</TabsTrigger>
           <TabsTrigger value="education">Education</TabsTrigger>
         </TabsList>
-        <Info user={user} />
+        <Info user={user} approvedSkills={approvedSkills} />
         <Achievements
           event={event}
           workshop={workshop}

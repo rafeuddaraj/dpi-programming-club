@@ -27,3 +27,9 @@ export const getSingleResult = async ({ roll, exam, regulation }) => {
     return errorResponse();
   }
 };
+
+export const getAllResultRoll = async () => {
+  return await prisma.results.findMany({
+    select: { roll: true, exam: true, regulation: true },
+  });
+};

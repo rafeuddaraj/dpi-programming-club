@@ -31,6 +31,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import DepartmentList from "@/utils/DepartmentList";
 import { zodResolver } from "@hookform/resolvers/zod";
+import MDEditor from "@uiw/react-md-editor";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -337,10 +338,9 @@ export function ProfileEditForm({ user }) {
                   <FormItem>
                     <FormLabel>About</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder="Tell us about yourself"
-                        className="resize-none"
-                        {...field}
+                      <MDEditor
+                        value={field.value}
+                        onChange={(value) => field.onChange(value)}
                       />
                     </FormControl>
                     <FormDescription>
