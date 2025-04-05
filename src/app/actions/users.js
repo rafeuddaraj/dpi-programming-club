@@ -90,7 +90,13 @@ export const updateUserByIdOne = async (id, data) => {
   }
 };
 
-export const getAllUsers = async (query, page, limit) => {
+export const getAllUsers = async (
+  query,
+  page,
+  limit,
+  role = "all",
+  status = "all"
+) => {
   const now = new Date();
   const where = query
     ? {
@@ -104,6 +110,20 @@ export const getAllUsers = async (query, page, limit) => {
     : {
         role: { not: "admin" },
       };
+  role = role?.toLowerCase();
+  if (role === "all") {
+    where.role = { in: ["moderator", "member"] };
+  }
+  if (role === "member") {
+    where.role = role;
+  }
+  if (role === "moderator") {
+    where.role = role;
+  }
+  status = status?.toLowerCase();
+  if (status !== "all") {
+    where.status = status.toUpperCase();
+  }
   return commonGet("user", where, { user: true }, page, limit, {
     createdAt: "desc",
   });

@@ -15,6 +15,7 @@ import {
   UserMinus,
   UserX,
 } from "lucide-react";
+import NewFilterAction from "./_components/filter";
 
 import Link from "next/link";
 
@@ -62,7 +63,9 @@ export default async function UsersPage({ params, searchParams }) {
   const resp = await getAllUsers(
     urlSearchParams?.q,
     parseInt(urlSearchParams?.page) || 1,
-    parseInt(urlSearchParams?.limit) || 10
+    parseInt(urlSearchParams?.limit) || 10,
+    urlSearchParams?.role || "all",
+    urlSearchParams?.status || "all"
   );
 
   if (resp?.error) {
@@ -89,12 +92,8 @@ export default async function UsersPage({ params, searchParams }) {
         <CardContent>
           <div className="data-table-toolbar">
             <div className="flex items-center gap-2">
-              <FilterAction />
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                Export
-              </Button>
+              <FilterAction placeholder={"Search users..."} />
+              <NewFilterAction />
             </div>
           </div>
 

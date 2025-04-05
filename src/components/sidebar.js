@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   LogOut,
   Settings,
+  UserCog2,
   UserCog2Icon,
   Users,
   Wrench,
@@ -27,6 +28,7 @@ export default function Sidebar({ isMobile = false }) {
   const routes = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Users", href: "/dashboard/users", icon: Users },
+    { name: "Moderators", href: "/dashboard/moderators", icon: UserCog2 },
     {
       name: "Members Collect",
       href: "/dashboard/member-collect",

@@ -47,8 +47,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
+import MDEditor from "@uiw/react-md-editor";
 import { AlertCircle, Filter, Info, RefreshCw, Search } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -197,85 +197,87 @@ export default function UserSkillsOverview({ skillRequests, onUpdateStatus }) {
                             </Badge>
                           </DialogTrigger>
                           <DialogContent className="sm:max-w-md">
-                            <DialogHeader>
-                              <DialogTitle>{request.name}</DialogTitle>
-                              <DialogDescription>
-                                Skill request details
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="space-y-4 py-4">
-                              <div>
-                                <h4 className="text-sm font-medium mb-1">
-                                  Status:
-                                </h4>
-                                <div>{getStatusBadge(request.status)}</div>
-                              </div>
+                            <ScrollArea className="h-[80vh]">
+                              <DialogHeader>
+                                <DialogTitle>{request.name}</DialogTitle>
+                                <DialogDescription>
+                                  Skill request details
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="space-y-4 py-4">
+                                <div>
+                                  <h4 className="text-sm font-medium mb-1">
+                                    Status:
+                                  </h4>
+                                  <div>{getStatusBadge(request.status)}</div>
+                                </div>
 
-                              {request.status === "REJECTED" &&
-                                request.rejectionNote && (
-                                  <>
-                                    <Alert variant="destructive">
-                                      <AlertCircle className="h-4 w-4" />
-                                      <AlertTitle>Rejection Reason</AlertTitle>
-                                      <AlertDescription>
-                                        <FeedbackPreview
-                                          markdownText={request.rejectionNote}
-                                        />
-                                      </AlertDescription>
-                                    </Alert>
-                                  </>
-                                )}
+                                {request.status === "REJECTED" &&
+                                  request.rejectionNote && (
+                                    <>
+                                      <Alert variant="destructive">
+                                        <AlertCircle className="h-4 w-4" />
+                                        <AlertTitle>
+                                          Rejection Reason
+                                        </AlertTitle>
+                                        <AlertDescription>
+                                          <FeedbackPreview
+                                            markdownText={request.rejectionNote}
+                                          />
+                                        </AlertDescription>
+                                      </Alert>
+                                    </>
+                                  )}
 
-                              <Separator />
+                                <Separator />
 
-                              <div>
-                                <h4 className="text-sm font-medium mb-1">
-                                  Reason for Request:
-                                </h4>
-                                <p className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
+                                <div>
+                                  <h4 className="text-sm font-medium mb-1">
+                                    Reason for Request:
+                                  </h4>
                                   <FeedbackPreview
                                     markdownText={
                                       request.reason || "No reason provided"
                                     }
                                   />
-                                </p>
+                                </div>
+
+                                <Separator />
+
+                                <div>
+                                  <h4 className="text-sm font-medium mb-1">
+                                    Your Experience:
+                                  </h4>
+                                  <p className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
+                                    <FeedbackPreview
+                                      markdownText={
+                                        request.experience ||
+                                        "No experience details provided"
+                                      }
+                                    />
+                                  </p>
+                                </div>
+                                {request?.feedback && (
+                                  <>
+                                    <Separator />
+
+                                    <div>
+                                      <h4 className="text-sm font-medium mb-1">
+                                        Reviewer Feedback:
+                                      </h4>
+                                      <p className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
+                                        <FeedbackPreview
+                                          markdownText={
+                                            request.feedback ||
+                                            "No feedback details provided"
+                                          }
+                                        />
+                                      </p>
+                                    </div>
+                                  </>
+                                )}
                               </div>
-
-                              <Separator />
-
-                              <div>
-                                <h4 className="text-sm font-medium mb-1">
-                                  Your Experience:
-                                </h4>
-                                <p className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
-                                  <FeedbackPreview
-                                    markdownText={
-                                      request.experience ||
-                                      "No experience details provided"
-                                    }
-                                  />
-                                </p>
-                              </div>
-                              {request?.feedback && (
-                                <>
-                                  <Separator />
-
-                                  <div>
-                                    <h4 className="text-sm font-medium mb-1">
-                                      Reviewer Feedback:
-                                    </h4>
-                                    <p className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
-                                      <FeedbackPreview
-                                        markdownText={
-                                          request.feedback ||
-                                          "No feedback details provided"
-                                        }
-                                      />
-                                    </p>
-                                  </div>
-                                </>
-                              )}
-                            </div>
+                            </ScrollArea>
                           </DialogContent>
                         </Dialog>
                       </TableCell>
@@ -303,75 +305,76 @@ export default function UserSkillsOverview({ skillRequests, onUpdateStatus }) {
 
       <Dialog open={resubmitDialogOpen} onOpenChange={setResubmitDialogOpen}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Resubmit Skill Request</DialogTitle>
-            <DialogDescription>
-              Update your request and resubmit for approval
-            </DialogDescription>
-          </DialogHeader>
+          <ScrollArea className={"h-[80vh]"}>
+            <DialogHeader>
+              <DialogTitle>Resubmit Skill Request</DialogTitle>
+              <DialogDescription>
+                Update your request and resubmit for approval
+              </DialogDescription>
+            </DialogHeader>
 
-          {currentRequest?.rejectionNote && (
-            <Alert variant="destructive" className="mt-2">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Previous Rejection Reason</AlertTitle>
-              <AlertDescription>
-                {currentRequest.rejectionNote}
-              </AlertDescription>
-            </Alert>
-          )}
+            {currentRequest?.rejectionNote && (
+              <Alert variant="destructive" className="mt-2">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Previous Rejection Reason</AlertTitle>
+                <AlertDescription>
+                  {currentRequest.rejectionNote}
+                </AlertDescription>
+              </Alert>
+            )}
 
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(submitResubmission)}
-              className="space-y-4 py-4"
-            >
-              <FormField
-                control={form.control}
-                name="reason"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Reason for Request</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Why do you need this skill?"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(submitResubmission)}
+                className="space-y-4 py-4"
+              >
+                <FormField
+                  control={form.control}
+                  name="reason"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Reason for Request</FormLabel>
+                      <FormControl>
+                        <MDEditor
+                          value={field.value}
+                          onChange={(value) => field.onChange(value)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="experience"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Your Experience</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Describe your experience with this skill"
-                        className="min-h-[100px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="experience"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Your Experience</FormLabel>
+                      <FormControl>
+                        <MDEditor
+                          value={field.value}
+                          onChange={(value) => field.onChange(value)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={() => setResubmitDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">Resubmit Request</Button>
-              </DialogFooter>
-            </form>
-          </Form>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={() => setResubmitDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Resubmit Request</Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </Card>

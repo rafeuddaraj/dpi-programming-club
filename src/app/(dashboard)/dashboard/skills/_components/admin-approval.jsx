@@ -151,42 +151,43 @@ export default async function AdminApproval({
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-md">
-                        <DialogHeader>
-                          <DialogTitle>
-                            {request.skill?.name} - {request?.user?.user?.name}
-                          </DialogTitle>
-                          <DialogDescription>
-                            Skill request details
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className=" break-words whitespace-pre-wrap">
-                          <div>
-                            <h4 className="text-sm font-medium mb-1">
-                              Reason for Request:
-                            </h4>
-                            <FeedbackPreview
-                              markdownText={
-                                request.reason || "No reason provided"
-                              }
-                            />
-                          </div>
+                        <ScrollArea className="h-[80vh]">
+                          <DialogHeader>
+                            <DialogTitle>
+                              {request.skill?.name} -{" "}
+                              {request?.user?.user?.name}
+                            </DialogTitle>
+                            <DialogDescription>
+                              Skill request details
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className=" break-words whitespace-pre-wrap">
+                            <div>
+                              <h4 className="text-sm font-medium mb-1">
+                                Reason for Request:
+                              </h4>
+                              <FeedbackPreview
+                                markdownText={
+                                  request.reason || "No reason provided"
+                                }
+                              />
+                            </div>
 
-                          <Separator />
+                            <Separator />
 
-                          <div>
-                            <h4 className="text-sm font-medium mb-1">
-                              User Experience:
-                            </h4>
-                            <FeedbackPreview
-                              markdownText={
-                                request.experience ||
-                                "No experience details provided"
-                              }
-                            />
-                          </div>
+                            <div>
+                              <h4 className="text-sm font-medium mb-1">
+                                User Experience:
+                              </h4>
+                              <FeedbackPreview
+                                markdownText={
+                                  request.experience ||
+                                  "No experience details provided"
+                                }
+                              />
+                            </div>
 
-                          {request.status === "REJECTED" &&
-                            request.rejectionNote && (
+                            {request?.rejectionNote && (
                               <>
                                 <Separator />
                                 <div>
@@ -199,26 +200,27 @@ export default async function AdminApproval({
                                 </div>
                               </>
                             )}
-                          {request.status === "APPROVED" &&
-                            request.feedback && (
-                              <>
-                                <Separator />
-                                <div>
-                                  <h4 className="text-sm font-medium mb-1 text-success-500">
-                                    Feedback:
-                                  </h4>
-                                  <FeedbackPreview
-                                    markdownText={request.feedback}
-                                  />
-                                </div>
-                              </>
-                            )}
-                        </div>
+                            {request.status === "APPROVED" &&
+                              request.feedback && (
+                                <>
+                                  <Separator />
+                                  <div>
+                                    <h4 className="text-sm font-medium mb-1 text-success-500">
+                                      Feedback:
+                                    </h4>
+                                    <FeedbackPreview
+                                      markdownText={request.feedback}
+                                    />
+                                  </div>
+                                </>
+                              )}
+                          </div>
+                        </ScrollArea>
                       </DialogContent>
                     </Dialog>
                   </TableCell>
                   <TableCell>{getStatusBadge(request.status)}</TableCell>
-                  <ApprovalActions request={request} />
+                  <ApprovalActions request={request} isAdmin={isAdmin} />
                 </TableRow>
               ))
             )}

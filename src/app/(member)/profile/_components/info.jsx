@@ -12,7 +12,7 @@ import SkillsDisplay from "./skill-card";
 export default function Info({ user, approvedSkills }) {
   return (
     <>
-      <TabsContent value="info">
+      <TabsContent value="info" className="space-y-4">
         <Card>
           <CardHeader>
             <CardTitle>About Me</CardTitle>

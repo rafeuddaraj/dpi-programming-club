@@ -116,7 +116,12 @@ export const approveSkillRequest = async (id, feedback) => {
     }
     const skillRequest = await prisma.userSkills.update({
       where: { id },
-      data: { status: "APPROVED", feedback },
+      data: {
+        status: "APPROVED",
+        feedback,
+        rejectionNote: null,
+        reviewerId: user?.id,
+      },
     });
     revalidatePath("dashboard/skills");
     return skillRequest;
@@ -140,7 +145,7 @@ export const rejectSkillRequest = async (id, reason) => {
     }
     const skillRequest = await prisma.userSkills.update({
       where: { id },
-      data: { status: "REJECTED", rejectionNote: reason },
+      data: { status: "REJECTED", rejectionNote: reason, reviewerId: user?.id },
     });
     revalidatePath("dashboard/skills");
     return skillRequest;
@@ -157,20 +162,15 @@ export const deleteSkillRequest = async (id) => {
     const session = await auth();
     const user = session?.user || null;
     if (!user) {
-      return errorResponse({
-        message: "Unauthorized",
-        status: 401,
-      });
+      throw new Error();
     }
     const skillRequest = await prisma.userSkills.delete({
       where: { id },
     });
+    revalidatePath("/dashboard/skills");
     return skillRequest;
   } catch (error) {
-    return errorResponse({
-      message: "Error deleting skill request",
-      status: 500,
-    });
+    throw new Error();
   }
 };
 
@@ -439,10 +439,12 @@ export const distributeSkillRequest = async () => {
 
 export const removeSkillDistribution = async () => {
   try {
-    await prisma.userSkills.updateMany({
-      where: { reviewerId: { not: null } },
+    const resp = await prisma.userSkills.updateMany({
+      where: { reviewerId: { not: null }, status: "PENDING" },
       data: { reviewerId: null },
     });
+
+    if (!resp?.length) throw "No unpending ";
     revalidatePath("dashboard/skills");
     return { message: "All skill request assignments have been reset." };
   } catch (error) {

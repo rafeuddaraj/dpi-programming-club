@@ -98,13 +98,19 @@ export const getRegisteredUserById = async (rollNo, secretCode) => {
 // Update a registered user
 export const updateRegisteredUser = async (id, data) => {
   try {
+    console.log(data);
+
     const updatedUser = await prisma.registeredUser.update({
       where: { id },
       data,
     });
+    console.log(updatedUser);
+
     revalidatePath("/dashboard/member-collect");
     return successResponse("User updated successfully", 200, updatedUser);
   } catch (error) {
+    console.log(error);
+
     return errorResponse("Something went wrong", 500, error.message);
   }
 };

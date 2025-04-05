@@ -1,6 +1,10 @@
 "use client";
 
-import { approveSkillRequest, rejectSkillRequest } from "@/app/actions/skills";
+import {
+  approveSkillRequest,
+  deleteSkillRequest,
+  rejectSkillRequest,
+} from "@/app/actions/skills";
 import { Button } from "@/components/button";
 import {
   Form,
@@ -21,8 +25,8 @@ import {
 import { TableCell } from "@/components/ui/table";
 import { zodResolver } from "@hookform/resolvers/zod";
 import MDEditor from "@uiw/react-md-editor";
-import { Check, X } from "lucide-react";
-import { useState } from "react";
+import { Check, Delete, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -31,7 +35,7 @@ const schema = z.object({
   note: z.string().min(10, { message: "Must be at least 10 characters" }),
 });
 
-export default function ApprovalActions({ request }) {
+export default function ApprovalActions({ request, isAdmin = false }) {
   const [actionType, setActionType] = useState(null); // "approve" or "reject"
   const [currentRequestId, setCurrentRequestId] = useState(null);
 
@@ -41,6 +45,15 @@ export default function ApprovalActions({ request }) {
       note: "",
     },
   });
+
+  useEffect(() => {
+    if (actionType === "approve") {
+      form.reset({ note: request?.feedback });
+    }
+    if (actionType === "reject") {
+      form.reset({ note: request?.rejectionNote });
+    }
+  }, [actionType, request]);
 
   const handleAction = (requestId, type) => {
     setCurrentRequestId(requestId);
@@ -70,10 +83,24 @@ export default function ApprovalActions({ request }) {
     }
   };
 
+  const handleDeleteSkillRequest = async (id) => {
+    try {
+      if (confirm("Are you sure you want to delete this request")) {
+        toast.promise(deleteSkillRequest(id), {
+          loading: "Deleting skill request...",
+          success: "Skill request deleted successfully!",
+          error: "Failed to delete skill request!",
+        });
+      }
+    } catch {
+      toast.error("Failed to delete skill request!");
+    }
+  };
+
   return (
     <>
       <TableCell className="text-right">
-        {request.status === "PENDING" && (
+        {!isAdmin && request.status === "PENDING" && (
           <div className="flex justify-end gap-2">
             <Button
               size="sm"
@@ -90,6 +117,42 @@ export default function ApprovalActions({ request }) {
               onClick={() => handleAction(request.id, "reject")}
             >
               <X className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 w-8 p-0 text-red-500"
+              onClick={() => handleDeleteSkillRequest(request.id)}
+            >
+              <Delete className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+        {isAdmin && (
+          <div className="flex justify-end gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 w-8 p-0 text-green-500"
+              onClick={() => handleAction(request.id, "approve")}
+            >
+              <Check className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 w-8 p-0 text-red-500"
+              onClick={() => handleAction(request.id, "reject")}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 w-8 p-0 text-red-500"
+              onClick={() => handleDeleteSkillRequest(request.id)}
+            >
+              <Delete className="h-4 w-4" />
             </Button>
           </div>
         )}

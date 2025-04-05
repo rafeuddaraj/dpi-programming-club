@@ -54,7 +54,7 @@ export default function DistributeAction({
             size="sm"
             variant="outline"
             onClick={handleDistributeAllModerators}
-            disabled={isDistributeLoading}
+            disabled={isDistributeLoading || unassignedCount === 0}
             className="flex gap-4"
           >
             {isDistributeLoading && <Loader2 className="animate-spin" />}
@@ -68,7 +68,7 @@ export default function DistributeAction({
             className="flex gap-4"
             variant="outline"
             onClick={handleRemoveDistributeAllModerators}
-            disabled={isDistributeRemoveLoading}
+            disabled={isDistributeRemoveLoading || distributedCount === 0}
           >
             {isDistributeRemoveLoading && <Loader2 className="animate-spin" />}
             <Recycle />
