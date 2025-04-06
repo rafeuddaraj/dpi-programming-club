@@ -72,14 +72,18 @@ const userSchema = z.object({
     .string()
     .min(1, "Role is required")
     .max(50, "Role cannot be longer than 50 characters"),
+  examiner: z.string().default("false")?.optional(),
 });
 
 export default function UserEditForm({ user }) {
+  user.examiner = user?.examiner?.toString();
+
   const {
     register,
     handleSubmit,
     control, // Add control for Controller
     formState: { errors, isSubmitting },
+    watch,
   } = useForm({
     resolver: zodResolver(userSchema), // Zod validation
     defaultValues: user, // Ensure default values are provided
@@ -90,12 +94,18 @@ export default function UserEditForm({ user }) {
   const onSubmit = async (data) => {
     try {
       // Make sure we're sending the correct data
-      const { status, role, ...otherData } = data || {};
+      const { status, role, examiner, ...otherData } = data || {};
       const updateData = {
         status,
         role,
       };
       // Proceed with updating the user
+      if (role === "moderator") {
+        updateData.examiner =
+          examiner?.toString()?.toLowerCase() === "true" ? true : false;
+      } else if (role === "member") {
+        updateData.examiner = false;
+      }
       const queuePromises = [
         updateUserByIdOne(user.id, updateData),
         updateRegisteredUser(user?.registeredUserId, otherData),
@@ -104,13 +114,12 @@ export default function UserEditForm({ user }) {
       if (resps[0]?.error && resps[1]?.error) {
         throw new Error("Error updating user");
       }
-      console.log("Update okay", resps);
 
       toast.success("Update successful");
       //   router.push("/dashboard/users");
     } catch (error) {
       toast.error("There was an error!");
-      console.error("Error occurred:", error);
+      // console.error("Error occurred:", error);
     }
   };
 
@@ -259,6 +268,35 @@ export default function UserEditForm({ user }) {
                   <p className="text-red-500">{errors.role.message}</p>
                 )}
               </div>
+              {watch("role") === "moderator" && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="role">Role</Label>
+                    <Controller
+                      name="examiner"
+                      control={control}
+                      defaultValue={user.examiner?.toString()}
+                      render={({ field }) => (
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value?.toString()}
+                        >
+                          <SelectTrigger id="role">
+                            <SelectValue placeholder="Select Examiner Status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="true">Active</SelectItem>
+                            <SelectItem value="false">Stop</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.role && (
+                      <p className="text-red-500">{errors.role.message}</p>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </CardContent>
           <CardFooter className="flex justify-end gap-2">

@@ -2,42 +2,8 @@ import { getAllModerators } from "@/app/actions/moderators";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Award, CheckCircle, Clock, Users } from "lucide-react";
+import { Award, CheckCircle, Clock, Users, X } from "lucide-react";
 import Link from "next/link";
-
-// Mock data for demonstration
-const MOCK_MODERATORS = [
-  {
-    id: "1",
-    name: "Alex Johnson",
-    email: "alex.johnson@example.com",
-    image: "/placeholder.svg?height=100&width=100",
-    pendingAssignments: 5,
-    pendingSkillRequests: 3,
-    approvedAssignments: 12,
-    approvedSkillRequests: 8,
-  },
-  {
-    id: "2",
-    name: "Sam Wilson",
-    email: "sam.wilson@example.com",
-    image: "/placeholder.svg?height=100&width=100",
-    pendingAssignments: 2,
-    pendingSkillRequests: 1,
-    approvedAssignments: 24,
-    approvedSkillRequests: 15,
-  },
-  {
-    id: "3",
-    name: "Jamie Smith",
-    email: "jamie.smith@example.com",
-    image: "/placeholder.svg?height=100&width=100",
-    pendingAssignments: 8,
-    pendingSkillRequests: 4,
-    approvedAssignments: 7,
-    approvedSkillRequests: 5,
-  },
-];
 
 export async function ModeratorList() {
   let moderators = [];
@@ -119,6 +85,11 @@ export async function ModeratorList() {
                     <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-0.5 border border-border">
                       <Badge className="h-6 w-6 rounded-full p-0 flex items-center justify-center text-xs font-bold">
                         {getTotalPendingCount(moderator)}
+                      </Badge>
+                    </div>
+                    <div className="absolute -top-2 -left-1 bg-background rounded-full p-0.5 border border-border">
+                      <Badge className="h-6 w-6 rounded-full p-0 flex items-center justify-center text-xs font-bold">
+                        {moderator?.examiner ? <CheckCircle /> : <X />}
                       </Badge>
                     </div>
                   </div>
