@@ -19,6 +19,7 @@ import { BookOpen, Calendar, Clock } from "lucide-react";
 import Link from "next/link";
 
 import ComingSoon from "@/components/common/coming-soon";
+import Pagination from "@/components/common/Pagination";
 
 export default async function DashboardPage() {
   try {
@@ -26,7 +27,9 @@ export default async function DashboardPage() {
     if (resp?.error) {
       throw Error();
     }
-    const userWorkshops = resp?.data;
+    const data = resp?.data?.data;
+    const pagination = data?.pagination;
+    const userWorkshops = data?.data;
 
     const progressData = await Promise.all(
       userWorkshops?.map(async ({ workshop }) => ({
@@ -71,122 +74,125 @@ export default async function DashboardPage() {
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {userWorkshops?.map(({ workshop, ...participantData }) => {
-                  // const progress = getWorkshopProgress(workshop.id)
-                  // const totalModules = getTotalModulesCount(workshop)
-                  const completedModules = workshop?.modules?.filter(
-                    (module) =>
-                      getStatus(module?.startingDate, module?.endingDate) ===
-                      "Completed"
-                  ).length;
-                  const progress =
-                    progressData?.find((p) => p.id === workshop.id)?.progress ||
-                    0;
-                  return (
-                    <Card key={workshop?.id} className="flex flex-col">
-                      <CardHeader className="pb-4">
-                        <div className="flex justify-between items-start">
-                          <CardTitle className="text-xl">
-                            {workshop?.name}
-                          </CardTitle>
-                          <Badge
-                            variant={
-                              workshop?.type === "ONLINE"
-                                ? "default"
-                                : "secondary"
-                            }
-                          >
-                            {workshop?.type}
-                          </Badge>
-                        </div>
-                        <CardDescription>
-                          <p>
-                            Joining on{" "}
-                            {formatDate(participantData?.joining, {
-                              time: true,
-                            })}
-                          </p>
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="flex-grow">
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span>Progress</span>
-                            <span>{progress}%</span>
-                          </div>
-                          <Progress value={progress} className="h-2" />
-                          <p className="text-sm text-muted-foreground">
-                            {completedModules} of {workshop?.modules?.length}{" "}
-                            Complete Module
-                          </p>
-                        </div>
-
-                        <div className="mt-4 space-y-2 text-sm">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4 text-muted-foreground" />
-                            <span>
-                              Ends on {formatDate(workshop?.endingDate)}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <BookOpen className="h-4 w-4 text-muted-foreground" />
-                            <span>
-                              {workshop?.modules?.reduce(
-                                (count, module) =>
-                                  count + (module.lessons?.length || 0),
-                                0
-                              )}{" "}
-                              lessons • total {workshop?.modules?.length}{" "}
-                              modules
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-3">
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {userWorkshops?.map(({ workshop, ...participantData }) => {
+                    // const progress = getWorkshopProgress(workshop.id)
+                    // const totalModules = getTotalModulesCount(workshop)
+                    const completedModules = workshop?.modules?.filter(
+                      (module) =>
+                        getStatus(module?.startingDate, module?.endingDate) ===
+                        "Completed"
+                    ).length;
+                    const progress =
+                      progressData?.find((p) => p.id === workshop.id)
+                        ?.progress || 0;
+                    return (
+                      <Card key={workshop?.id} className="flex flex-col">
+                        <CardHeader className="pb-4">
+                          <div className="flex justify-between items-start">
+                            <CardTitle className="text-xl">
+                              {workshop?.name}
+                            </CardTitle>
                             <Badge
-                              className={`${
-                                participantData?.complete
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-red-100 text-red-800"
-                              } py-1 px-4 rounded-full text-md font-medium transition-all duration-300 ease-in-out`}
+                              variant={
+                                workshop?.type === "ONLINE"
+                                  ? "default"
+                                  : "secondary"
+                              }
                             >
-                              {participantData?.complete
-                                ? "Completed"
-                                : "Not Completed"}
+                              {workshop?.type}
                             </Badge>
                           </div>
-                        </div>
-                      </CardContent>
-                      <CardFooter className="pt-4 border-t block space-y-3">
-                        <div>
-                          <Button asChild className="w-full">
-                            <Link
-                              href={`/workshops/${workshop?.id}/player/${
-                                participantData?.lastLessonId ||
-                                workshop?.modules[0]?.lessons[0]?.id
-                              }`}
+                          <CardDescription>
+                            <p>
+                              Joining on{" "}
+                              {formatDate(participantData?.joining, {
+                                time: true,
+                              })}
+                            </p>
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-grow">
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span>Progress</span>
+                              <span>{progress}%</span>
+                            </div>
+                            <Progress value={progress} className="h-2" />
+                            <p className="text-sm text-muted-foreground">
+                              {completedModules} of {workshop?.modules?.length}{" "}
+                              Complete Module
+                            </p>
+                          </div>
+
+                          <div className="mt-4 space-y-2 text-sm">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4 text-muted-foreground" />
+                              <span>
+                                Ends on {formatDate(workshop?.endingDate)}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <BookOpen className="h-4 w-4 text-muted-foreground" />
+                              <span>
+                                {workshop?.modules?.reduce(
+                                  (count, module) =>
+                                    count + (module.lessons?.length || 0),
+                                  0
+                                )}{" "}
+                                lessons • total {workshop?.modules?.length}{" "}
+                                modules
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <Badge
+                                className={`${
+                                  participantData?.complete
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-red-100 text-red-800"
+                                } py-1 px-4 rounded-full text-md font-medium transition-all duration-300 ease-in-out`}
+                              >
+                                {participantData?.complete
+                                  ? "Completed"
+                                  : "Not Completed"}
+                              </Badge>
+                            </div>
+                          </div>
+                        </CardContent>
+                        <CardFooter className="pt-4 border-t block space-y-3">
+                          <div>
+                            <Button asChild className="w-full">
+                              <Link
+                                href={`/workshops/${workshop?.id}/player/${
+                                  participantData?.lastLessonId ||
+                                  workshop?.modules[0]?.lessons[0]?.id
+                                }`}
+                              >
+                                Continue Learning
+                              </Link>
+                            </Button>
+                          </div>
+                          <div>
+                            <Button
+                              asChild
+                              className="w-full"
+                              variant={"outline"}
                             >
-                              Continue Learning
-                            </Link>
-                          </Button>
-                        </div>
-                        <div>
-                          <Button
-                            asChild
-                            className="w-full"
-                            variant={"outline"}
-                          >
-                            <Link
-                              href={`/workshops/${workshop?.id}/leaderboard`}
-                            >
-                              Leaderboard
-                            </Link>
-                          </Button>
-                        </div>
-                      </CardFooter>
-                    </Card>
-                  );
-                })}
-              </div>
+                              <Link
+                                href={`/workshops/${workshop?.id}/leaderboard`}
+                              >
+                                Leaderboard
+                              </Link>
+                            </Button>
+                          </div>
+                        </CardFooter>
+                      </Card>
+                    );
+                  })}
+                </div>
+                <Pagination pagination={pagination} />
+              </>
             )}
           </TabsContent>
           <TabsContent value="in-progress">
@@ -201,7 +207,7 @@ export default async function DashboardPage() {
       </div>
     );
   } catch (err) {
-    // console.log(err);
+    console.log(err);
 
     return (
       <div className="container mx-auto px-4 py-8">

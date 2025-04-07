@@ -218,7 +218,10 @@ export default async function WorkshopDetailsPage({
         </TabsContent>
 
         <TabsContent value="participants">
-          <ParticipantsList workshopId={workshop.id} />
+          <ParticipantsList
+            workshopId={workshop?.id}
+            searchParams={searchParams}
+          />
         </TabsContent>
       </WorkshopTabs>
     </div>

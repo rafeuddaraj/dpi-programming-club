@@ -64,7 +64,7 @@ export async function ModeratorList() {
             href={`/dashboard/moderators/${moderator.id}`}
             key={moderator.id}
           >
-            <Card className="h-full overflow-hidden hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 group">
+            <Card className="h-full overflow-hidden hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20 group relative">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/80 to-primary/30"></div>
               <CardContent className="pt-6 pb-2">
                 <div className="flex items-start gap-4">

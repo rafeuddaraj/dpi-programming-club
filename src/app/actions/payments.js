@@ -10,8 +10,6 @@ export const updatePaymentStatus = async (
   revalidatePathCached
 ) => {
   try {
-    console.log(id);
-
     if (typeof id === "string") {
       const data = await prisma.payment.update({
         where: { id },
@@ -20,9 +18,6 @@ export const updatePaymentStatus = async (
       revalidatePath(revalidatePathCached);
       return successResponse("Update payment status");
     } else {
-      console.log("I am Here");
-      console.log({ id, paymentStatus });
-
       const data = await prisma.payment.updateMany({
         where: { id: { in: id } },
         data: { paymentStatus },

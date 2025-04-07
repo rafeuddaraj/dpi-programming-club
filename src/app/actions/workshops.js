@@ -21,7 +21,13 @@ export const getWorkshopById = async (workshopId) => {
       where: { id: workshopId },
       include: {
         modules: { include: { lessons: true } },
-        participants: { include: { participant: { include: { user: true } } } },
+        participants: {
+          include: {
+            participant: { include: { user: true } },
+            payment: true,
+            workshop: true,
+          },
+        },
       },
     });
     if (!workshop) return errorResponse("Workshop not found", 404);
@@ -320,10 +326,12 @@ export const enrollWorkshop = async (
     });
 
     if (isPremium) {
+      console.log("I am Called");
+
       if (
         currentWorkshop.totalSeats > bookedSeat?.length ||
         currentWorkshop?.type === "ONLINE"
-      )
+      ) {
         res = await prisma.$transaction(async (db) => {
           const paymentData = {
             userId: user?.id,
@@ -339,6 +347,7 @@ export const enrollWorkshop = async (
             workshopId: data?.id,
             participantId: user?.id,
             paymentId: payment?.id,
+            price: data?.amount,
           };
 
           const workshop = await db.workshopParticipant.create({
@@ -347,7 +356,7 @@ export const enrollWorkshop = async (
           });
           return workshop;
         });
-      else {
+      } else {
         throw new Error("No seat available");
       }
     } else {
@@ -549,18 +558,148 @@ export const getWorkshopProgress = async (workshopId) => {
 
 // Get All Participants of a Workshop
 
-export const getWorkshopParticipants = async () => {
+export const getWorkshopParticipants = async (page, limit) => {
   try {
     const session = await auth();
-    const participants = await prisma.workshopParticipant.findMany({
-      where: { participantId: session?.user?.id },
-      include: {
+    let where = { participantId: session?.user?.id };
+    let include = {
+      workshop: { include: { modules: { include: { lessons: true } } } },
+      payment: true,
+      participant: { include: { user: true } },
+    };
+    let orderBy = { joining: "asc" };
+
+    const participants = await commonGet(
+      "workshopParticipant",
+      where,
+      include,
+      page,
+      limit,
+      orderBy
+    );
+    return successResponse(
+      "Workshop participants retrieved successfully",
+      200,
+      participants
+    );
+  } catch (error) {
+    return errorResponse(
+      error.message || "Failed to fetch workshop participants"
+    );
+  }
+};
+
+// Common Update
+export const reviewParticipantData = async (id, data, path, model) => {
+  try {
+    const resp = await prisma[model].update({
+      where: { id },
+      data: { reviewStatus: "MARKED", ...data },
+    });
+    revalidatePath(path);
+    return successResponse("Participant data updated successfully", 200);
+  } catch {
+    return errorResponse();
+  }
+};
+
+// Only Admin
+export const getWorkshopParticipantsUsingAdminAndModerator = async (
+  workshopId,
+  query = "",
+  status = "",
+  type,
+  page = 1,
+  limit = 10
+) => {
+  try {
+    const session = await auth();
+
+    let where = {};
+    let include = {};
+    let orderBy = {};
+    const user = session?.user;
+    const role = user?.role;
+    if (role === "member") {
+      where = { participantId: session?.user?.id, workshopId };
+      include = {
         workshop: { include: { modules: { include: { lessons: true } } } },
         payment: true,
         participant: { include: { user: true } },
-      },
-      orderBy: { joining: "asc" },
-    });
+      };
+      orderBy = { joining: "asc" };
+    } else if (role === "moderator") {
+      status = status?.toString()?.toUpperCase();
+      const access = ["MARKED", "PENDING", "RECHECK"];
+      const isAccess = access?.includes(status);
+      where = {
+        participant: {
+          user: {
+            OR: [
+              { email: { contains: query, mode: "insensitive" } },
+              { name: { contains: query, mode: "insensitive" } },
+              { rollNo: { contains: query, mode: "insensitive" } },
+            ],
+          },
+        },
+        payment: {
+          paymentStatus:
+            type?.toString()?.toUpperCase() === "PAID" ? true : false,
+        },
+        examinerId: user?.id,
+        workshopId,
+        reviewStatus: { in: isAccess ? [status] : ["PENDING"] },
+      };
+      include = {
+        workshop: { include: { modules: { include: { lessons: true } } } },
+        payment: true,
+        participant: { include: { user: true } },
+      };
+      orderBy = { joining: "asc" };
+    } else {
+      status = status?.toString()?.toUpperCase();
+      const access = ["MARKED", "PENDING", "RECHECK", "PUBLISHED"];
+      const isAccess = access?.includes(status);
+      where = {
+        participant: {
+          user: {
+            OR: [
+              { email: { contains: query, mode: "insensitive" } },
+              { name: { contains: query, mode: "insensitive" } },
+              { rollNo: { contains: query, mode: "insensitive" } },
+            ],
+          },
+        },
+        reviewStatus: { in: isAccess ? [status] : ["PENDING"] },
+        workshopId,
+        payment: {
+          paymentStatus:
+            type?.toString()?.toUpperCase() === "PAID" ? true : false,
+        },
+      };
+      include = {
+        workshop: { include: { modules: { include: { lessons: true } } } },
+        payment: true,
+        participant: { include: { user: true } },
+      };
+      orderBy = { joining: "asc" };
+      if (status === "ALL") {
+        delete where?.reviewStatus;
+      }
+    }
+
+    if (type?.toString()?.toUpperCase() === "ALL") {
+      delete where?.payment;
+    }
+
+    const participants = await commonGet(
+      "workshopParticipant",
+      where,
+      include,
+      page,
+      limit,
+      orderBy
+    );
     return successResponse(
       "Workshop participants retrieved successfully",
       200,

@@ -251,6 +251,8 @@ export const enrollEvent = async (
             eventId: data?.id,
             participantId: user?.id,
             paymentId: payment?.id,
+            price: data?.amount,
+            examinerId: null,
           };
 
           const event = await db.eventParticipant.create({
@@ -263,11 +265,13 @@ export const enrollEvent = async (
         throw new Error("No seat available");
       }
     } else {
-      console.log("I am Comming");
-
       if (currentEvent.availableSeat > bookedSeat?.length) {
         res = await prisma.eventParticipant.create({
-          data: { participantId: user?.id, eventId: data?.eventId },
+          data: {
+            participantId: user?.id,
+            eventId: data?.eventId,
+            examinerId: null,
+          },
         });
       } else {
         throw new Error("No seat available");
@@ -310,30 +314,37 @@ export const getOwnEvents = async (participantId, query, page, limit) => {
   return commonGet("eventParticipant", where, include, page, limit);
 };
 
-async () => {
-  await prisma.eventParticipant.findMany({
-    where: { event: { name: { contains: query, mode: "insensitive" } } },
-  });
-};
-
-export const distributeAllEventsByModerator = async (eventId) => {
+export const distributeAllEventsByModerator = async (eventId, pathname) => {
   try {
     const resp = await prisma?.$transaction(async (db) => {
       const moderators = await db?.user?.findMany({
-        where: { role: "moderator" },
+        where: {
+          role: "moderator",
+          examiner: true,
+        },
         select: { id: true },
       });
-      if (!moderators.length) throw Error("No moderators found");
+
+      if (!moderators.length) throw new Error("No eligible moderators found");
 
       const participants = await db?.eventParticipant?.findMany({
-        where: { eventId, examinerId: null }, // Only fetch participants without examiner
+        where: {
+          eventId,
+          examinerId: null,
+        },
       });
-      if (!participants.length)
-        throw Error("No participants found without examiner");
 
-      // Distribute participants among moderators in a round-robin fashion
-      const updates = participants.map((participant, index) => {
-        const moderatorId = moderators[index % moderators.length].id;
+      if (!participants.length) {
+        throw new Error("No participants found without examiner");
+      }
+
+      const shuffledParticipants = [...participants].sort(
+        () => Math.random() - 0.5
+      );
+
+      const updates = shuffledParticipants.map((participant, index) => {
+        const moderatorIndex = index % moderators.length;
+        const moderatorId = moderators[moderatorIndex].id;
 
         return db.eventParticipant.update({
           where: { id: participant.id },
@@ -341,37 +352,298 @@ export const distributeAllEventsByModerator = async (eventId) => {
         });
       });
 
-      // Execute all update operations
       await Promise.all(updates);
 
-      return { message: "Participants distributed successfully" };
+      return "Participants distributed randomly and evenly among moderators";
     });
-
-    return resp;
+    revalidatePath(pathname);
+    return successResponse(resp);
   } catch (error) {
-    console.log(error);
+    console.error("Distribution Error:", error);
     return errorResponse();
   }
 };
 
-export const removeAllExaminersByEvent = async (eventId) => {
+export const removePendingDistributionsByModerator = async (
+  eventId,
+  pathname
+) => {
   try {
     const resp = await prisma?.$transaction(async (db) => {
-      // Remove all examiner assignments for the given event
-      const result = await db.eventParticipant.updateMany({
-        where: { eventId, examinerId: { not: null } },
-        data: { examinerId: null },
+      const distributedParticipants = await db.eventParticipant.findMany({
+        where: {
+          eventId,
+          examinerId: { not: null },
+          reviewStatus: "PENDING",
+        },
+      });
+
+      if (!distributedParticipants.length) {
+        throw new Error("No pending distributed participants found");
+      }
+
+      const updates = distributedParticipants.map((participant) => {
+        return db.eventParticipant.update({
+          where: { id: participant.id },
+          data: { examinerId: null },
+        });
+      });
+
+      await Promise.all(updates);
+
+      return {
+        message: "Pending distributions removed successfully",
+        count: distributedParticipants.length,
+      };
+    });
+    revalidatePath(pathname);
+    return successResponse(resp?.message, 200, resp);
+  } catch (error) {
+    console.error("Remove Distribution Error:", error);
+    return errorResponse();
+  }
+};
+
+export const removePublishedDistributionsByModerator = async (
+  moderatorId,
+  pathname
+) => {
+  try {
+    const resp = await prisma?.$transaction(async (db) => {
+      const distributedParticipants = await db.eventParticipant.findMany({
+        where: {
+          examinerId: moderatorId,
+          reviewStatus: "PUBLISHED",
+        },
+      });
+
+      if (!distributedParticipants.length) {
+        throw new Error(
+          "No published distributed participants found for this moderator"
+        );
+      }
+
+      const updates = distributedParticipants.map((participant) => {
+        return db.eventParticipant.update({
+          where: { id: participant.id },
+          data: { examinerId: null },
+        });
+      });
+
+      await Promise.all(updates);
+
+      return {
+        message:
+          "Published distributions removed successfully for the moderator",
+        count: distributedParticipants.length,
+      };
+    });
+    revalidatePath(pathname);
+    return successResponse(resp.message, 200, resp);
+  } catch (error) {
+    console.error("Remove Distribution Error:", error);
+    return errorResponse();
+  }
+};
+
+export const getEventParticipantDistributionStats = async (eventId) => {
+  try {
+    const stats = await prisma.$transaction(async (db) => {
+      const undistributedCount = await db.eventParticipant.count({
+        where: {
+          eventId,
+          examinerId: null,
+        },
+      });
+
+      const distributedCount = await db.eventParticipant.count({
+        where: {
+          eventId,
+          examinerId: { not: null },
+          reviewStatus: { in: ["PENDING"] },
+        },
+      });
+
+      const markedCount = await db.eventParticipant.count({
+        where: {
+          eventId,
+          reviewStatus: "MARKED",
+        },
+      });
+
+      const paymentCount = await db.payment.count({
+        where: {
+          EventParticipant: { some: { eventId } },
+          paymentStatus: false,
+        },
       });
 
       return {
-        message: "All examiners removed successfully",
-        count: result.count,
+        eventId,
+        undistributedCount,
+        distributedCount,
+        markedCount,
+        paymentCount,
       };
     });
 
-    return resp;
+    return successResponse("Success", 200, stats);
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching distribution stats:", error);
     return errorResponse();
+  }
+};
+
+export const publishAllEventMarkedParticipants = async (eventId, pathname) => {
+  try {
+    const updated = await prisma.eventParticipant.updateMany({
+      where: {
+        eventId,
+        reviewStatus: "MARKED",
+      },
+      data: {
+        reviewStatus: "PUBLISHED",
+      },
+    });
+    revalidatePath(pathname);
+    return successResponse(
+      `${updated.count} participant(s) marked as published.`,
+      200
+    );
+  } catch (error) {
+    console.error("Publish Error:", error);
+    return errorResponse();
+  }
+};
+
+export const markAllEventParticipantsAsPaid = async (eventId, pathname) => {
+  try {
+    const updated = await prisma.payment.updateMany({
+      where: {
+        EventParticipant: { some: { eventId } },
+      },
+      data: {
+        paymentStatus: true,
+      },
+    });
+    revalidatePath(pathname);
+    return successResponse(
+      `${updated.count} participant(s) marked as paid.`,
+      200
+    );
+  } catch (error) {
+    console.error("Payment Status Update Error:", error);
+    return errorResponse();
+  }
+};
+
+// Only Admin
+export const getEventParticipantsUsingAdminAndModerator = async (
+  eventId,
+  query = "",
+  status = "",
+  type,
+  page = 1,
+  limit = 10
+) => {
+  try {
+    const session = await auth();
+
+    let where = {};
+    let include = {};
+    let orderBy = {};
+    const user = session?.user;
+    const role = user?.role;
+    if (role === "member") {
+      where = { participantId: session?.user?.id, eventId };
+      include = {
+        event: true,
+        payment: true,
+        participant: { include: { user: true } },
+      };
+      orderBy = { joining: "asc" };
+    } else if (role === "moderator") {
+      status = status?.toString()?.toUpperCase();
+      const access = ["MARKED", "PENDING", "RECHECK"];
+      const isAccess = access?.includes(status);
+      where = {
+        participant: {
+          user: {
+            OR: [
+              { email: { contains: query, mode: "insensitive" } },
+              { name: { contains: query, mode: "insensitive" } },
+              { rollNo: { contains: query, mode: "insensitive" } },
+            ],
+          },
+        },
+        payment: {
+          paymentStatus:
+            type?.toString()?.toUpperCase() === "PAID" ? true : false,
+        },
+        examinerId: user?.id,
+        eventId,
+        reviewStatus: { in: isAccess ? [status] : ["PENDING"] },
+      };
+      include = {
+        event: true,
+        payment: true,
+        participant: { include: { user: true } },
+        examiner: true,
+      };
+      orderBy = { joining: "asc" };
+    } else {
+      status = status?.toString()?.toUpperCase();
+      const access = ["MARKED", "PENDING", "RECHECK", "PUBLISHED"];
+      const isAccess = access?.includes(status);
+      where = {
+        participant: {
+          user: {
+            OR: [
+              { email: { contains: query, mode: "insensitive" } },
+              { name: { contains: query, mode: "insensitive" } },
+              { rollNo: { contains: query, mode: "insensitive" } },
+            ],
+          },
+        },
+        reviewStatus: { in: isAccess ? [status] : ["PENDING"] },
+        eventId,
+        payment: {
+          paymentStatus:
+            type?.toString()?.toUpperCase() === "PAID" ? true : false,
+        },
+      };
+      include = {
+        event: true,
+        payment: true,
+        participant: { include: { user: true } },
+        examiner: { include: { user: true } },
+      };
+      orderBy = { joining: "asc" };
+      if (status === "ALL") {
+        delete where?.reviewStatus;
+      }
+    }
+
+    if (type?.toString()?.toUpperCase() === "ALL") {
+      delete where?.payment;
+    }
+
+    const participants = await commonGet(
+      "eventParticipant",
+      where,
+      include,
+      page,
+      limit,
+      orderBy
+    );
+    return successResponse(
+      "Event participants retrieved successfully",
+      200,
+      participants
+    );
+  } catch (error) {
+    return errorResponse(
+      error.message || "Failed to fetch workshop participants"
+    );
   }
 };

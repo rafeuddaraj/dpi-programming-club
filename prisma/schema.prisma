@@ -22,6 +22,12 @@ enum UserStatus {
   EX
 }
 
+enum Role {
+  admin
+  moderator
+  member
+}
+
 model User {
   id                    String                 @id @default(auto()) @map("_id") @db.ObjectId
   password              String
@@ -33,7 +39,7 @@ model User {
   about                 String?
   linkedin              String?
   github                String?
-  role                  String                 @default("member") // member, moderator, admin
+  role                  Role                   @default(member) // member, moderator, admin
   address               String?
   status                UserStatus             @default(PROCESSING)
   renewalDate           DateTime
@@ -54,6 +60,7 @@ model User {
   Notice                Notice[]
   skills                UserSkills[]
   skillsReviewer        UserSkills[]           @relation("Examiner")
+  workshopReviewer      WorkshopParticipant[]  @relation("Examiner")
 }
 
 model Skills {
@@ -123,20 +130,22 @@ model Event {
 }
 
 model EventParticipant {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  eventId       String   @db.ObjectId
-  event         Event    @relation(fields: [eventId], references: [id])
-  participantId String   @db.ObjectId
+  id            String            @id @default(auto()) @map("_id") @db.ObjectId
+  eventId       String            @db.ObjectId
+  event         Event             @relation(fields: [eventId], references: [id])
+  participantId String            @db.ObjectId
   score         Int?
-  complete      Boolean  @default(false)
+  complete      Boolean           @default(false)
   certificate   String?
   feedback      String?
-  participant   User     @relation(fields: [participantId], references: [id])
-  joining       DateTime @default(now())
-  paymentId     String?  @db.ObjectId
-  payment       Payment? @relation(fields: [paymentId], references: [id])
-  examinerId    String?  @db.ObjectId
-  examiner      User?    @relation("Examiner", fields: [examinerId], references: [id])
+  price         Int?
+  participant   User              @relation(fields: [participantId], references: [id])
+  joining       DateTime          @default(now())
+  paymentId     String?           @db.ObjectId
+  payment       Payment?          @relation(fields: [paymentId], references: [id])
+  examinerId    String?           @db.ObjectId
+  reviewStatus  SubmissionStatus? @default(PENDING)
+  examiner      User?             @relation("Examiner", fields: [examinerId], references: [id])
 
   @@unique([eventId, participantId])
 }
@@ -201,21 +210,25 @@ model WorkshopLesson {
 }
 
 model WorkshopParticipant {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  workshopId    String   @db.ObjectId
-  workshop      Workshop @relation(fields: [workshopId], references: [id])
-  participantId String   @db.ObjectId
-  participant   User     @relation(fields: [participantId], references: [id])
+  id            String            @id @default(auto()) @map("_id") @db.ObjectId
+  workshopId    String            @db.ObjectId
+  workshop      Workshop          @relation(fields: [workshopId], references: [id])
+  participantId String            @db.ObjectId
+  participant   User              @relation(fields: [participantId], references: [id])
   price         Int?
   score         Int? // - update
-  complete      Boolean  @default(false) // - update
+  complete      Boolean           @default(false) // - update
   certificate   String? // - update
   feedback      String? // - update
-  paymentId     String?  @db.ObjectId
-  lastModuleId  String?  @db.ObjectId
-  lastLessonId  String?  @db.ObjectId
-  payment       Payment? @relation(fields: [paymentId], references: [id])
-  joining       DateTime @default(now())
+  paymentId     String?           @db.ObjectId
+  reviewStatus  SubmissionStatus? @default(PENDING)
+  lastModuleId  String?           @db.ObjectId
+  lastLessonId  String?           @db.ObjectId
+  payment       Payment?          @relation(fields: [paymentId], references: [id])
+  joining       DateTime          @default(now())
+
+  examinerId String? @db.ObjectId
+  examiner   User?   @relation("Examiner", fields: [examinerId], references: [id])
 
   @@unique([workshopId, participantId])
 }
