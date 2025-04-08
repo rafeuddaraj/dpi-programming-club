@@ -104,7 +104,7 @@ export const reSubmitSkillRequest = async (id, reason) => {
   }
 };
 
-export const approveSkillRequest = async (id, feedback) => {
+export const reviewedSkillRequest = async (id, feedback) => {
   try {
     const session = await auth();
     const user = session?.user || null;
@@ -117,7 +117,7 @@ export const approveSkillRequest = async (id, feedback) => {
     const skillRequest = await prisma.userSkills.update({
       where: { id },
       data: {
-        status: "APPROVED",
+        status: "REVIEWED",
         feedback,
         rejectionNote: null,
         reviewerId: user?.id,
@@ -125,6 +125,35 @@ export const approveSkillRequest = async (id, feedback) => {
     });
     revalidatePath("dashboard/skills");
     return skillRequest;
+  } catch (error) {
+    return errorResponse({
+      message: "Error reviewing skill request",
+      status: 500,
+    });
+  }
+};
+export const approvedSkillRequestByAdmin = async () => {
+  try {
+    const session = await auth();
+    const user = session?.user || null;
+    if (!user) {
+      return errorResponse({
+        message: "Unauthorized",
+        status: 401,
+      });
+    }
+    const skillRequest = await prisma.userSkills.updateMany({
+      where: { status: "REVIEWED" },
+      data: {
+        status: "APPROVED",
+      },
+    });
+    revalidatePath("dashboard/skills");
+    return successResponse(
+      `${skillRequest.count} skill(s) request as published.`,
+      200,
+      skillRequest
+    );
   } catch (error) {
     return errorResponse({
       message: "Error approving skill request",
@@ -192,8 +221,10 @@ export const getAllSkillRequests = async (
     let where = null;
     let include = null;
     if (user?.role === "admin") {
+      status = status?.toUpperCase();
+      const access = ["PENDING", "APPROVED", "REJECTED", "REVIEWED"];
       where = {
-        status,
+        status: { in: access?.includes(status) ? [status] : [access[0]] },
         OR: [
           {
             user: {
@@ -208,10 +239,15 @@ export const getAllSkillRequests = async (
         skill: true,
         reviewer: { include: { user: true } },
       };
+      if (status === "ALL") {
+        where.status = { in: access };
+      }
     } else if (user?.role === "moderator") {
+      status = status?.toUpperCase();
+      const access = ["PENDING", "REVIEWED"];
       where = {
-        reviewerId: userId,
-        status: "PENDING",
+        reviewerId: user?.id,
+        status: { in: access?.includes(status) ? [status] : [access[0]] },
         OR: [
           {
             user: {
@@ -222,10 +258,13 @@ export const getAllSkillRequests = async (
         ],
       }; // for moderators
       include = {
-        user: true,
+        user: { include: { user: true } },
         skill: true,
         reviewer: { include: { user: true } },
       }; // for moderators
+      if (status === "ALL") {
+        where.status = { in: access };
+      }
     } else {
       where = {
         userId,
@@ -243,7 +282,6 @@ export const getAllSkillRequests = async (
         skill: true,
       }; // for users
     }
-    if (status === "ALL") delete where?.status;
     return await commonGet("userSkills", where, include, page, limit, {
       createdAt: "desc",
     });
@@ -391,7 +429,8 @@ export const distributeSkillRequest = async () => {
   try {
     const moderators = await prisma.user.findMany({
       where: {
-        OR: [{ role: "moderator" }, { examiner: true }], // TODO:: Change for Final
+        role: "moderator",
+        examiner: true,
       },
       select: { id: true },
     });
@@ -444,10 +483,12 @@ export const removeSkillDistribution = async () => {
       data: { reviewerId: null },
     });
 
-    if (!resp?.length) throw "No unpending ";
+    if (!resp?.count) throw "No unpending ";
     revalidatePath("dashboard/skills");
     return { message: "All skill request assignments have been reset." };
   } catch (error) {
+    console.log(error);
+
     return { error: "Failed to reset skill assignments" };
   }
 };
@@ -460,9 +501,13 @@ export const unDistributeCountAndDistributeCount = async () => {
     const distributedCount = await prisma.userSkills.count({
       where: { reviewerId: { not: null }, status: "PENDING" },
     });
+    const reviewedCount = await prisma.userSkills.count({
+      where: { reviewerId: { not: null }, status: "REVIEWED" },
+    });
     return successResponse("success", 200, {
       unassignedCount,
       distributedCount,
+      reviewedCount,
     });
   } catch (error) {
     return errorResponse();

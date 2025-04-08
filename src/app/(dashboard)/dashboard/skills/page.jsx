@@ -48,49 +48,77 @@ export default async function SkillManagementSystem({
   return (
     <div className="container mx-auto py-6 px-4 md:px-6">
       <h1 className="text-3xl font-bold mb-6">Skill Management System</h1>
+      {isAdmin ? (
+        <Tabs defaultValue="skill-request" className="w-full">
+          <TabsList className="grid grid-cols-2 mb-6">
+            <TabsTrigger value="skills">Manage Skills</TabsTrigger>
+            <TabsTrigger value="skill-request">
+              {isAdmin ? "Admin Approval" : "Request Skills"}
+            </TabsTrigger>
+          </TabsList>
 
-      <Tabs defaultValue="skill-request" className="w-full">
-        <TabsList className="grid grid-cols-2 mb-6">
-          <TabsTrigger value="skills">Manage Skills</TabsTrigger>
-          <TabsTrigger value="skill-request">
-            {isAdmin ? "Admin Approval" : "Request Skills"}
-          </TabsTrigger>
-        </TabsList>
+          <TabsContent value="skills">
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    {skillId ? "Update Skill" : "Create Skill"}
+                  </CardTitle>
+                  <CardDescription>
+                    Add a new skill or update existing ones
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SkillForm
+                    skills={skills}
+                    currentSkill={currentUpdateSkill}
+                  />
+                </CardContent>
+              </Card>
 
-        <TabsContent value="skills">
-          <div className="grid gap-6 md:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Skill List</CardTitle>
+                  <CardDescription>View all available skills</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SkillList
+                    skills={skills}
+                    pagination={pagination}
+                    page={page}
+                    limit={limit}
+                  />
+                  <Pagination pagination={pagination} />
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+          <TabsContent value="skill-request">
             <Card>
               <CardHeader>
-                <CardTitle>
-                  {skillId ? "Update Skill" : "Create Skill"}
-                </CardTitle>
+                <CardTitle>Skill Approval Dashboard</CardTitle>
                 <CardDescription>
-                  Add a new skill or update existing ones
+                  {isAdmin
+                    ? "Manage user and moderator skill requests with distribute"
+                    : "Manage user skill requests"}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <SkillForm skills={skills} currentSkill={currentUpdateSkill} />
+                <Suspense fallback={<h2>Loading...</h2>}>
+                  <AdminApproval
+                    page={page}
+                    limit={limit}
+                    query={query}
+                    statusFilter={statusFilter}
+                    isAdmin={isAdmin}
+                  />
+                </Suspense>
               </CardContent>
             </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Skill List</CardTitle>
-                <CardDescription>View all available skills</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <SkillList
-                  skills={skills}
-                  pagination={pagination}
-                  page={page}
-                  limit={limit}
-                />
-                <Pagination pagination={pagination} />
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-        <TabsContent value="skill-request">
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <>
           <Card>
             <CardHeader>
               <CardTitle>Skill Approval Dashboard</CardTitle>
@@ -112,8 +140,8 @@ export default async function SkillManagementSystem({
               </Suspense>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        </>
+      )}
     </div>
   );
 }

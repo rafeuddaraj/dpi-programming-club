@@ -107,6 +107,9 @@ export const getAllUpcomingEvent = async () => {
 
 export const getParticipantByEventId = async (query, id, page, limit) => {
   try {
+    const session = await auth();
+    const user = session?.user || null;
+    const role = user?.role;
     const where = query
       ? {
           OR: [
@@ -146,6 +149,11 @@ export const getParticipantByEventId = async (query, id, page, limit) => {
       event: true,
       payment: true,
     };
+
+    if (role === "moderator") {
+      delete where?.eventId;
+      where.examinerId = user?.id;
+    }
 
     const orderBy = { payment: { paymentStatus: "asc" } };
     const participant = await commonGet(
@@ -591,6 +599,9 @@ export const getEventParticipantsUsingAdminAndModerator = async (
         examiner: true,
       };
       orderBy = { joining: "asc" };
+      if (status === "ALL") {
+        where.reviewStatus = { in: access };
+      }
     } else {
       status = status?.toString()?.toUpperCase();
       const access = ["MARKED", "PENDING", "RECHECK", "PUBLISHED"];

@@ -1,9 +1,16 @@
-import { getWorkshopParticipantsUsingAdminAndModerator } from "@/app/actions/workshops";
+import {
+  getWorkshopParticipantDistributionStats,
+  getWorkshopParticipantsUsingAdminAndModerator,
+} from "@/app/actions/workshops";
 import SearchFilter from "../common/marking-system/search-filter";
 import { WorkshopParticipantDashboard } from "../common/marking-system/workshop-participant-dashboard";
 import Pagination from "../common/Pagination";
 
-export async function ParticipantsList({ workshopId, searchParams }) {
+export async function ParticipantsList({
+  workshopId,
+  searchParams,
+  isModerator,
+}) {
   const query = searchParams?.q;
   const page = searchParams?.page ? parseInt(searchParams?.page) : 1;
   const limit = searchParams?.limit ? parseInt(searchParams?.limit) : 10;
@@ -27,13 +34,29 @@ export async function ParticipantsList({ workshopId, searchParams }) {
 
   const isPaid = !!participants[0]?.payment;
 
+  let workshopStats = null;
+  try {
+    const resp = await getWorkshopParticipantDistributionStats(workshopId);
+
+    if (!resp?.error) workshopStats = resp?.data;
+  } catch {
+    // Just Bypassing the error
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col md:flex-row gap-4">
-        <SearchFilter isPaid={isPaid} />
+        <SearchFilter
+          isPaid={isPaid}
+          stats={workshopStats}
+          componentType={"Workshop"}
+        />
       </div>
 
-      <WorkshopParticipantDashboard participants={participants} />
+      <WorkshopParticipantDashboard
+        participants={participants}
+        isModerator={isModerator}
+      />
       <Pagination pagination={pagination} />
     </div>
   );

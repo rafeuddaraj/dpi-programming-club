@@ -100,9 +100,29 @@ export const updateWorkshop = async ({ workshopId, data }) => {
 
 export const deleteWorkshop = async (workshopId) => {
   try {
-    await prisma.workshop.delete({ where: { id: workshopId } });
-    return successResponse("Workshop deleted successfully", 200);
+    const resp = await prisma.$transaction(async (db) => {
+      const participant = await db.workshopParticipant.count({
+        where: { workshopId },
+      });
+      if (participant) {
+        throw Error(
+          "Can't delete this workshop cause this workshop are participant here."
+        );
+      }
+      await db.workshopLesson.deleteMany({
+        where: { module: { workshopId } },
+      });
+      await db.workshopModule.deleteMany({ where: { workshopId } });
+      await db.assignments.deleteMany({
+        where: { lessons: { module: { workshopId } } },
+      });
+      await db.workshop.delete({ where: { id: workshopId } });
+      return "Workshop deleted successfully";
+    });
+    return successResponse(resp, 200);
   } catch (error) {
+    console.log(error);
+
     return errorResponse(error.message || "Failed to delete workshop");
   }
 };
@@ -603,6 +623,238 @@ export const reviewParticipantData = async (id, data, path, model) => {
   }
 };
 
+export const distributeAllWorkshopsByModerator = async (
+  workshopId,
+  pathname
+) => {
+  try {
+    const resp = await prisma?.$transaction(async (db) => {
+      const moderators = await db?.user?.findMany({
+        where: {
+          role: "moderator",
+          examiner: true,
+        },
+        select: { id: true },
+      });
+
+      if (!moderators.length) throw new Error("No eligible moderators found");
+
+      const participants = await db?.workshopParticipant?.findMany({
+        where: {
+          workshopId,
+          examinerId: null,
+        },
+      });
+
+      if (!participants.length) {
+        throw new Error("No participants found without examiner");
+      }
+
+      const shuffledParticipants = [...participants].sort(
+        () => Math.random() - 0.5
+      );
+
+      const updates = shuffledParticipants.map((participant, index) => {
+        const moderatorIndex = index % moderators.length;
+        const moderatorId = moderators[moderatorIndex].id;
+
+        return db.workshopParticipant.update({
+          where: { id: participant.id },
+          data: { examinerId: moderatorId },
+        });
+      });
+
+      await Promise.all(updates);
+
+      return "Participants distributed randomly and evenly among moderators";
+    });
+    revalidatePath(pathname);
+    return successResponse(resp);
+  } catch (error) {
+    console.error("Distribution Error:", error);
+    return errorResponse();
+  }
+};
+
+export const removeWorkshopPendingDistributionsByModerator = async (
+  workshopId,
+  pathname
+) => {
+  try {
+    const resp = await prisma?.$transaction(async (db) => {
+      const distributedParticipants = await db.workshopParticipant.findMany({
+        where: {
+          workshopId,
+          examinerId: { not: null },
+          reviewStatus: "PENDING",
+        },
+      });
+
+      if (!distributedParticipants.length) {
+        throw new Error("No pending distributed participants found");
+      }
+
+      const updates = distributedParticipants.map((participant) => {
+        return db.workshopParticipant.update({
+          where: { id: participant.id },
+          data: { examinerId: null },
+        });
+      });
+
+      await Promise.all(updates);
+
+      return {
+        message: "Pending distributions removed successfully",
+        count: distributedParticipants.length,
+      };
+    });
+    revalidatePath(pathname);
+    return successResponse(resp?.message, 200, resp);
+  } catch (error) {
+    console.error("Remove Distribution Error:", error);
+    return errorResponse();
+  }
+};
+
+export const removeWorkshopPublishedDistributionsByModerator = async (
+  moderatorId,
+  pathname
+) => {
+  try {
+    const resp = await prisma?.$transaction(async (db) => {
+      const distributedParticipants = await db.workshopParticipant.findMany({
+        where: {
+          examinerId: moderatorId,
+          reviewStatus: "PUBLISHED",
+        },
+      });
+
+      if (!distributedParticipants.length) {
+        throw new Error(
+          "No published distributed participants found for this moderator"
+        );
+      }
+
+      const updates = distributedParticipants.map((participant) => {
+        return db.workshopParticipant.update({
+          where: { id: participant.id },
+          data: { examinerId: null },
+        });
+      });
+
+      await Promise.all(updates);
+
+      return {
+        message:
+          "Published distributions removed successfully for the moderator",
+        count: distributedParticipants.length,
+      };
+    });
+    revalidatePath(pathname);
+    return successResponse(resp.message, 200, resp);
+  } catch (error) {
+    console.error("Remove Distribution Error:", error);
+    return errorResponse();
+  }
+};
+
+export const getWorkshopParticipantDistributionStats = async (workshopId) => {
+  try {
+    const stats = await prisma.$transaction(async (db) => {
+      const undistributedCount = await db.workshopParticipant.count({
+        where: {
+          workshopId,
+          examinerId: null,
+        },
+      });
+
+      const distributedCount = await db.workshopParticipant.count({
+        where: {
+          workshopId,
+          examinerId: { not: null },
+          reviewStatus: { in: ["PENDING"] },
+        },
+      });
+
+      const markedCount = await db.workshopParticipant.count({
+        where: {
+          workshopId,
+          reviewStatus: "MARKED",
+        },
+      });
+
+      const paymentCount = await db.payment.count({
+        where: {
+          WorkshopParticipant: { some: { workshopId } },
+          paymentStatus: false,
+        },
+      });
+
+      return {
+        workshopId,
+        undistributedCount,
+        distributedCount,
+        markedCount,
+        paymentCount,
+      };
+    });
+
+    return successResponse("Success", 200, stats);
+  } catch (error) {
+    console.error("Error fetching distribution stats:", error);
+    return errorResponse();
+  }
+};
+
+export const publishAllWorkshopMarkedParticipants = async (
+  workshopId,
+  pathname
+) => {
+  try {
+    const updated = await prisma.workshopParticipant.updateMany({
+      where: {
+        workshopId,
+        reviewStatus: "MARKED",
+      },
+      data: {
+        reviewStatus: "PUBLISHED",
+      },
+    });
+    revalidatePath(pathname);
+    return successResponse(
+      `${updated.count} participant(s) marked as published.`,
+      200
+    );
+  } catch (error) {
+    console.error("Publish Error:", error);
+    return errorResponse();
+  }
+};
+
+export const markAllWorkshopParticipantsAsPaid = async (
+  workshopId,
+  pathname
+) => {
+  try {
+    const updated = await prisma.payment.updateMany({
+      where: {
+        WorkshopParticipant: { some: { workshopId } },
+      },
+      data: {
+        paymentStatus: true,
+      },
+    });
+    revalidatePath(pathname);
+    return successResponse(
+      `${updated.count} participant(s) marked as paid.`,
+      200
+    );
+  } catch (error) {
+    console.error("Payment Status Update Error:", error);
+    return errorResponse();
+  }
+};
+
 // Only Admin
 export const getWorkshopParticipantsUsingAdminAndModerator = async (
   workshopId,
@@ -632,6 +884,7 @@ export const getWorkshopParticipantsUsingAdminAndModerator = async (
       status = status?.toString()?.toUpperCase();
       const access = ["MARKED", "PENDING", "RECHECK"];
       const isAccess = access?.includes(status);
+      // Moderator not need for Workshop id cause moderator are examiner so just reviewing workshop participant data.
       where = {
         participant: {
           user: {
@@ -656,6 +909,10 @@ export const getWorkshopParticipantsUsingAdminAndModerator = async (
         participant: { include: { user: true } },
       };
       orderBy = { joining: "asc" };
+      if (status === "ALL") {
+        where.reviewStatus = { in: access };
+      }
+      !workshopId && delete where?.workshopId;
     } else {
       status = status?.toString()?.toUpperCase();
       const access = ["MARKED", "PENDING", "RECHECK", "PUBLISHED"];
@@ -680,7 +937,10 @@ export const getWorkshopParticipantsUsingAdminAndModerator = async (
       include = {
         workshop: { include: { modules: { include: { lessons: true } } } },
         payment: true,
-        participant: { include: { user: true } },
+        participant: {
+          include: { user: true },
+        },
+        examiner: { include: { user: true } },
       };
       orderBy = { joining: "asc" };
       if (status === "ALL") {

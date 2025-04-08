@@ -10,6 +10,7 @@ export default async function EventParticipantDashboard({
   params,
   searchParams,
   componentType,
+  isModerator,
 }) {
   const query = searchParams?.q;
   const page = searchParams?.page ? parseInt(searchParams?.page) : 1;
@@ -53,6 +54,7 @@ export default async function EventParticipantDashboard({
         <ParticipantTable
           participants={participants}
           componentType={componentType}
+          isModerator={isModerator}
         />
         <Pagination pagination={pagination} />
       </div>

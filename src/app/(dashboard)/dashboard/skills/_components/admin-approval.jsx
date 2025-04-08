@@ -43,6 +43,9 @@ export default async function AdminApproval({
         return <Badge className="bg-green-500">Approved</Badge>;
       case "REJECTED":
         return <Badge variant="destructive">Rejected</Badge>;
+      case "REVIEWED":
+        return <Badge className="bg-blue-500">Reviewed</Badge>;
+      case "PENDING":
       default:
         return <Badge variant="outline">Pending</Badge>;
     }
@@ -68,6 +71,7 @@ export default async function AdminApproval({
   }
   let distributedCount = null;
   let unassignedCount = null;
+  let reviewedCount = null;
   if (isAdmin) {
     try {
       const resp = await unDistributeCountAndDistributeCount();
@@ -75,6 +79,7 @@ export default async function AdminApproval({
       if (!resp?.error) {
         distributedCount = resp?.data?.distributedCount;
         unassignedCount = resp?.data?.unassignedCount;
+        reviewedCount = resp?.data?.reviewedCount;
       }
     } catch {
       //
@@ -85,7 +90,7 @@ export default async function AdminApproval({
     <div className="space-y-4">
       <div className="relative flex gap-4">
         <SearchAction placeholder={"Search by user or skill..."} />
-        {isAdmin && <FilterAction />}
+        <FilterAction isAdmin={isAdmin} />
       </div>
 
       {isAdmin && (
@@ -93,6 +98,7 @@ export default async function AdminApproval({
           <DistributeAction
             unassignedCount={unassignedCount}
             distributedCount={distributedCount}
+            reviewedCount={reviewedCount}
           />
         </div>
       )}

@@ -1,9 +1,9 @@
 "use client";
 
 import {
-  approveSkillRequest,
   deleteSkillRequest,
   rejectSkillRequest,
+  reviewedSkillRequest,
 } from "@/app/actions/skills";
 import { Button } from "@/components/button";
 import {
@@ -64,7 +64,7 @@ export default function ApprovalActions({ request, isAdmin = false }) {
   const submitAction = async (data) => {
     try {
       if (actionType === "approve") {
-        const resp = await approveSkillRequest(currentRequestId, data?.note);
+        const resp = await reviewedSkillRequest(currentRequestId, data?.note);
         if (resp?.error) {
           throw resp?.message;
         }
@@ -97,10 +97,12 @@ export default function ApprovalActions({ request, isAdmin = false }) {
     }
   };
 
+  const moderatorEditAccess = ["PENDING", "REVIEWED"];
+
   return (
     <>
       <TableCell className="text-right">
-        {!isAdmin && request.status === "PENDING" && (
+        {!isAdmin && moderatorEditAccess.includes(request.status) && (
           <div className="flex justify-end gap-2">
             <Button
               size="sm"
@@ -128,7 +130,7 @@ export default function ApprovalActions({ request, isAdmin = false }) {
             </Button>
           </div>
         )}
-        {isAdmin && (
+        {isAdmin && moderatorEditAccess.includes(request.status) && (
           <div className="flex justify-end gap-2">
             <Button
               size="sm"

@@ -5,6 +5,12 @@ import {
   publishAllEventMarkedParticipants,
   removePendingDistributionsByModerator,
 } from "@/app/actions/events";
+import {
+  distributeAllWorkshopsByModerator,
+  markAllWorkshopParticipantsAsPaid,
+  publishAllWorkshopMarkedParticipants,
+  removeWorkshopPendingDistributionsByModerator,
+} from "@/app/actions/workshops";
 import { Button } from "@/components/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -47,13 +53,14 @@ export default function DistributeAction({ componentType, stats }) {
         return distributeAllEventsByModerator(eventId, pathname);
       }
       async function workshop() {
-        const eventId = params.id;
-        return await distributeAllEventsByModerator(eventId, pathname);
+        const workshopId = params.id;
+        return await distributeAllWorkshopsByModerator(workshopId, pathname);
       }
 
       const processRequest =
-        (await makeRequest(componentType, event)) ||
+        makeRequest(componentType, event) ||
         makeRequest(componentType, workshop);
+      console.log(processRequest);
 
       if (typeof processRequest === "function") {
         resp = await processRequest();
@@ -61,7 +68,9 @@ export default function DistributeAction({ componentType, stats }) {
 
       if (!resp || resp?.error) throw Error();
       toast?.success(resp?.message);
-    } catch {
+    } catch (err) {
+      console.log(err);
+
       toast?.error("Distributing failed!");
     } finally {
       setIsLoading(false);
@@ -76,8 +85,11 @@ export default function DistributeAction({ componentType, stats }) {
         return removePendingDistributionsByModerator(eventId, pathname);
       }
       function workshop() {
-        const eventId = params.id;
-        return removePendingDistributionsByModerator(eventId, pathname);
+        const workshopId = params.id;
+        return removeWorkshopPendingDistributionsByModerator(
+          workshopId,
+          pathname
+        );
       }
 
       const processRequest =
@@ -105,8 +117,8 @@ export default function DistributeAction({ componentType, stats }) {
         return publishAllEventMarkedParticipants(eventId, pathname);
       }
       async function workshop() {
-        const eventId = params.id;
-        return await distributeAllEventsByModerator(eventId, pathname);
+        const workshopId = params.id;
+        return await publishAllWorkshopMarkedParticipants(workshopId, pathname);
       }
 
       const processRequest =
@@ -134,8 +146,8 @@ export default function DistributeAction({ componentType, stats }) {
         return markAllEventParticipantsAsPaid(eventId, pathname);
       }
       async function workshop() {
-        const eventId = params.id;
-        return await distributeAllEventsByModerator(eventId, pathname);
+        const workshopId = params.id;
+        return await markAllWorkshopParticipantsAsPaid(workshopId, pathname);
       }
 
       const processRequest =
@@ -159,7 +171,7 @@ export default function DistributeAction({ componentType, stats }) {
       {/* {undistributedCount !== 0 && ( */}
       <Button
         onClick={() => handleDistribute("distribute")}
-        disabled={isLoading === "removeDistribute"}
+        disabled={isLoading === "removeDistribute" || undistributedCount === 0}
         variant="outline"
         size="sm"
       >
@@ -175,7 +187,7 @@ export default function DistributeAction({ componentType, stats }) {
       {/* {distributedCount !== 0 && ( */}
       <Button
         onClick={() => handleDistributeRemove("removeDistribute")}
-        disabled={isLoading === "removeDistribute"}
+        disabled={isLoading === "removeDistribute" || distributedCount === 0}
         variant="outline"
         size="sm"
       >

@@ -7,7 +7,10 @@ import Pagination from "@/components/common/Pagination";
 import FilterAction from "./_components/filter";
 import MarkingAction from "./_components/marking";
 
-export default async function SubmissionsPage({ searchParams: searchParam }) {
+export default async function SubmissionsPage({
+  searchParams: searchParam,
+  isModerator,
+}) {
   const searchParams = await searchParam;
 
   const query = searchParams.q;
@@ -40,10 +43,18 @@ export default async function SubmissionsPage({ searchParams: searchParam }) {
         View and manage all assignment submissions.
       </p>
       <div className="flex flex-col md:flex-row gap-4">
-        <FilterAction placeholder={"Search Assignment...."} />
-        <MarkingAction counts={counts} />
+        <FilterAction
+          placeholder={"Search Assignment...."}
+          isModerator={isModerator}
+        />
+        {!isModerator && <MarkingAction counts={counts} />}
       </div>
-      <SubmissionsTable submissions={submissions} />
+      <SubmissionsTable
+        submissions={submissions}
+        isModerator={isModerator}
+        page={page}
+        limit={limit}
+      />
       <Pagination pagination={pagination} />
     </div>
   );

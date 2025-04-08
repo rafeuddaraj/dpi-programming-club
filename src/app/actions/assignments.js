@@ -142,6 +142,9 @@ export const getAssignmentSubmissionUnMarking = async (
   page,
   limit
 ) => {
+  const session = await auth();
+  const user = session?.user;
+  const role = user?.role;
   const where = query
     ? {
         assignment: { name: { contains: query, mode: "insensitive" } },
@@ -155,11 +158,14 @@ export const getAssignmentSubmissionUnMarking = async (
         lessons: { include: { module: { include: { workshop: true } } } },
       },
     }, // Include assignment details
-    user: true, // Include user details
-    examiner: true,
+    user: { include: { user: true } }, // Include user details
+    examiner: { include: { user: true } },
   };
 
   try {
+    if (role === "moderator") {
+      where.examinerId = user?.id;
+    }
     const resp = await commonGet(
       "assignmentSubmission",
       where,
@@ -214,9 +220,13 @@ export const getAssignmentSubmissionById = async (id) => {
         id,
       },
       include: {
-        assignment: true,
+        assignment: {
+          include: {
+            lessons: { include: { module: { include: { workshop: true } } } },
+          },
+        },
         user: { include: { user: true } },
-        examiner: true,
+        examiner: { include: { user: { include: { user: true } } } },
       },
     });
 
@@ -240,12 +250,9 @@ export const adminAssignmentMarkSubmission = async (submissionId, data) => {
   try {
     const session = await auth();
     const user = session?.user || {};
-
-    if (!user || user.role !== "admin") {
-      return errorResponse("Unauthorized access", 403);
-    }
-
+    const role = user?.role;
     // Extract data from request
+    data.status = role === "admin" ? data?.status : "MARKED";
     const { marks, status, feedback } = data;
 
     // Find the existing submission
@@ -264,7 +271,6 @@ export const adminAssignmentMarkSubmission = async (submissionId, data) => {
         marks,
         status,
         feedback,
-        examinerId: user.id, // Assigning examiner as current user
         updatedAt: new Date(),
       },
     });
@@ -303,7 +309,7 @@ export const publishedAllMarkedAssignments = async () => {
 export const distributeAllAssignments = async () => {
   try {
     const examiners = await prisma.user.findMany({
-      where: { examiner: true },
+      where: { examiner: true, role: "moderator" },
       select: { id: true, user: true },
     });
 
