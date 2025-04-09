@@ -73,6 +73,14 @@ export default function MarkSubmissionForm({
         description: "The submission has been successfully marked.",
       });
       router.refresh();
+      router.push(
+        isAdmin
+          ? `/dashboard/assignments/submissions?status=all`
+          : `/dashboard/assignments?status=all`,
+        {
+          scroll: true,
+        }
+      );
     } catch (error) {
       toast({
         title: "Error",

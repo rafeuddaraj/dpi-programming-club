@@ -1,5 +1,4 @@
 "use server";
-
 import prisma from "@/lib/prisma";
 import { isExpiredDate } from "@/lib/utils";
 import { errorResponse, successResponse } from "@/utils/req-res";
@@ -134,7 +133,9 @@ export const refreshTokenAction = async (data) => {
       refreshToken,
     });
   } catch (err) {
-    return null;
+    console.log("Refresh Token Error:", err);
+
+    return errorResponse();
   }
 };
 

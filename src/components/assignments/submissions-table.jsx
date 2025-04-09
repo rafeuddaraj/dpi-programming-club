@@ -62,13 +62,13 @@ export default function SubmissionTable({
 
   return (
     <div className="space-y-4 my-5">
-      <div className="rounded-lg border overflow-hidden bg-card p-4">
+      <div className="rounded-lg border overflow-hidden bg-card">
         <div className="overflow-x-auto select-none">
           <Table>
             <TableHeader className="bg-muted/50 rounded-md">
               <TableRow className="hover:bg-transparent">
                 <TableHead className="rounded-tl-md">Index</TableHead>
-                <TableHead className="rounded-tl-md">Assignment</TableHead>
+                <TableHead>Assignment</TableHead>
                 <TableHead>Student</TableHead>
                 {!isModerator && <TableHead>Examiner</TableHead>}
                 <TableHead>Timeline</TableHead>

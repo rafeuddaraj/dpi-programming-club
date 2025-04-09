@@ -67,11 +67,13 @@ export default function NoticeTable({ notices, pagination }) {
   return (
     <>
       <div className="border rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto select-none">
           <Table>
             <TableHeader>
               <TableRow>
-                {!isDashboard && <TableHead>Index</TableHead>}
+                {!isDashboard && (
+                  <TableHead className="text-center">Index</TableHead>
+                )}
                 <TableHead>Title</TableHead>
                 <TableHead className="hidden md:table-cell">
                   Published
@@ -86,7 +88,9 @@ export default function NoticeTable({ notices, pagination }) {
             <TableBody>
               {notices.map((notice, index) => (
                 <TableRow key={notice.id}>
-                  {!isDashboard && <TableCell>{index + 1}</TableCell>}
+                  {!isDashboard && (
+                    <TableCell className="text-center">{index + 1}</TableCell>
+                  )}
                   <TableCell className="font-medium">
                     <div className="flex flex-col">
                       <span>{notice.name}</span>
