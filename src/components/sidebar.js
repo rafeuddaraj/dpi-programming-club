@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   LogOut,
   Settings,
+  UserCheck,
   UserCog2,
   UserCog2Icon,
   Users,
@@ -37,6 +38,12 @@ export default function Sidebar({ isMobile = false, user }) {
       name: "Users",
       href: "/dashboard/users",
       icon: Users,
+      isModerate: false,
+    },
+    {
+      name: "Sessions",
+      href: "/dashboard/sessions",
+      icon: UserCheck,
       isModerate: false,
     },
     {
