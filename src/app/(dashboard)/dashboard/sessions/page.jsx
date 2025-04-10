@@ -15,7 +15,7 @@ export default async function SessionsPage({ searchParams: searchParam }) {
   let pagination = null;
   const searchParams = await searchParam;
   const page = parseInt(searchParams?.page) || 1;
-  const limit = parseInt(searchParams?.limit) || 1;
+  const limit = parseInt(searchParams?.limit) || 10;
   const query = searchParams?.q;
   try {
     const resp = await getAllSessions(query, page, limit);
