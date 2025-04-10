@@ -24,13 +24,10 @@ import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const makeRequest = (componentType, callback) => {
+const makeRequest = (componentType, callbacks = {}) => {
   componentType = new String(componentType).toLowerCase();
-  const callbackName = callback?.name;
-  if (componentType === callbackName) {
-    return callback;
-  }
-  return null;
+  const callback = callbacks[componentType];
+  return callback || null;
 };
 
 export default function DistributeAction({ componentType, stats }) {
@@ -57,11 +54,7 @@ export default function DistributeAction({ componentType, stats }) {
         return await distributeAllWorkshopsByModerator(workshopId, pathname);
       }
 
-      const processRequest =
-        makeRequest(componentType, event) ||
-        makeRequest(componentType, workshop);
-      console.log(processRequest);
-
+      const processRequest = makeRequest(componentType, { event, workshop });
       if (typeof processRequest === "function") {
         resp = await processRequest();
       }
@@ -69,8 +62,6 @@ export default function DistributeAction({ componentType, stats }) {
       if (!resp || resp?.error) throw Error();
       toast?.success(resp?.message);
     } catch (err) {
-      console.log(err);
-
       toast?.error("Distributing failed!");
     } finally {
       setIsLoading(false);
@@ -92,16 +83,17 @@ export default function DistributeAction({ componentType, stats }) {
         );
       }
 
-      const processRequest =
-        (await makeRequest(componentType, event)) ||
-        makeRequest(componentType, workshop);
+      const processRequest = makeRequest(componentType, {
+        event,
+        workshop,
+      });
 
       if (typeof processRequest === "function") {
         resp = await processRequest();
       }
       if (!resp || resp?.error) throw Error();
       toast?.success(resp?.message);
-    } catch {
+    } catch (err) {
       toast?.error("Distributing failed!");
     } finally {
       setIsLoading(null);
@@ -121,9 +113,7 @@ export default function DistributeAction({ componentType, stats }) {
         return await publishAllWorkshopMarkedParticipants(workshopId, pathname);
       }
 
-      const processRequest =
-        makeRequest(componentType, event) ||
-        makeRequest(componentType, workshop);
+      const processRequest = makeRequest(componentType, { event, workshop });
 
       if (typeof processRequest === "function") {
         resp = await processRequest();
@@ -150,9 +140,7 @@ export default function DistributeAction({ componentType, stats }) {
         return await markAllWorkshopParticipantsAsPaid(workshopId, pathname);
       }
 
-      const processRequest =
-        makeRequest(componentType, event) ||
-        makeRequest(componentType, workshop);
+      const processRequest = makeRequest(componentType, { event, workshop });
 
       if (typeof processRequest === "function") {
         resp = await processRequest();
