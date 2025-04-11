@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteManagementMember } from "@/app/actions/managements";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,8 +19,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { isExpiredDate } from "@/lib/utils";
+import { getInitials } from "@/utils/get-initial";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
@@ -63,13 +64,15 @@ export default function MemberList({ members, yearId, page, limit }) {
                 {(page - 1) * limit + 1 + index}
               </TableCell>
               <TableCell>
-                <Image
-                  src={member?.user?.user?.avatar || "/avatar.svg"}
-                  alt={member?.user?.user?.name || "User name"}
-                  width={40}
-                  height={40}
-                  className="rounded-full"
-                />
+                <Avatar>
+                  <AvatarImage
+                    src={member?.user?.avatar || "/avatar.svg"}
+                    alt={member?.user?.user?.name || "User name"}
+                  />
+                  <AvatarFallback>
+                    {getInitials(member?.user?.user?.name)}
+                  </AvatarFallback>
+                </Avatar>
               </TableCell>
               <TableCell className="font-medium">
                 {member?.user?.user?.rollNo}

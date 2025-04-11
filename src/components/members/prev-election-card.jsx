@@ -19,7 +19,7 @@ import {
 
 export default function PrevElectionCard({ election }) {
   const [isOpen, setIsOpen] = useState(false);
-
+  election?.members?.sort((a, b) => a?.role?.value - b?.role?.value);
   return (
     <Card className="overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md">
       <CardHeader className="p-6 bg-muted/50">

@@ -95,6 +95,8 @@ export default async function FeaturedElection() {
     election.endingDate
   );
 
+  election?.members?.sort((a, b) => a?.role?.value - b?.role?.value);
+
   return (
     <div className="space-y-8">
       <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md border border-gray-200 dark:border-gray-700 p-6 mb-8">
