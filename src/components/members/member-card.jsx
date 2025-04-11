@@ -31,6 +31,7 @@ export default function MemberCard({ member }) {
   const genderBadgeColor = member?.user?.gender
     ? getGenderBadgeColor(member?.user?.gender)
     : "";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -52,7 +53,7 @@ export default function MemberCard({ member }) {
                 <div className="relative">
                   <Avatar className="h-16 w-16 border-2 border-primary/20">
                     <AvatarImage
-                      src={member?.user?.avatar}
+                      src={member?.avatar}
                       alt={member?.user?.name}
                     />
                     <AvatarFallback>
