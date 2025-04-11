@@ -23,7 +23,7 @@ export default function Info({ user, approvedSkills }) {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Approved Skills</CardTitle>
+            <CardTitle>Approved Skills {approvedSkills?.length || 0}</CardTitle>
             <CardDescription>Skills you have been approved for</CardDescription>
           </CardHeader>
           <SkillsDisplay skills={approvedSkills} />

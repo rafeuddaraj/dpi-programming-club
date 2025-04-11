@@ -167,3 +167,7 @@ body {
 .feedbackMdPreview ui {
   list-style: inherit !important;
 }
+
+/* .my-masonry-grid_column {
+  background-clip: padding-box;
+} */
