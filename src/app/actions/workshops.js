@@ -346,7 +346,7 @@ export const enrollWorkshop = async (
     });
 
     if (isPremium) {
-      console.log("I am Called");
+      // console.log("I am Called");
 
       if (
         currentWorkshop.totalSeats > bookedSeat?.length ||
@@ -481,7 +481,7 @@ export const getModuleAndLesson = async (workshopId, lessonId) => {
     });
     return successResponse("success", 200, lesson);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
 
     return errorResponse();
   }

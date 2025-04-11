@@ -8,10 +8,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import { Moon, Sun } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
@@ -28,6 +30,14 @@ const navItems = [
 export function Navbar({ user }) {
   const [isOpen, setIsOpen] = useState(false);
   const { setTheme } = useTheme();
+  const pathname = usePathname();
+
+  const isActive = (href) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+    return pathname.startsWith(href) && pathname !== "/";
+  };
 
   return (
     <nav className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b border-border/40">
@@ -43,7 +53,10 @@ export function Navbar({ user }) {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="text-foreground/60 hover:text-foreground px-3 py-2 rounded-md text-sm font-medium"
+                    className={cn(
+                      "text-foreground/60 hover:text-foreground px-3 py-2 rounded-md text-sm font-medium",
+                      isActive(item.href) ? "!text-blue-400" : ""
+                    )}
                   >
                     {item.name}
                   </Link>
@@ -114,7 +127,10 @@ export function Navbar({ user }) {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-foreground/60 hover:text-foreground block px-3 py-2 rounded-md text-base font-medium"
+                className={cn(
+                  `text-foreground/60 hover:text-foreground block px-3 py-2 rounded-md text-base font-medium`,
+                  isActive(item.href) ? "!text-blue-400" : ""
+                )}
                 onClick={() => setIsOpen(false)}
               >
                 {item.name}

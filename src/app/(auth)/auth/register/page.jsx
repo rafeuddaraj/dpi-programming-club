@@ -3,19 +3,20 @@ import { isExpiredDate } from "@/lib/utils";
 import RegistrationClosed from "./_components/registration-close";
 import RegisterForm from "./_components/registration-form";
 
-
 export default async function page() {
-  const resp = await getSettings()
+  const resp = await getSettings();
   if (resp?.error) {
-    throw Error()
+    throw Error();
   }
-  const settings = resp?.data
-  console.log(settings?.registrationDeadline);
+  const settings = resp?.data;
 
   return (
     <>
-      {isExpiredDate(settings?.registrationDeadline) ? <RegistrationClosed settings={settings} /> : <RegisterForm />}
-
+      {isExpiredDate(settings?.registrationDeadline) ? (
+        <RegistrationClosed settings={settings} />
+      ) : (
+        <RegisterForm />
+      )}
     </>
   );
 }

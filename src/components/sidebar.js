@@ -16,6 +16,7 @@ import {
   UserCog2,
   UserCog2Icon,
   Users,
+  Vote,
   Wrench,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
@@ -44,6 +45,12 @@ export default function Sidebar({ isMobile = false, user }) {
       name: "Sessions",
       href: "/dashboard/sessions",
       icon: UserCheck,
+      isModerate: false,
+    },
+    {
+      name: "Managements",
+      href: "/dashboard/managements",
+      icon: Vote,
       isModerate: false,
     },
     {

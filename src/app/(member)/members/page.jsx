@@ -1,11 +1,8 @@
-"use client"
-
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { totalMemberCount } from "@/app/actions/users";
+import { MotionDiv } from "@/components/common/motion";
+import MemberList from "@/components/members/member-list";
+import SearchAction from "@/components/notice/search";
+import PageHeader from "./page-header";
 
 // Mock data for members
 const members = [
@@ -37,82 +34,34 @@ const members = [
     skills: ["UI/UX Design", "JavaScript", "PHP"],
   },
   // Add more members as needed
-]
+];
 
-export default function MembersPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-
-  const filteredMembers = members.filter(
-    (member) =>
-      member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.skills.some((skill) => skill.toLowerCase().includes(searchTerm.toLowerCase())),
-  )
+export default async function MembersPage({ searchParams: searchParam }) {
+  const searchParams = await searchParam;
+  const query = searchParams?.q;
+  const totalMembers = await totalMemberCount();
 
   return (
     <div className="container mx-auto py-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <h1 className="text-3xl font-bold mb-8 text-center">All Members</h1>
-        <Input
-          type="search"
-          placeholder="Search members by name, department, or skills..."
-          className="mb-8"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+      <PageHeader
+        title="Our Vibrant Club Members"
+        description="Meet the passionate and diverse individuals who make our club truly special. From dedicated learners to inspiring leaders, every member brings unique energy and enthusiasm to our community."
+        memberCount={totalMembers}
+        foundingYear={2025}
+      />
+      <MotionDiv
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <SearchAction
+          placeholder="Search members by name, roll...."
+          className={"w-full"}
         />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredMembers.map((member) => (
-            <MemberCard key={member.id} member={member} />
-          ))}
+        <div className="space-y-16 mt-5">
+          <MemberList members={members} query={query} />
         </div>
-      </motion.div>
+      </MotionDiv>
     </div>
-  )
+  );
 }
-
-function MemberCard({ member }) {
-  return (
-    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}>
-      <Card className="overflow-hidden">
-        <CardHeader className="pb-0">
-          <div className="flex items-center space-x-4">
-            <Avatar className="w-16 h-16">
-              <AvatarImage src={member.image} alt={member.name} />
-              <AvatarFallback>
-                {member.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <CardTitle>{member.name}</CardTitle>
-              <p className="text-sm text-muted-foreground">{member.role}</p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="mt-2">
-            <p className="text-sm">
-              <strong>Department:</strong> {member.department}
-            </p>
-            <p className="text-sm">
-              <strong>Year:</strong> {member.year}
-            </p>
-          </div>
-          <div className="mt-4">
-            <p className="text-sm font-semibold mb-2">Skills:</p>
-            <div className="flex flex-wrap gap-2">
-              {member.skills.map((skill, index) => (
-                <Badge key={index} variant="secondary">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
-  )
-}
-

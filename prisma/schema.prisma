@@ -61,6 +61,7 @@ model User {
   skills                UserSkills[]
   skillsReviewer        UserSkills[]           @relation("Examiner")
   workshopReviewer      WorkshopParticipant[]  @relation("Examiner")
+  electionMembers       ElectionMember[]
 }
 
 model Skills {
@@ -444,4 +445,35 @@ model Results {
   updatedAt  DateTime    @updatedAt()
 
   @@index([roll], map: "roll_1")
+}
+
+// Election Managements 
+model Elections {
+  id           String           @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  startingDate DateTime
+  endingDate   DateTime
+  pin          Boolean          @default(false)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt()
+  roles        Json[]           @default([])
+  members      ElectionMember[]
+}
+
+type electionMemberRole {
+  value Int
+  name  String
+}
+
+model ElectionMember {
+  id         String             @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String             @db.ObjectId
+  user       User               @relation(fields: [userId], references: [id])
+  role       electionMemberRole // 1 for President, 2 for Vice President, 3 for General Secretary
+  electionId String             @db.ObjectId
+  election   Elections          @relation(fields: [electionId], references: [id])
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt()
+
+  @@unique([electionId, userId])
 }

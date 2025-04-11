@@ -8,8 +8,10 @@ import { auth } from "../auth";
 
 export const getUserById = async (id, select = {}, include = {}) => {
   try {
-    const user = await prisma.user.findFirst({
-      where: { OR: [{ id }, { user: { rollNo: id } }] },
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
       ...(include && { include }),
     });
 
@@ -181,5 +183,73 @@ export const createUser = async (data) => {
     console.log(err);
 
     return errorResponse();
+  }
+};
+
+export const getAllUserWithoutManagement = async (
+  query,
+  page = 1,
+  limit = 12
+) => {
+  try {
+    const where = {
+      user: {
+        OR: [
+          { name: { contains: query || "", mode: "insensitive" } },
+          { email: { contains: query || "", mode: "insensitive" } },
+          { phoneNumber: { contains: query || "", mode: "insensitive" } },
+          { rollNo: { contains: query || "", mode: "insensitive" } },
+        ],
+      },
+      role: "member",
+    };
+    const select = {
+      id: true,
+      avatar: true,
+      skills: {
+        select: {
+          skill: {
+            select: {
+              name: true,
+              id: true,
+            },
+          },
+          status: true,
+        },
+      },
+      user: {
+        select: {
+          name: true,
+          department: true,
+          semester: true,
+          gender: true,
+          rollNo: true,
+          session: true,
+          shift: true,
+        },
+      },
+    };
+    const resp = await commonGet(
+      "user",
+      where,
+      {},
+      page,
+      limit,
+      { createdAt: "desc" },
+      select
+    );
+    return successResponse("done", 200, resp);
+  } catch (err) {
+    console.log(err);
+
+    return errorResponse();
+  }
+};
+
+export const totalMemberCount = async () => {
+  try {
+    return await prisma.user.count({ where: { role: "member" } });
+  } catch {
+    return 0;
   }
 };

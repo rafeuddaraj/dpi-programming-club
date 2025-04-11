@@ -47,14 +47,13 @@ export default async function ProfilePage({ searchParams }) {
   } catch {
     //
   }
-
   if (userData?.error || activities?.error) {
     throw Error("User not found");
   }
 
   let approvedSkills = [];
   try {
-    const resp = await getAllApprovedSkillsByUser();
+    const resp = await getAllApprovedSkillsByUser(userId);
     if (!resp?.error) {
       approvedSkills = resp?.data;
     }

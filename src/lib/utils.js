@@ -40,20 +40,25 @@ export const commonGet = async (
   include = {},
   page = 1,
   pageSize = 10,
-  orderBy = {}
+  orderBy = {},
+  select
 ) => {
   try {
     const skip = (page - 1) * pageSize;
     const take = pageSize;
-
-    // Fetch paginated results
-    const results = await prisma[model].findMany({
+    const data = {
       where,
       include,
       skip,
       take,
       orderBy,
-    });
+    };
+    if (select) {
+      delete data.include;
+      data.select = select;
+    }
+    // Fetch paginated results
+    const results = await prisma[model].findMany(data);
 
     // Get total count for pagination
     const totalCount = await prisma[model].count({ where });

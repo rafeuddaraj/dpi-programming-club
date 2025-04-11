@@ -402,18 +402,19 @@ export const getAllSkillRequestsByUserId = async (userId) => {
   }
 };
 
-export const getAllApprovedSkillsByUser = async () => {
+export const getAllApprovedSkillsByUser = async (userId) => {
   try {
     const session = await auth();
     const user = session?.user || null;
-    if (!user) {
+    const usrId = userId || user?.id;
+    if (!usrId) {
       return errorResponse({
         message: "Unauthorized",
         status: 401,
       });
     }
     const skills = await prisma.userSkills.findMany({
-      where: { userId: user?.id, status: "APPROVED" },
+      where: { userId: usrId, status: "APPROVED" },
       include: { skill: true },
     });
     return successResponse("Approved skills fetched", 200, skills);
