@@ -59,7 +59,7 @@ export default function NoticeForm({ notice }) {
       router.refresh();
       toast.success("Notice saved successfully");
     } catch (error) {
-      console.error("Failed to save notice:", error);
+      // console.error("Failed to save notice:", error);
       toast.error("Failed to save notice");
     }
   };

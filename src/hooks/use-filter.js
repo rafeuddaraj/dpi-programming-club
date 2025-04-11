@@ -16,5 +16,5 @@ export const useFilter = () => {
     }
     replace(`${pathname}?${params.toString()}`);
   };
-  return { onUpdate };
+  return { onUpdate, searchParams: params };
 };

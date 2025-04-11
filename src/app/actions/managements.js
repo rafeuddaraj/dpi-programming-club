@@ -54,7 +54,7 @@ export const updatePin = async (id, pinStatus) => {
 export const getAllManagements = async (query, page, limit) => {
   try {
     const where = { name: { contains: query || "", mode: "insensitive" } };
-    const orderBy = { startingDate: "desc" };
+    const orderBy = { createdAt: "desc" };
     const resp = await commonGet(
       "elections",
       where,
@@ -170,5 +170,70 @@ export const getUserByRoll = async (rollNo, electionId) => {
     console.log(err);
 
     return errorResponse(err?.message);
+  }
+};
+
+// Getting public
+
+export const getPinnedManagementTeam = async () => {
+  try {
+    const today = new Date();
+    const resp = await prisma.elections.findFirst({
+      where: { pin: true, endingDate: { gt: today } },
+      include: {
+        members: {
+          include: {
+            user: {
+              include: {
+                user: true,
+                skills: {
+                  select: { skill: { select: { name: true } }, status: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    return successResponse("Fetch success", 200, resp);
+  } catch {
+    return errorResponse();
+  }
+};
+export const getAllManagementTeam = async (query, page, limit) => {
+  try {
+    const today = new Date();
+    const where = {
+      endingDate: {
+        lt: today,
+      },
+      name: { contains: query || "", mode: "insensitive" },
+    };
+    const include = {
+      members: {
+        include: {
+          user: {
+            include: {
+              user: true,
+              skills: {
+                select: { skill: { select: { name: true } }, status: true },
+              },
+            },
+          },
+        },
+      },
+    };
+    const orderby = { endingDate: "desc" };
+    const resp = await commonGet(
+      "elections",
+      where,
+      include,
+      page,
+      limit,
+      orderby
+    );
+    return successResponse("Fetch success", 200, resp);
+  } catch {
+    return errorResponse();
   }
 };

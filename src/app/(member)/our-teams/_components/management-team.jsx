@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { managementTeam, predefinedRoles } from "@/lib/data";
+import { managementTeam } from "@/lib/data";
 import { motion } from "framer-motion";
 import {
   Award,
@@ -17,6 +17,7 @@ import {
   Timer,
 } from "lucide-react";
 import { useState } from "react";
+import Masonry from "react-masonry-css";
 
 function calculateTermProgress(startDate, endDate) {
   const start = new Date(startDate).getTime();
@@ -79,15 +80,34 @@ function getRoleName(roleId) {
   return role ? role.name : "Member";
 }
 
+function getGenderBadgeColor(gender) {
+  return gender === "Male"
+    ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+    : "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300";
+}
+
+// Breakpoint columns for the masonry layout
+const breakpointColumnsObj = {
+  default: 2,
+  1100: 2,
+  700: 1,
+};
+
 export default function ManagementTeam() {
   return (
     <div className="space-y-8">
       <h2 className="text-2xl font-bold text-center">Management Team</h2>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <Masonry
+        breakpointCols={breakpointColumnsObj}
+        className="flex w-auto -ml-4"
+        columnClassName="pl-4 bg-clip-padding"
+      >
         {managementTeam.map((member) => (
-          <ManagementMemberCard key={member.id} member={member} />
+          <div key={member.id} className="mb-4">
+            <ManagementMemberCard member={member} />
+          </div>
         ))}
-      </div>
+      </Masonry>
     </div>
   );
 }
@@ -97,6 +117,7 @@ function ManagementMemberCard({ member }) {
   const termProgress = calculateTermProgress(member.startTime, member.endTime);
   const roleGradient = getRoleColor(member.roleId);
   const roleName = getRoleName(member.roleId);
+  const genderBadgeColor = getGenderBadgeColor(member.gender);
 
   return (
     <motion.div
@@ -115,12 +136,19 @@ function ManagementMemberCard({ member }) {
         <CardHeader className={`bg-gradient-to-r ${roleGradient} p-6`}>
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <Avatar className="h-20 w-20 border-4 border-white/30 shadow-md">
-                <AvatarImage src={member.avatar} alt={member.name} />
-                <AvatarFallback className="text-lg">
-                  {member.name.substring(0, 2)}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar className="h-20 w-20 border-4 border-white/30 shadow-md">
+                  <AvatarImage src={member.avatar} alt={member.name} />
+                  <AvatarFallback className="text-lg">
+                    {member.name.substring(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                <div
+                  className={`absolute -bottom-1 -right-1 rounded-full px-2 py-0.5 text-xs font-medium ${genderBadgeColor}`}
+                >
+                  {member.gender}
+                </div>
+              </div>
               <div className="text-white">
                 <h3 className="text-xl font-bold">{member.name}</h3>
                 <div className="flex items-center mt-1">

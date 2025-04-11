@@ -16,13 +16,21 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
+function getGenderBadgeColor(gender) {
+  return gender.toLowerCase() === "male"
+    ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+    : "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300";
+}
+
 export default function MemberCard({ member }) {
   const [isHovered, setIsHovered] = useState(false);
   const skills =
     member?.skills
       ?.filter((skill) => skill?.status === "APPROVED")
       .map((item) => item?.skill) || [];
-
+  const genderBadgeColor = member?.user?.gender
+    ? getGenderBadgeColor(member?.user?.gender)
+    : "";
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -41,12 +49,24 @@ export default function MemberCard({ member }) {
           <CardContent className="p-6">
             <div className="flex flex-col space-y-4">
               <div className="flex items-center space-x-4">
-                <Avatar className="h-16 w-16 border-2 border-primary/20">
-                  <AvatarImage src={member?.avatar} alt={member?.user?.name} />
-                  <AvatarFallback>
-                    {member?.user?.name?.substring(0, 2)}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="h-16 w-16 border-2 border-primary/20">
+                    <AvatarImage
+                      src={member?.user?.avatar}
+                      alt={member?.user?.name}
+                    />
+                    <AvatarFallback>
+                      {member?.user?.name.substring(0, 2)}
+                    </AvatarFallback>
+                  </Avatar>
+                  {member?.user?.gender && (
+                    <div
+                      className={`absolute -bottom-1 -right-1 rounded-full px-2 py-0.5 text-xs font-medium ${genderBadgeColor}`}
+                    >
+                      {member?.user?.gender}
+                    </div>
+                  )}
+                </div>
 
                 <div>
                   <h3 className="text-lg font-semibold">

@@ -23,6 +23,7 @@ const navItems = [
   { name: "Workshops", href: "/workshops" },
   { name: "Results", href: "/bteb-results" },
   { name: "Members", href: "/members" },
+  { name: "Our Teams", href: "/our-teams" },
   { name: "Notice", href: "/notice" },
   { name: "Gallery", href: "/gallery" },
 ];
