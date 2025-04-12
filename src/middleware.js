@@ -35,11 +35,7 @@ export default auth((request) => {
 
   // If user is logged in but doesn't have permission for this route
   if (matchedRoute && !matchedRoute.roles.includes(user?.role)) {
-    if (user?.role === "admin" || user?.role === "moderator") {
-      return Response.redirect(new URL("/dashboard", nextUrl)); // admin or moderator redirects to dashboard
-    } else if (user?.role === "member") {
-      return Response.redirect(new URL("/profile", nextUrl)); // member redirects to profile
-    }
+    return Response.redirect(new URL("/dashboard", nextUrl));
   }
 
   // Allow access to the route if all checks pass

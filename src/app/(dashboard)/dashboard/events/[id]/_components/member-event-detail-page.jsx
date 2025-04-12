@@ -9,7 +9,7 @@ import { format } from "date-fns";
 import { ArrowLeft, Clock, DollarSign, MapPin } from "lucide-react";
 import Link from "next/link";
 
-export default async function EventDetailsPage({ params }) {
+export default async function MemberEventDetailsPage({ params }) {
   const param = await params;
   const { user } = (await auth()) || {};
 
@@ -49,7 +49,7 @@ export default async function EventDetailsPage({ params }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Link href="/profile/dashboard/events">
+        <Link href="/dashboard/events">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Events
@@ -122,7 +122,7 @@ export default async function EventDetailsPage({ params }) {
                 {event.author}
               </p>
               {isExpiredDate(event?.endTime) && (
-                <Link href={`/profile/dashboard/events/${event?.id}/result`}>
+                <Link href={`/dashboard/events/${event?.id}/result`}>
                   <Button size="lg">Result</Button>
                 </Link>
               )}

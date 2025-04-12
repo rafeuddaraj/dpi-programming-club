@@ -1,21 +1,26 @@
 export const routeAccessMap = [
   // Public Routes
   {
-    paths: ["/auth/login", "/auth/register", "/about", "/contact"],
+    paths: ["/auth/login", "/auth/register"],
     roles: [], // No role needed
     isPrivate: false, // Public route
   },
 
-  // Admin Routes
   {
     paths: [
       "/dashboard",
       "/dashboard/events",
-      "/dashboard/events/:id",
       "/dashboard/workshops",
-      "/dashboard/workshops/:id",
       "/dashboard/skills",
       "/dashboard/assignments",
+    ],
+    roles: ["admin", "moderator", "member"],
+    isPrivate: true, // Admin can access all of these
+  },
+  {
+    paths: [
+      "/dashboard/events/:id",
+      "/dashboard/workshops/:id",
       "/dashboard/assignments/submissions/:id",
       "/dashboard/member-collect",
       "/dashboard/member-collect/add",
@@ -24,7 +29,6 @@ export const routeAccessMap = [
     isPrivate: true, // Admin can access all of these
   },
 
-  // Moderator Routes
   {
     paths: [
       "/dashboard/users",
@@ -37,7 +41,6 @@ export const routeAccessMap = [
       "/dashboard/notice",
       "/dashboard/notice/create",
       "/dashboard/results",
-      "/dashboard/settings",
       "/dashboard/events/create",
       "/dashboard/events/:id",
       "/dashboard/events/:id/edit",
@@ -58,6 +61,11 @@ export const routeAccessMap = [
     roles: ["admin"],
     isPrivate: true,
   },
+  {
+    paths: ["/settings"],
+    roles: ["admin", "members"],
+    isPrivate: true,
+  },
 
   // Profile Route
   {
@@ -66,7 +74,7 @@ export const routeAccessMap = [
     isPrivate: false,
   },
   {
-    paths: ["/profile/edit", "/profile/dashboard"],
+    paths: ["/profile/edit"],
     roles: ["member"],
     isPrivate: true,
   },

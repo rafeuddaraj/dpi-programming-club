@@ -1,3 +1,5 @@
+import ComingSoon from "@/components/common/coming-soon";
+
 export default function MemberAssignmentPage() {
-  return <>Working....</>;
+  return <ComingSoon title="Assignments" />;
 }

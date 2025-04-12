@@ -57,7 +57,7 @@ export const createSkillRequest = async (data) => {
     const skillRequest = await prisma.userSkills.createMany({
       data,
     });
-    revalidatePath("/profile/dashboard/skills");
+    revalidatePath("/dashboard/skills");
     return successResponse(
       "Skill request created successfully",
       200,
@@ -94,7 +94,7 @@ export const reSubmitSkillRequest = async (id, reason) => {
       where: { id, userId: user?.id },
       data: { status: "PENDING", reason },
     });
-    revalidatePath("/profile/dashboard/skills");
+    revalidatePath("/dashboard/skills");
     return skillRequest;
   } catch (error) {
     return errorResponse({

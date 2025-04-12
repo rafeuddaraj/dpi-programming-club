@@ -208,13 +208,7 @@ function ProfileDropdown({ user }) {
           <Link href="/profile">Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link
-            href={`${
-              user?.role === "admin" ? "/dashboard" : "/profile/dashboard"
-            }`}
-          >
-            Dashboard
-          </Link>
+          <Link href={"/dashboard"}>Dashboard</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

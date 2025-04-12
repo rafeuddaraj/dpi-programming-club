@@ -62,7 +62,7 @@ export default function MemberCard({ member }) {
                   </Avatar>
                   {member?.user?.gender && (
                     <div
-                      className={`absolute -bottom-1 -right-1 rounded-full px-2 py-0.5 text-xs font-medium ${genderBadgeColor}`}
+                      className={`absolute -bottom-1 -right-1 rounded-full px-2 py-0.5 text-xs font-medium ${genderBadgeColor} capitalize`}
                     >
                       {member?.user?.gender}
                     </div>

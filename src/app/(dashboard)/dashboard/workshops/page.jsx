@@ -1,6 +1,6 @@
 import { auth } from "@/app/auth";
 import AdminWorkshopPage from "./_components/admin-workshop";
-import MemberWorkshop from "./_components/member-workshop";
+import MemberWorkshopPage from "./_components/member-workshop";
 import ModeratorWorkshop from "./_components/moderator-workshop";
 
 export default async function WorkshopPage({ searchParams, params }) {
@@ -16,7 +16,7 @@ export default async function WorkshopPage({ searchParams, params }) {
       ) : isModerator ? (
         <ModeratorWorkshop searchParams={searchParams} params={params} />
       ) : (
-        <MemberWorkshop searchParams={searchParams} params={params} />
+        <MemberWorkshopPage searchParams={searchParams} params={params} />
       )}
     </>
   );

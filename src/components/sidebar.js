@@ -26,99 +26,99 @@ import { Button } from "./button";
 
 export default function Sidebar({ isMobile = false, user }) {
   const pathname = usePathname();
-  const isAdmin = user?.role === "admin";
+  const role = user?.role;
 
   const routes = [
     {
       name: "Dashboard",
       href: "/dashboard",
       icon: LayoutDashboard,
-      isModerate: true,
+      roles: ["admin", "moderator", "member"],
     },
     {
       name: "Users",
       href: "/dashboard/users",
       icon: Users,
-      isModerate: false,
+      roles: ["admin"],
     },
     {
       name: "Sessions",
       href: "/dashboard/sessions",
       icon: UserCheck,
-      isModerate: false,
+      roles: ["admin"],
     },
     {
       name: "Managements",
       href: "/dashboard/managements",
       icon: Vote,
-      isModerate: false,
+      roles: ["admin"],
     },
     {
       name: "Moderators",
       href: "/dashboard/moderators",
       icon: UserCog2,
-      isModerate: false,
+      roles: ["admin"],
     },
     {
       name: "Members Collect",
       href: "/dashboard/member-collect",
       icon: UserCog2Icon,
-      isModerate: false,
+      roles: ["admin"],
     },
     {
       name: "Notice",
       href: "/dashboard/notice",
       icon: Bell,
-      isModerate: false,
+      roles: ["admin"],
     },
     {
       name: "Results",
       href: "/dashboard/results",
       icon: GraduationCap,
-      isModerate: false,
+      roles: ["admin"],
     },
     {
       name: "Events",
       href: "/dashboard/events",
       icon: Calendar,
-      isModerate: true,
+      roles: ["admin", "moderator", "member"],
     },
     {
       name: "Projects",
       href: "/dashboard/projects",
       icon: Briefcase,
-      isModerate: true,
+      roles: ["admin", "moderator", "member"],
     },
     {
       name: "Workshops",
       href: "/dashboard/workshops",
       icon: Wrench,
-      isModerate: true,
+      roles: ["admin", "moderator", "member"],
     },
     {
       name: "Assignments",
       href: "/dashboard/assignments",
       icon: FileText,
-      isModerate: true,
+      roles: ["admin", "moderator", "member"],
     },
 
     {
       name: "Payments",
       href: "/dashboard/payments",
       icon: CreditCard,
-      isModerate: false,
+      roles: ["admin"],
     },
     {
       name: "Skills",
       href: "/dashboard/skills",
       icon: Award,
-      isModerate: true,
+      roles: ["admin", "moderator", "member"],
     },
     {
       name: "Settings",
       href: "/dashboard/settings",
       icon: Settings,
-      isModerate: false,
+      roles: ["admin", "moderator", "member"],
     },
   ];
 
@@ -146,7 +146,7 @@ export default function Sidebar({ isMobile = false, user }) {
 
       <div className="flex-1 px-3 py-2 space-y-1">
         {routes
-          .filter((route) => (isAdmin === true ? true : route?.isModerate))
+          .filter((route) => route.roles.includes(role))
           .map((route) => (
             <div key={route.href}>
               <Link

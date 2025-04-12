@@ -1,5 +1,3 @@
-import UserSkillSelector from "@/app/(dashboard)/dashboard/skills/_components/user-skill-selector";
-import UserSkillsOverview from "@/app/(dashboard)/dashboard/skills/_components/user-skills-overview";
 import {
   getAllSkillRequestsByUserId,
   getAllSkillWithoutPrevSkills,
@@ -11,8 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import UserSkillSelector from "./user-skill-selector";
+import UserSkillsOverview from "./user-skills-overview";
 
-export default async function SkillManagementSystem() {
+export default async function MemberSkillPage() {
   let availableSkills = [];
   let userSkills = [];
   try {

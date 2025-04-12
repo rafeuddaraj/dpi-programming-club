@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export default function Dashboard() {
+export default function MemberDashboardPage({ searchParams, params }) {
   const stats = [
     {
       title: "Total Courses",

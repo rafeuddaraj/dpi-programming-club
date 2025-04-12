@@ -50,7 +50,7 @@ export default async function WorkshopPlayerPage({
   const lessonAndModuleResp = await getModuleAndLesson(workshopId, lessonId);
 
   if (lessonAndModuleResp?.error) {
-    return redirect("/profile/dashboard");
+    return redirect("/dashboard");
   }
 
   const { module, ...lesson } = lessonAndModuleResp?.data;
