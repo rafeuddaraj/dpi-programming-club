@@ -288,6 +288,7 @@ export function ProfileEditForm({ user }) {
                         <Input
                           placeholder="https://linkedin.com/in/johndoe"
                           {...field}
+                          disabled={user?.linkedin}
                         />
                       </FormControl>
                       <FormMessage />
@@ -304,6 +305,7 @@ export function ProfileEditForm({ user }) {
                         <Input
                           placeholder="https://github.com/johndoe"
                           {...field}
+                          disabled={user?.github}
                         />
                       </FormControl>
                       <FormMessage />
@@ -320,7 +322,7 @@ export function ProfileEditForm({ user }) {
                         <Input
                           placeholder="johndoe#1234"
                           {...field}
-                          disabled={user.discord}
+                          disabled={user?.discord}
                         />
                       </FormControl>
                       <FormMessage />

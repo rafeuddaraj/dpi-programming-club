@@ -13,7 +13,7 @@ import { Moon, Sun } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
@@ -141,7 +141,13 @@ export function Navbar({ user }) {
           <div className="pt-4 pb-3 border-t border-border/40">
             <div className="flex items-center px-5 space-x-2">
               <ThemeToggle />
-              <ProfileDropdown />
+              {user ? (
+                <ProfileDropdown user={user} />
+              ) : (
+                <Link href="/auth/login">
+                  <Button>Login</Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -213,7 +219,8 @@ function ProfileDropdown({ user }) {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={async () => {
-            await signOut();
+            await signOut({ redirect: false });
+            redirect("/auth/login");
           }}
         >
           Logout

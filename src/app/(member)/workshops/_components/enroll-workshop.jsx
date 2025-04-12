@@ -4,7 +4,6 @@ import { enrollWorkshop } from "@/app/actions/workshops";
 import { Button } from "@/components/button";
 import PaymentModal from "@/components/common/PaymentModal";
 import { Loader2 } from "lucide-react";
-import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -24,7 +23,6 @@ export default function EnrollWorkshop({ workshop }) {
         );
         if (resp?.error) {
           if (resp?.message === "User not found") {
-            signOut({ redirectTo: "/auth/login" });
             return toast.error("Your are not verified user!");
           }
           throw new Error();

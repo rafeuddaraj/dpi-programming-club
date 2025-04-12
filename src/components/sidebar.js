@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import { Button } from "./button";
 
 export default function Sidebar({ isMobile = false, user }) {
@@ -186,7 +186,10 @@ export default function Sidebar({ isMobile = false, user }) {
       <div className="p-4 border-t">
         <button
           className="sidebar-item w-full justify-start text-destructive hover:text-destructive"
-          onClick={() => signOut()}
+          onClick={() => {
+            signOut({ redirect: false });
+            redirect("/auth/login");
+          }}
         >
           <LogOut className="sidebar-item-icon" />
           <span>Logout</span>

@@ -3,6 +3,7 @@ import { getSingleResult } from "@/app/actions/bteb-result";
 import { getAllApprovedSkillsByUser } from "@/app/actions/skills";
 import { getUserById } from "@/app/actions/users";
 import { auth } from "@/app/auth";
+import notFound from "@/app/not-found";
 import { MotionDiv } from "@/components/common/motion";
 import { ShareModal } from "@/components/common/share-modal";
 import { Icons } from "@/components/icons";
@@ -48,7 +49,7 @@ export default async function ProfilePage({ searchParams }) {
     //
   }
   if (userData?.error || activities?.error) {
-    throw Error("User not found");
+    return notFound();
   }
 
   let approvedSkills = [];

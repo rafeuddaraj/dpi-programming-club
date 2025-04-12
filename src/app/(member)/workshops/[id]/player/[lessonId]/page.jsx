@@ -1,6 +1,6 @@
 import { ArrowLeft, Play } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { getAssignmentSubmissionByUserIdAndAssignmentId } from "@/app/actions/assignments";
 import {
@@ -50,7 +50,7 @@ export default async function WorkshopPlayerPage({
   const lessonAndModuleResp = await getModuleAndLesson(workshopId, lessonId);
 
   if (lessonAndModuleResp?.error) {
-    throw Error();
+    return redirect("/profile/dashboard");
   }
 
   const { module, ...lesson } = lessonAndModuleResp?.data;

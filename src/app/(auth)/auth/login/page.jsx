@@ -47,7 +47,7 @@ export default function LoginPage() {
       if (res?.error) {
         throw new Error(res?.error);
       }
-      window.location.replace("/profile");
+      router.push("/profile");
     } catch {
       setError("There was an error while trying to login.");
     }
@@ -110,7 +110,10 @@ export default function LoginPage() {
             </div>
             <Button
               type="submit"
-              disabled={form.formState.isSubmitting}
+              disabled={
+                form.formState.isSubmitting ||
+                (form.formState.isSubmitted && !error)
+              }
               className="w-full"
             >
               {form.formState.isSubmitting ? "Processing" : "Login"}

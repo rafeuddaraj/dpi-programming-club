@@ -44,7 +44,7 @@ export default function SkillsDisplay({ skills }) {
                   <div className="p-5 space-y-4">
                     <div className="relative">
                       <div className="absolute left-2 top-0 bottom-0 w-0.5 bg-stone-200 dark:bg-slate-600"></div>
-                      <ScrollArea className="h-24">
+                      <ScrollArea className="h-[30vh]">
                         <div className="pl-6 text-stone-700 whitespace-normal">
                           <FeedbackPreview markdownText={skill?.experience} />
                         </div>
