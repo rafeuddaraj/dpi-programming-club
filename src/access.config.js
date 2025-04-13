@@ -1,7 +1,7 @@
 export const routeAccessMap = [
   // Public Routes
   {
-    paths: ["/auth/login", "/auth/register"],
+    paths: [],
     roles: [], // No role needed
     isPrivate: false, // Public route
   },
