@@ -16,6 +16,7 @@ import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Badge } from "./ui/badge";
 
 const navItems = [
   { name: "Home", href: "/" },
@@ -46,7 +47,12 @@ export function Navbar({ user }) {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0">
-              <span className="text-2xl font-bold text-primary">CSCDPI</span>
+              <span className="text-2xl font-bold text-primary">
+                CSCDPI{" "}
+                <sup>
+                  <Badge>Beta</Badge>
+                </sup>
+              </span>
             </Link>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4 flex-wrap">

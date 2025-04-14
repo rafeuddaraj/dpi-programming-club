@@ -23,6 +23,7 @@ import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
 import { Button } from "./button";
+import { Badge } from "./ui/badge";
 
 export default function Sidebar({ isMobile = false, user }) {
   const pathname = usePathname();
@@ -135,12 +136,15 @@ export default function Sidebar({ isMobile = false, user }) {
         isMobile ? "" : "hidden"
       } md:flex flex-col w-64 bg-card border-r overflow-y-auto`}
     >
-      <div className="p-6">
+      <div className="p-6 relative">
         <Link href="/" className="flex items-center gap-2 font-bold text-2xl">
+          <span>CST Club</span>
           <span className="bg-primary text-primary-foreground p-1 rounded">
             DPI
           </span>
-          <span>CST Club</span>
+          <div className={"absolute right-2 top-0"}>
+            <Badge variant={"destructive"}>Beta</Badge>
+          </div>
         </Link>
       </div>
 
