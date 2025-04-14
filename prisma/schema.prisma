@@ -29,39 +29,40 @@ enum Role {
 }
 
 model User {
-  id                    String                 @id @default(auto()) @map("_id") @db.ObjectId
+  id                    String                  @id @default(auto()) @map("_id") @db.ObjectId
   password              String
-  registeredUserId      String                 @unique @db.ObjectId
-  user                  RegisteredUser         @relation(fields: [registeredUserId], references: [id])
+  registeredUserId      String                  @unique @db.ObjectId
+  user                  RegisteredUser          @relation(fields: [registeredUserId], references: [id])
   avatar                String?
   discord               String?
   bio                   String?
   about                 String?
   linkedin              String?
   github                String?
-  role                  Role                   @default(member) // member, moderator, admin
+  role                  Role                    @default(member) // member, moderator, admin
   address               String?
-  status                UserStatus             @default(PROCESSING)
+  status                UserStatus              @default(PROCESSING)
   renewalDate           DateTime
   otp                   Int?
   expiredOtp            DateTime?
-  examiner              Boolean?               @default(false)
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt()
+  examiner              Boolean?                @default(false)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt()
   token                 Session[]
   Payment               Payment[]
   gallery               Gallery[]
   EventParticipant      EventParticipant[]
   workshopParticipants  WorkshopParticipant[]
-  eventExaminers        EventParticipant[]     @relation("Examiner")
-  examiners             AssignmentSubmission[] @relation("Examiner")
+  eventExaminers        EventParticipant[]      @relation("Examiner")
+  examiners             AssignmentSubmission[]  @relation("Examiner")
   assignmentSubmissions AssignmentSubmission[]
   quizResults           QuizResults[]
   Notice                Notice[]
   skills                UserSkills[]
-  skillsReviewer        UserSkills[]           @relation("Examiner")
-  workshopReviewer      WorkshopParticipant[]  @relation("Examiner")
+  skillsReviewer        UserSkills[]            @relation("Examiner")
+  workshopReviewer      WorkshopParticipant[]   @relation("Examiner")
   electionMembers       ElectionMember[]
+  quizAnswers           QuizAnswersSubmission[]
 }
 
 model Skills {
@@ -318,51 +319,68 @@ model AssignmentSubmission {
 // Quizzes
 
 model Quizzes {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  description String
-  totalMarks  Int      @default(100)
-  duration    Int // Duration in minutes
-  isActive    Boolean  @default(false)
-  startTime   DateTime // When the quiz will be available
-  endTime     DateTime // When the quiz will end
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt()
-
-  questions QuizQuestions[]
-  results   QuizResults[]
-  links     QuizLinks[]
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  description  String
+  isActive     Boolean         @default(false)
+  startingDate DateTime // When the quiz will be available
+  endingDate   DateTime // When the quiz will end
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt()
+  parentId     String?         @unique @db.ObjectId
+  childId      String?         @unique @db.ObjectId
+  results      QuizResults[]
+  questions    QuizQuestions[]
 }
 
 model QuizQuestions {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  quizId       String   @db.ObjectId
-  question     String
-  options      String[] // ["Option 1", "Option 2", "Option 3", "Option 4"]
-  isActive     Boolean  @default(false)
-  correctIndex Int // Index of the correct answer in the options array
-  marks        Int // Marks for this question
-  quiz         Quizzes  @relation(fields: [quizId], references: [id])
+  id            String                  @id @default(auto()) @map("_id") @db.ObjectId
+  quizId        String                  @unique @db.ObjectId
+  question      String
+  description   String
+  duration      Int                     @default(30) // second value accept
+  options       String[] // ["Option 1", "Option 2", "Option 3", "Option 4"]
+  isActive      Boolean                 @default(false)
+  correctAnswer String[] // value = ["Option 1" , "Option 2"]
+  marks         Int // Marks for this question
+  quiz          Quizzes                 @relation(fields: [quizId], references: [id])
+  quizAnswers   QuizAnswersSubmission[]
+}
+
+model QuizAnswersSubmission {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  questionId     String        @db.ObjectId
+  userId         String        @db.ObjectId
+  user           User          @relation(fields: [userId], references: [id])
+  question       QuizQuestions @relation(fields: [userId], references: [id])
+  selectedAnswer String[]
+  isCorrect      Boolean // Auto generated
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt()
+
+  @@unique([userId, questionId])
+}
+
+enum QuizStatus {
+  PENDING
+  IN_PROGRESS
+  SUBMITTED
+  FAILED
 }
 
 model QuizResults {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  quizId      String   @db.ObjectId
-  userId      String   @db.ObjectId
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  quizId      String     @db.ObjectId
+  userId      String     @db.ObjectId
   score       Int
-  completedAt DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt()
-  quiz        Quizzes  @relation(fields: [quizId], references: [id])
-  user        User     @relation(fields: [userId], references: [id])
-}
+  completedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt()
+  status      QuizStatus @default(PENDING)
+  quiz        Quizzes    @relation(fields: [quizId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
 
-model QuizLinks {
-  id        String       @id @default(auto()) @map("_id") @db.ObjectId
-  quizId    String       @db.ObjectId
-  type      ActivityType // "Workshop", "Course", etc.
-  relatedId String       @db.ObjectId // ID of the related entity (e.g., Workshop ID or Course ID)
-  quiz      Quizzes      @relation(fields: [quizId], references: [id])
+  @@unique([userId, quizId])
 }
 
 // Notice Board

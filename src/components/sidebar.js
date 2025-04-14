@@ -11,6 +11,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   LogOut,
+  Phone,
   Settings,
   UserCheck,
   UserCog2,
@@ -99,6 +100,12 @@ export default function Sidebar({ isMobile = false, user }) {
       name: "Assignments",
       href: "/dashboard/assignments",
       icon: FileText,
+      roles: ["admin", "moderator", "member"],
+    },
+    {
+      name: "Quizzes",
+      href: "/dashboard/quizzes",
+      icon: Phone,
       roles: ["admin", "moderator", "member"],
     },
 
