@@ -66,13 +66,6 @@ export const routeAccessMap = [
     roles: ["admin", "members"],
     isPrivate: true,
   },
-
-  // Profile Route
-  {
-    paths: ["/profile"],
-    roles: ["member", "admin", "moderator"],
-    isPrivate: false,
-  },
   {
     paths: ["/profile/edit"],
     roles: ["member"],

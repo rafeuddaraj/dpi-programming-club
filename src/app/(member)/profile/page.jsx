@@ -16,7 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { hasPermission, MEMBER } from "@/lib/permissions";
 import { isMembershipExpired } from "@/lib/utils";
 import GetDepartmentList from "@/utils/DepartmentList";
 import dynamic from "next/dynamic";
@@ -151,12 +150,6 @@ export default async function ProfilePage({ searchParams }) {
           approvedSkills={approvedSkills}
         />
         <div className="flex justify-center gap-4">
-          {hasPermission(session?.user?.role, MEMBER["update:own_user"]) &&
-            userData?.id === session.user?.id && (
-              <Button asChild>
-                <Link href="/profile/edit">Edit Profile</Link>
-              </Button>
-            )}
           <ShareModal
             url={`${process?.env?.SITE_URL}/profile?id=${userData?.id}`}
           >

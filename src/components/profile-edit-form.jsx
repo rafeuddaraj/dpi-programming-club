@@ -106,7 +106,6 @@ export function ProfileEditForm({ user }) {
         throw new Error("Something went Wrong");
       }
       toast.success("Profile Update Success");
-      return router.push("/profile");
     } catch (err) {
       toast.error(err.message);
     }
