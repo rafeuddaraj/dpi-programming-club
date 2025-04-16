@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Bell, Menu, Search, X } from "lucide-react";
 import { useState } from "react";
-import Sidebar from "./sidebar";
 
-export default function Header() {
+import dynamic from "next/dynamic";
+const Sidebar = dynamic(() => import("./sidebar"));
+
+export default function Header({ user }) {
   const [showSearch, setShowSearch] = useState(false);
 
   return (
@@ -20,7 +22,7 @@ export default function Header() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="p-0">
-          <Sidebar isMobile={true} />
+          <Sidebar isMobile={true} user={user} />
         </SheetContent>
       </Sheet>
 

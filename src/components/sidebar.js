@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import {
   Award,
   Bell,
@@ -22,7 +21,6 @@ import {
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
-import { Button } from "./button";
 import { Badge } from "./ui/badge";
 
 export default function Sidebar({ isMobile = false, user }) {
@@ -133,8 +131,8 @@ export default function Sidebar({ isMobile = false, user }) {
   return (
     <div
       className={`${
-        isMobile ? "" : "hidden"
-      } md:flex flex-col w-64 bg-card border-r overflow-y-auto`}
+        isMobile ? " border-r-transparent" : "hidden border-r"
+      } md:flex flex-col w-64 bg-card overflow-y-auto`}
     >
       <div className="p-6 relative">
         <Link href="/" className="flex items-center gap-2 font-bold text-2xl">
@@ -147,7 +145,6 @@ export default function Sidebar({ isMobile = false, user }) {
           </div>
         </Link>
       </div>
-
       <div className="flex-1 px-3 py-2 space-y-1">
         {routes
           .filter((route) => route.roles.includes(role))
@@ -163,26 +160,6 @@ export default function Sidebar({ isMobile = false, user }) {
                 <route.icon className="sidebar-item-icon" />
                 <span>{route.name}</span>
               </Link>
-              {route.subItems && (
-                <div className="ml-4 mt-1 grid gap-1">
-                  {route.subItems.map((item) => (
-                    <Button
-                      key={item.href}
-                      asChild
-                      variant="ghost"
-                      className={cn(
-                        "h-8 justify-start gap-2",
-                        pathname === item.href && "bg-muted font-medium"
-                      )}
-                    >
-                      <Link href={item.href}>
-                        <item.icon className="h-4 w-4" />
-                        {item.label}
-                      </Link>
-                    </Button>
-                  ))}
-                </div>
-              )}
             </div>
           ))}
       </div>
